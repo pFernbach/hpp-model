@@ -1,0 +1,23 @@
+digraph CD  {
+	size = "8,15"
+	rankdir = BT
+	compound=true
+	CjrlDynamicRobot [shape = box] 
+	CjrlHumanoidDynamicRobot [shape = box] 
+	CjrlHumanoidDynamicRobot -> CjrlDynamicRobot;
+	CkppDeviceComponent [shape = box]
+	"ChppDevice" [shape = box]
+	"ChppHumanoidRobot" [shape = box]
+	"ChppDevice" -> CkppDeviceComponent
+	"ChppDevice" -> CimplDynamicRobot
+	"ChppHumanoidRobot" -> "ChppDevice" 
+	"ChppHumanoidRobot" -> CimplHumanoidDynamicRobot 
+
+	subgraph cluster0 {
+		CimplDynamicRobot [shape = box] 
+		CimplHumanoidDynamicRobot [shape = box]
+	}
+	CimplDynamicRobot -> CjrlDynamicRobot
+	CimplHumanoidDynamicRobot -> CjrlHumanoidDynamicRobot
+}
+

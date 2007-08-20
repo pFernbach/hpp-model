@@ -1,0 +1,2 @@
+In class ChppBody
+	1. remove methods getOuterObjects, getOuterObjects and attributes inner, outer since they are implemented in CkwsKCDBody.

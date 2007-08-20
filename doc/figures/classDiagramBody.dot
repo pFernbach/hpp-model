@@ -1,0 +1,13 @@
+digraph CD  {
+	size = "8,15"
+	rankdir = BT
+	compound=true
+	CjrlBody [shape = box] 
+	"ChppBody<CimplBody>" [shape = box]
+	CkwsKCDBody [shape = box]
+	CimplBody [shape = box]
+	CimplBody -> CjrlBody
+	"ChppBody<CimplBody>" -> CimplBody
+	"ChppBody<CimplBody>" -> CkwsKCDBody
+}
+

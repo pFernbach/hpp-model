@@ -1,0 +1,45 @@
+digraph CD  {
+	size = "12,15"
+	rankdir = BT
+	compound=true
+	CjrlJoint [shape = box] 
+	subgraph cluster0 {
+		CimplJoint [shape = box] 
+		CimplJointFreeFlyer [shape = box] 
+		CimplJointRotation [shape = box]
+		CimplJointTranslation [shape = box]
+	}
+	subgraph cluster1 {
+		CkppFreeFlyerJointComponent [shape = box]
+		CkppRotationJointComponent [shape = box]
+		CkppTranslationJointComponent [shape = box]
+		CkwsJoint [shape = box]
+	}
+
+	subgraph cluster2 {
+		ChppJoint [shape = box]
+		"ChppJointFreeFlyer" [shape = box]
+		"ChppJointRotation" [shape = box]
+		"ChppJointTranslation" [shape = box]
+	}
+
+	ChppJoint -> CimplJoint
+	CimplJoint -> CjrlJoint
+	ChppJoint -> CkwsJoint [style = dashed]
+	CimplJointFreeFlyer -> CimplJoint
+	CimplJointRotation -> CimplJoint
+	CimplJointTranslation -> CimplJoint
+	"ChppJointFreeFlyer" -> CimplJointFreeFlyer
+	"ChppJointRotation" -> CimplJointRotation
+	"ChppJointTranslation" -> CimplJointTranslation
+	"ChppJointFreeFlyer" -> CkppFreeFlyerJointComponent
+	"ChppJointRotation" -> CkppRotationJointComponent
+	"ChppJointTranslation" -> CkppTranslationJointComponent
+	"ChppJointFreeFlyer" -> ChppJoint 
+	"ChppJointRotation" -> ChppJoint 
+	"ChppJointTranslation" -> ChppJoint 
+	CkppFreeFlyerJointComponent -> CkwsJoint
+	CkppRotationJointComponent -> CkwsJoint
+	CkppTranslationJointComponent -> CkwsJoint
+}
+
