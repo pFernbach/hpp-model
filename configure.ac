@@ -44,20 +44,20 @@ AC_SUBST(ROBOTDYNAMICSIMPL_PREFIX)
 
 dnl --- Get name of classes ---------------------------------
 
-CIMPLDYNAMICROBOT=`$PKG_CONFIG $with_robotDynamics --variable=CimplDynamicRobot`
-AC_SUBST(CIMPLDYNAMICROBOT)
+dnl CIMPLDYNAMICROBOT=`$PKG_CONFIG $with_robotDynamics --variable=CimplDynamicRobot`
+dnl AC_SUBST(CIMPLDYNAMICROBOT)
 
-CIMPLHUMANOIDDYNAMICROBOT=`$PKG_CONFIG $with_robotDynamics --variable=CimplHumanoidDynamicRobot`
-AC_SUBST(CIMPLHUMANOIDDYNAMICROBOT)
+dnl CIMPLHUMANOIDDYNAMICROBOT=`$PKG_CONFIG $with_robotDynamics --variable=CimplHumanoidDynamicRobot`
+dnl AC_SUBST(CIMPLHUMANOIDDYNAMICROBOT)
 
-CIMPLJOINTFREEFLYER=`$PKG_CONFIG $with_robotDynamics --variable=CimplJointFreeFlyer`
-AC_SUBST(CIMPLJOINTFREEFLYER)
+dnl CIMPLJOINTFREEFLYER=`$PKG_CONFIG $with_robotDynamics --variable=CimplJointFreeFlyer`
+dnl AC_SUBST(CIMPLJOINTFREEFLYER)
 
-CIMPLJOINTROTATION=`$PKG_CONFIG $with_robotDynamics --variable=CimplJointRotation`
-AC_SUBST(CIMPLJOINTROTATION)
+dnl CIMPLJOINTROTATION=`$PKG_CONFIG $with_robotDynamics --variable=CimplJointRotation`
+dnl AC_SUBST(CIMPLJOINTROTATION)
 
-CIMPLJOINTTRANSLATION=`$PKG_CONFIG $with_robotDynamics --variable=CimplJointTranslation`
-AC_SUBST(CIMPLJOINTTRANSLATION)
+dnl CIMPLJOINTTRANSLATION=`$PKG_CONFIG $with_robotDynamics --variable=CimplJointTranslation`
+dnl AC_SUBST(CIMPLJOINTTRANSLATION)
 
 
 

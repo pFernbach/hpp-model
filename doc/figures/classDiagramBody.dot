@@ -3,11 +3,11 @@ digraph CD  {
 	rankdir = BT
 	compound=true
 	CjrlBody [shape = box] 
-	"ChppBody<CimplBody>" [shape = box]
+	"ChppBody" [shape = box]
 	CkwsKCDBody [shape = box]
 	CimplBody [shape = box]
 	CimplBody -> CjrlBody
-	"ChppBody<CimplBody>" -> CimplBody
-	"ChppBody<CimplBody>" -> CkwsKCDBody
+	"ChppBody" -> CimplBody
+	"ChppBody" -> CkwsKCDBody
 }
 

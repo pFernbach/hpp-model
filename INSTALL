@@ -11,3 +11,7 @@ cd build
 ../configure [OPTIONS]
 make 
 make install
+
+The robot dynamics implementation used must be specified at configuration by command
+  --with-robotDynamics=xxx
+where xxx is the name of the package implementing abstract interface for robot dynamics.
