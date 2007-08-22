@@ -19,6 +19,7 @@ INCLUDE
 #include "kwsKcd2/kwsKCDBody.h"
 
 #include "hppModel/hppImplRobotDynamics.h"
+#include "hppModel/hppJoint.h"
 
 KIT_PREDEF_CLASS(ChppBody);
 
@@ -45,6 +46,10 @@ public:
   static ChppBodyShPtr create(std::string inName);
 
   /**
+     \name Collision lists
+     @{
+  */
+  /**
      \brief Attach objects to the body.
      \param inInnerObjects list of objects to attach to the body
 
@@ -56,6 +61,20 @@ public:
   void 	setInnerObjects (const std::vector< CkcdObjectShPtr > &inInnerObjects);
 
   /**
+     \brief Attach objects to the body in specified position
+     \param inInnerObjects list of objects to attach to the body
+     \param inPlacementVector Vector of homogeneous matrix specifying the position of each object in inInnerObjects.
+
+     Previous objects if any are detached. 
+
+     Objects are put in the left test tree of attExactAnalyzer for exact distance computation.
+  */
+
+  void 	setInnerObjects (const std::vector< CkcdObjectShPtr > &inInnerObjects, 
+			 const std::vector< CkitMat4 > &inPlacementVector);
+
+
+  /**
      \brief Defines the list of objects to be tested for collision with this body.
      \param inOuterObjects list of objects to be tested for collision for this body
 
@@ -65,6 +84,30 @@ public:
   */
 
   void 	setOuterObjects (const std::vector< CkcdObjectShPtr > &inOuterObjects);
+
+  /**
+     @}
+  */
+  /**
+     \brief Add geometry to the body
+     
+     \param inSolidComponentRef Reference to the solid component to add.
+     \return true if success, false otherwise.
+
+     The input solid component is dynamically cast into
+     \li a CkppKCDPolyhedron or 
+     \li a CkppKCDAssembly
+     The object is then added to the inner object list of the body.
+     The collision analyser attExactAnalyzer is also updated.
+
+     \note The body must be attached to a joint.
+  */
+  bool addSolidComponent(const CkppSolidComponentRefShPtr& inSolidComponentRef);
+
+  /**
+     \name Collision and distance computation
+     @{
+  */
 
   /**
      \brief Compute exact distance and closest points between body and set of outer objects.
@@ -116,8 +159,36 @@ public:
   bool getCollision(unsigned int& outNbCollision,
 		    CkcdObjectShPtr &outObjectBody, CkcdObjectShPtr &outObjectEnv);
 
+  /**
+     @}
+  */
+
+  /**
+     \name Joint the body is attached to
+     @{
+  */
+
+  /**
+     \brief Store a pointer to the joint the body is attached to
+  */
+  void joint(ChppJoint* inJoint) {attJoint = inJoint;};
+
+  /**
+     \brief Get a pointer to the joint the body is attached to
+  */
+  ChppJoint* joint() { return attJoint; };
+
+  /**
+     @}
+  */
+
 protected:
   
+  /**
+     \brief Pointer to the joint the body is attached to
+  */
+  ChppJoint* attJoint;
+
   /**
      \brief Cosntructor by name.
   */

@@ -7,6 +7,8 @@
 #ifndef HPPDEVICE_H
 #define HPPDEVICE_H
 
+#include <map>
+
 #include "KineoWorks2/kwsInterface.h"
 #include "KineoUtility/kitInterface.h"
 #include "KineoModel/kppDeviceComponent.h"
@@ -72,18 +74,28 @@ public:
   */
 
   /**
-     \name Root joint
+     \name Joints
   */
 
   /**
      \brief Define the root joint
   */
-  void rootJoint(ChppJointShPtr inJoint);
+  void setRootJoint(ChppJoint& inJoint);
 
   /**
      \brief Get the root joint
   */
-  ChppJointShPtr rootJoint();
+  ChppJoint* getRootJoint();
+
+  /**
+     \brief Get ChppJoint containing a given CkppJointComponent
+  */
+  ChppJoint* kppToHppJoint(CkppJointComponentShPtr inKppJoint);
+
+  /**
+     \brief Register joint in device.
+  */
+  void registerJoint(ChppJoint& inHppJoint);
 
   /**
      @}
@@ -156,6 +168,15 @@ private:
   void ckcdObjectBoundingBox(const CkcdObjectShPtr& object, double& xMin, double& yMin, 
 			     double& zMin, double& xMax, double& yMax, double& zMax) const;
 
+  /**
+     \brief Map to retrieve the ChppJoint that contains a given CjrlJoint
+  */
+  std::map<CjrlJoint*, ChppJoint*> attJrlToHppJointMap;
+
+  /**
+     \brief Map to retrieve the ChppJoint by name.
+  */
+  std::map<CkppJointComponent*, ChppJoint*> attKppToHppJointMap;
 };
 
 #endif

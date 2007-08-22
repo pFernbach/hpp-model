@@ -3,4 +3,7 @@
 
 #include "@ROBOTDYNAMICSIMPL@/robotDynamicsImpl.h"
 
+typedef CjrlRobotDynamicsObjectConstructor<CimplDynamicRobot, CimplHumanoidDynamicRobot, CimplJointFreeFlyer, CimplJointRotation, CimplJointTranslation, CimplBody> CrobotDynamicsConstructor;
+
+
 #endif
