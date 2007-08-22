@@ -22,7 +22,7 @@ The following figure displays the inheritance diagram between classes representi
 \li CimplJointRotation is an implementation of rotation joint deriving from CimplJoint,
 \li CimplJointTranslation is an implementation of translation joint deriving from CimplJoint.
 
-\image html classDiagramJoint.png "Inheritance diagram between classes implementing joints. Dashed lines represent virtual inheritence."
+\image html classDiagramJoint.png "Inheritance diagram between classes implementing joints. Dashed lines represent attributes."
 
 \subsection subsec_hppDevice_bodies Bodies
 

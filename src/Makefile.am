@@ -7,8 +7,7 @@ lib_LTLIBRARIES = libhppModel.la
 libhppModel_la_SOURCES = \
 	hppDevice.cpp \
 	hppBody.cpp \
-	hppJoint.cpp \
-	hppJointFreeFlyer.cpp 
+	hppJoint.cpp 
 
 libhppModel_la_LDFLAGS = \
 	$(ROBOTDYNAMICSIMPL_LIBS)$ \

@@ -308,27 +308,52 @@ ktStatus ChppDevice::addObstacle(const CkcdObjectShPtr& inObject)
 
 // ==========================================================================
 
-void ChppDevice::rootJoint(ChppJointShPtr inJoint)
+void ChppDevice::setRootJoint(ChppJoint& inJoint)
 {
   /*
     Set joint as Kineo root joint
   */
-  CkwsJointShPtr kwsJoint(inJoint.get());
-  CkwsDevice::setRootJoint(kwsJoint);
+  CkppDeviceComponent::rootJointComponent(inJoint.kppJoint());
 
   /*
     Set joint as robotDynamics root joint
   */
-  CimplDynamicRobot::rootJoint(*(inJoint.get()));
+  CimplDynamicRobot::rootJoint(*(inJoint.jrlJoint()));
+
+  /*
+    Store hppJoint in maps
+  */
+  attKppToHppJointMap[inJoint.kppJoint().get()] = &inJoint;
+  attJrlToHppJointMap[inJoint.jrlJoint()] = &inJoint;
 }
 
 // ==========================================================================
 
-ChppJointShPtr ChppDevice::rootJoint()
+ChppJoint* ChppDevice::getRootJoint() 
 {
   /*
-    Dynamic cast Kineo root joint as ChppJoint
+    Get CkppJointComponent root joint 
   */
-  ChppJointShPtr joint = KIT_DYNAMIC_PTR_CAST(ChppJoint, this->CkwsDevice::rootJoint());
+  CkppJointComponentShPtr kppJointComponent = rootJointComponent();
+    
+  ChppJoint* joint = kppToHppJoint(kppJointComponent);
   return joint;
+}
+
+// ==========================================================================
+
+void ChppDevice::registerJoint(ChppJoint& inHppJoint)
+{
+  /*
+    Store hppJoint in maps
+  */
+  attKppToHppJointMap[inHppJoint.kppJoint().get()] = &inHppJoint;
+  attJrlToHppJointMap[inHppJoint.jrlJoint()] = &inHppJoint;
+}
+
+// ==========================================================================
+
+ChppJoint* ChppDevice::kppToHppJoint(CkppJointComponentShPtr inKppJoint)
+{
+  return attKppToHppJointMap[inKppJoint.get()];
 }

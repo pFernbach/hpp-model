@@ -6,6 +6,11 @@
 */
 
 #include <iostream>
+
+#include "KineoModel/kppSolidComponentRef.h"
+#include "KineoKCDModel/kppKCDPolyhedron.h"
+#include "KineoKCDModel/kppKCDAssembly.h"
+
 #include "hppModel/hppBody.h"
 
 //=============================================================================
@@ -50,6 +55,18 @@ void ChppBody::setInnerObjects (const std::vector<CkcdObjectShPtr> &inInnerObjec
 
 //=============================================================================
 
+void ChppBody::setInnerObjects (const std::vector< CkcdObjectShPtr > &inInnerObjects, 
+				const std::vector< CkitMat4 > &inPlacementVector)
+{
+  innerObjects(inInnerObjects, inPlacementVector);
+
+  // retrieve the test trees associated with the objects and the ignored object list
+  CkcdTestTreeShPtr tree = CkcdTestTree::collectTestTrees(inInnerObjects, std::vector<CkcdObjectShPtr>());
+
+  attExactAnalyzer->leftTestTree(tree);
+}
+
+
 void ChppBody::setOuterObjects (const std::vector<CkcdObjectShPtr> &inOuterObjects)
 {
   outerObjects(inOuterObjects);
@@ -58,6 +75,41 @@ void ChppBody::setOuterObjects (const std::vector<CkcdObjectShPtr> &inOuterObjec
   CkcdTestTreeShPtr tree = CkcdTestTree::collectTestTrees(inOuterObjects, std::vector< CkcdObjectShPtr >());
 
   attExactAnalyzer->rightTestTree(tree);
+}
+
+
+//=============================================================================
+
+bool ChppBody::addSolidComponent(const CkppSolidComponentRefShPtr& inSolidComponentRef)
+{
+  CkppSolidComponentShPtr solidComponent = inSolidComponentRef->referencedSolidComponent();
+
+  /*
+    The input solid component is dynamically cast into
+     1. a CkppKCDPolyhedron or 
+     2. a CkppKCDAssembly
+  */
+  
+  CkcdObjectShPtr kcdObject;
+  if (CkppKCDPolyhedronShPtr polyhedron = KIT_DYNAMIC_PTR_CAST(CkppKCDPolyhedron, solidComponent)) {
+    kcdObject = polyhedron;
+  }
+  else if (CkppKCDAssemblyShPtr assembly = KIT_DYNAMIC_PTR_CAST(CkppKCDAssembly, solidComponent)) {
+    kcdObject = assembly;
+  }
+  else {
+    std::cerr << "ChppBody::addSolidComponent: solid component is neither an assembly nor a polyhedron" << std::endl;
+    return false;
+  }
+
+  /*
+    Add object to the inner object list
+  */
+  std::vector<CkcdObjectShPtr> innerObjectList = innerObjects();
+  innerObjectList.push_back(kcdObject);
+
+  setInnerObjects(innerObjectList);
+  return true;
 }
 
 //=============================================================================
@@ -234,3 +286,5 @@ bool ChppBody::getCollision(unsigned int &outNbCollision,
     return false;
   }
 }
+
+
