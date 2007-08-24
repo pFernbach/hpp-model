@@ -357,3 +357,124 @@ ChppJoint* ChppDevice::kppToHppJoint(CkppJointComponentShPtr inKppJoint)
 {
   return attKppToHppJointMap[inKppJoint.get()];
 }
+
+// ==========================================================================
+
+bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUpdateWhat)
+{
+  bool updateGeom = (inUpdateWhat == GEOMETRIC || inUpdateWhat == BOTH);
+  bool updateDynamic = (inUpdateWhat == DYNAMIC || inUpdateWhat == BOTH);
+
+  if (updateGeom) {
+    if (CkppDeviceComponent::setCurrentConfig(inConfig) != KD_OK) {
+      return false;
+    }
+  }
+  if (updateDynamic) {
+    unsigned int kwsConfigDim = inConfig.size();
+    /* 
+       Count the number of extra dofs of the CkppDeviceComponent
+       since the first degrees of freedom of inConfig correspond to these extra-dofs.
+    */
+    unsigned int rankInCkwsConfig = countExtraDofs();
+    std::vector< CkppJointComponentShPtr > kppJointVector;
+    getJointComponentVector(kppJointVector);
+
+    /*
+      Allocate a vector for CjrldynamicRobot configuration
+      The difference of size between KppDeviceComponent and CjrldynamicRobot is
+      the number of extra dofs.
+    */
+    MAL_VECTOR_DIM(jrlConfig, double, kwsConfigDim-rankInCkwsConfig);
+
+    /*
+      Loop over CkppDeviceComponent joints
+    */
+    for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size(); iKppJoint++) {
+      CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
+      unsigned int jointDim = kppJoint->countDofComponents();
+      /*
+	Get associated CjrlJoint
+      */
+      CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint.get()]->jrlJoint();
+      unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
+
+      /*
+	Check rank in configuration wrt  dimension.
+      */
+      if (jrlRankInConfig+jointDim > inConfig.size()) {
+	std::cerr << "hppSetCurrentConfig: rank in configuration is more than configuration dimension." 
+		  << std::endl;
+	return false;
+      }
+      /*
+	Fill dofs of this joint
+      */
+      for (unsigned int iJrlDof = jrlRankInConfig; iJrlDof < jrlRankInConfig+jointDim; iJrlDof++) {
+	jrlConfig[iJrlDof] = inConfig.dofValue(rankInCkwsConfig);
+	rankInCkwsConfig++;
+      }
+    }
+    return CimplDynamicRobot::currentConfiguration(jrlConfig);
+  }
+  return false;
+}
+
+// ==========================================================================
+
+bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdateWhat)
+{  
+  bool updateGeom = (inUpdateWhat == GEOMETRIC || inUpdateWhat == BOTH);
+  bool updateDynamic = (inUpdateWhat == DYNAMIC || inUpdateWhat == BOTH);
+
+  if (updateDynamic) {
+    if (!CimplDynamicRobot::currentConfiguration(inConfig)) {
+      return false;
+    }
+  }
+  if (updateGeom) {
+    CkwsConfig kwsConfig(CkwsDeviceShPtr(this));
+    unsigned int kwsConfigDim = kwsConfig.size();
+    /* 
+       Count the number of extra dofs of the CkppDeviceComponent and set them to 0
+    */
+    unsigned int rankInCkwsConfig;
+    for (rankInCkwsConfig=0; rankInCkwsConfig < countExtraDofs(); rankInCkwsConfig++) {
+      kwsConfig.dofValue(rankInCkwsConfig, 0);
+    }
+
+    std::vector< CkppJointComponentShPtr > kppJointVector;
+    getJointComponentVector(kppJointVector);
+
+    /*
+      Loop over CkppDeviceComponent joints
+    */
+    for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size(); iKppJoint++) {
+      CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
+      unsigned int jointDim = kppJoint->countDofComponents();
+      /*
+	Get associated CjrlJoint
+      */
+      CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint.get()]->jrlJoint();
+      unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
+
+      /*
+	Check rank in configuration wrt  dimension.
+      */
+      if (jrlRankInConfig > inConfig.size()) {
+	std::cerr << "hppSetCurrentConfig: rank in configuration is more than configuration dimension." 
+		  << std::endl;
+	return false;
+      }
+      /*
+	Fill dofs of this joint
+      */
+      for (unsigned int iJrlDof = jrlRankInConfig; iJrlDof < jrlRankInConfig+jointDim; iJrlDof++) {
+	kwsConfig.dofValue(rankInCkwsConfig, inConfig[iJrlDof]);
+	rankInCkwsConfig++;
+      }
+    }
+    return (CkppDeviceComponent::setCurrentConfig(kwsConfig) == KD_OK);
+  }
+  return false;
+}

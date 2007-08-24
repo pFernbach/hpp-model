@@ -11,8 +11,6 @@
 #include "hppModel/hppDevice.h"
 #include "hppModel/hppBody.h"
 
-//static CrobotDynamicsConstructor robotDynamicsConstructor;
-
 static matrix4d abstractMatrixFromCkitMat4(const CkitMat4& inMatrix)
 {
   MAL_S4x4_MATRIX(abstractMatrix, double);

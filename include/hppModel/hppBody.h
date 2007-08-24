@@ -46,6 +46,11 @@ public:
   static ChppBodyShPtr create(std::string inName);
 
   /**
+     \brief Get name of object.
+  */
+  const std::string& name() {return attName;};
+
+  /**
      \name Collision lists
      @{
   */

@@ -1,2 +1,7 @@
+2007/08/24
+	Reorganization of classes.
+	1. ChppJoint does not derive anymore from CjrlJoint and CkwsJoint
+	2. ChppJointFreeFlyer, ChppJointRotation and ChppJointTranslation have been removed.
+	
 In class ChppBody
 	1. remove methods getOuterObjects, getOuterObjects and attributes inner, outer since they are implemented in CkwsKCDBody.

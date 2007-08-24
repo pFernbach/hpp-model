@@ -21,18 +21,32 @@
 KIT_PREDEF_CLASS(ChppDevice);
 
 /**
- \brief Robot with geometric and dynamic model 
+   \brief Robot with geometric and dynamic model 
  
- The dynamic model is implemented through robotDynamics abstract interface, while the geometric model is implemented by KineoWorks.
-
- The class is templated by an implementation of CjrlDynamicRobot. Thus, different implementations can be used without modification of the code.
-
- The creation of the device is done by ChppDevice::create(const std::string inName). This function returns a shared pointer to the newly created object.
-\sa Smart pointers documentation: http://www.boost.org/libs/smart_ptr/smart_ptr.htm 
+   The dynamic model is implemented through robotDynamics abstract interface, by CimplDynamicRobot 
+   which is an implementation of CjrlDynamicRobot, while the geometric model is implemented by 
+   CkppDeviceComponent (See KPP-SDK documentation).
+   
+   The creation of the device is done by ChppDevice::create(const std::string inName). 
+   This function returns a shared pointer to the newly created object.
+   \sa Smart pointers documentation: http://www.boost.org/libs/smart_ptr/smart_ptr.htm 
+   
+   Due to the composite nature of ChppDevice, configuration vectors might differ between the geometric and 
+   the dynamic parts. For this reason, two functions ChppDevice::hppSetCurrentConfig and two functions 
+   ChppDevice::hppGetCurrentConfig are are implemented.
 */
 
 class ChppDevice : public CkppDeviceComponent, public CimplDynamicRobot {
 public:
+  /**
+     \brief Specify which part of the device is concerned
+  */
+  typedef enum EwhichPart {
+    GEOMETRIC,
+    DYNAMIC,
+    BOTH
+  } EwhichPart;
+
   /**
      \name Construction, copy and destruction
      {@
@@ -96,6 +110,43 @@ public:
      \brief Register joint in device.
   */
   void registerJoint(ChppJoint& inHppJoint);
+
+  /**
+     @}
+  */
+
+  /**
+     \name Configurations
+     @{
+  */
+
+  /**
+     \brief Put the robot in a given configuration
+
+     \param inConfig The configuration
+     \param inUpdateWhat Specify which part of the robot (geometric, dynamic or both) should be update)
+
+     \return true if success, false otherwise.
+
+     \note In CkwsConfig, the order of the joint degrees-of-freedom follow KineoWorks convention.
+     The configuration of the dynamic part (CimplDynamicRobot) is thus computed accordingly.
+  */
+  bool hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUpdateWhat=BOTH);
+
+  /**
+     \brief Put the robot in a given configuration
+
+     \param inConfig The configuration
+     \param inUpdateWhat Specify which part of the robot (geometric, dynamic or both) should be update)
+
+     \return true if success, false otherwise.
+     
+     CkppDeviceComponent extra-dofs are set to 0.
+
+     \note In vectorN, the order of  the joint degrees-of-freedom follow CimplDynamicRobot convention.
+     The configuration of the geometric part (CkppDeviceComponent) is thus computed accordingly.
+  */
+  bool hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdateWhat=BOTH);
 
   /**
      @}
