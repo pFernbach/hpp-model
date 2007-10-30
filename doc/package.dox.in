@@ -180,7 +180,7 @@ SEARCHENGINE           = NO
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
-PROJECT_NAME           = "hppModel library documentation"
+PROJECT_NAME           = "hppModel library"
 PROJECT_NUMBER         = @VERSION@
 
 #---------------------------------------------------------------------------

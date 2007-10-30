@@ -17,9 +17,10 @@ INCLUDE
 #include "KineoUtility/kitInterface.h"
 #include "kcd2/kcdInterface.h"
 #include "kwsKcd2/kwsKCDBody.h"
+#include "KineoModel/kppSolidComponentRef.h"
 
-#include "hppModel/hppImplRobotDynamics.h"
-#include "hppModel/hppJoint.h"
+#include "hppImplRobotDynamics.h"
+#include "hppJoint.h"
 
 KIT_PREDEF_CLASS(ChppBody);
 
@@ -97,6 +98,7 @@ public:
      \brief Add geometry to the body
      
      \param inSolidComponentRef Reference to the solid component to add.
+     \param inPosition Position of the object before attaching it to the body (default value=Identity).
      \return true if success, false otherwise.
 
      The input solid component is dynamically cast into
@@ -107,7 +109,7 @@ public:
 
      \note The body must be attached to a joint.
   */
-  bool addSolidComponent(const CkppSolidComponentRefShPtr& inSolidComponentRef);
+  bool addSolidComponent(const CkppSolidComponentRefShPtr& inSolidComponentRef, const CkitMat4& inPosition=CkitMat4());
 
   /**
      \name Collision and distance computation
@@ -164,6 +166,8 @@ public:
   bool getCollision(unsigned int& outNbCollision,
 		    CkcdObjectShPtr &outObjectBody, CkcdObjectShPtr &outObjectEnv);
 
+  bool printCollisionStatus(const bool& detailInfoFlag = false);
+  void printCollisionStatusFast();
   /**
      @}
   */
@@ -176,12 +180,12 @@ public:
   /**
      \brief Store a pointer to the joint the body is attached to
   */
-  void joint(ChppJoint* inJoint) {attJoint = inJoint;};
+  void hppJoint(ChppJoint* inJoint) {attJoint = inJoint;};
 
   /**
      \brief Get a pointer to the joint the body is attached to
   */
-  ChppJoint* joint() { return attJoint; };
+  ChppJoint* hppJoint() const { return attJoint; };
 
   /**
      @}
@@ -197,7 +201,7 @@ protected:
   /**
      \brief Cosntructor by name.
   */
-  ChppBody(std::string inName) : attName(inName) {};
+  ChppBody(std::string inName) : attJoint(NULL), attName(inName) {};
 
   /**
      \brief Initialization of body

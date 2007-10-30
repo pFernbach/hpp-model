@@ -5,8 +5,14 @@
  */
 
 #include <iostream>
-#include "hppModel/hppDevice.h" 
-#include "hppModel/hppBody.h"
+
+#include "KineoModel/kppFreeFlyerJointComponent.h"
+#include "KineoModel/kppRotationJointComponent.h"
+#include "KineoModel/kppTranslationJointComponent.h"
+
+#include "hppDevice.h" 
+#include "hppBody.h"
+#include "kwsioConfig.h"
 
 // ==========================================================================
 
@@ -308,23 +314,17 @@ ktStatus ChppDevice::addObstacle(const CkcdObjectShPtr& inObject)
 
 // ==========================================================================
 
-void ChppDevice::setRootJoint(ChppJoint& inJoint)
+void ChppDevice::setRootJoint(ChppJoint* inJoint)
 {
   /*
     Set joint as Kineo root joint
   */
-  CkppDeviceComponent::rootJointComponent(inJoint.kppJoint());
+  CkppDeviceComponent::rootJointComponent(inJoint->kppJoint());
 
   /*
     Set joint as robotDynamics root joint
   */
-  CimplDynamicRobot::rootJoint(*(inJoint.jrlJoint()));
-
-  /*
-    Store hppJoint in maps
-  */
-  attKppToHppJointMap[inJoint.kppJoint().get()] = &inJoint;
-  attJrlToHppJointMap[inJoint.jrlJoint()] = &inJoint;
+  CimplDynamicRobot::rootJoint(*(inJoint->jrlJoint()));
 }
 
 // ==========================================================================
@@ -342,20 +342,24 @@ ChppJoint* ChppDevice::getRootJoint()
 
 // ==========================================================================
 
-void ChppDevice::registerJoint(ChppJoint& inHppJoint)
+void ChppDevice::registerJoint(ChppJoint* inHppJoint)
 {
   /*
     Store hppJoint in maps
   */
-  attKppToHppJointMap[inHppJoint.kppJoint().get()] = &inHppJoint;
-  attJrlToHppJointMap[inHppJoint.jrlJoint()] = &inHppJoint;
+  attKppToHppJointMap[inHppJoint->kppJoint()] = inHppJoint;
+  attJrlToHppJointMap[inHppJoint->jrlJoint()] = inHppJoint;
 }
 
 // ==========================================================================
 
 ChppJoint* ChppDevice::kppToHppJoint(CkppJointComponentShPtr inKppJoint)
 {
-  return attKppToHppJointMap[inKppJoint.get()];
+  if (attKppToHppJointMap.count(inKppJoint) != 1) {
+    std::cerr << "ChppDevice::kppToHppJoint: no ChppJoint for this CkppJointComponent." << std::endl;
+    return NULL;
+  }
+  return attKppToHppJointMap[inKppJoint];
 }
 
 // ==========================================================================
@@ -366,6 +370,7 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
   bool updateDynamic = (inUpdateWhat == DYNAMIC || inUpdateWhat == BOTH);
 
   if (updateGeom) {
+    std::cout << "CkwsConfig: " << inConfig << std::endl;
     if (CkppDeviceComponent::setCurrentConfig(inConfig) != KD_OK) {
       return false;
     }
@@ -396,7 +401,7 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
       /*
 	Get associated CjrlJoint
       */
-      CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint.get()]->jrlJoint();
+      CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint]->jrlJoint();
       unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
 
       /*
@@ -405,17 +410,45 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
       if (jrlRankInConfig+jointDim > inConfig.size()) {
 	std::cerr << "hppSetCurrentConfig: rank in configuration is more than configuration dimension." 
 		  << std::endl;
+	std::cout << "vectorN: " << jrlConfig << std::endl;
 	return false;
       }
       /*
-	Fill dofs of this joint
+	Cast joint into one of the possible types
       */
-      for (unsigned int iJrlDof = jrlRankInConfig; iJrlDof < jrlRankInConfig+jointDim; iJrlDof++) {
-	jrlConfig[iJrlDof] = inConfig.dofValue(rankInCkwsConfig);
-	rankInCkwsConfig++;
+      if (CkppFreeFlyerJointComponentShPtr jointFF = KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
+									  kppJoint)) {
+	// Translations along x, y, z
+	jrlConfig[jrlRankInConfig] = inConfig.dofValue(rankInCkwsConfig);
+	jrlConfig[jrlRankInConfig+1] = inConfig.dofValue(rankInCkwsConfig+1);
+	jrlConfig[jrlRankInConfig+2] = inConfig.dofValue(rankInCkwsConfig+2);
+	double rx = inConfig.dofValue(rankInCkwsConfig+3);
+	double ry = inConfig.dofValue(rankInCkwsConfig+4);
+	double rz = inConfig.dofValue(rankInCkwsConfig+5);
+	// Convert KineoWorks rotation angles to roll, pitch, yaw
+	double roll, pitch, yaw;
+	YawPitchRollToRollPitchYaw(rx, ry, rz, roll, pitch, yaw);
+	jrlConfig[jrlRankInConfig+3] = roll;
+	jrlConfig[jrlRankInConfig+4] = pitch;
+	jrlConfig[jrlRankInConfig+5] = yaw;
+      }
+      else if(CkppRotationJointComponentShPtr jointRot = KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
+									      kppJoint)) {
+	jrlConfig[jrlRankInConfig] = inConfig.dofValue(rankInCkwsConfig);
+      }
+      else if(CkppTranslationJointComponentShPtr jointTrans = KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
+										   kppJoint)) {
+	jrlConfig[jrlRankInConfig] = inConfig.dofValue(rankInCkwsConfig);
+      }
+      else {
+	std::cerr << "hppSetCurrentConfig: unknown type of joint." 
+		  << std::endl;
+	std::cout << "vectorN: " << jrlConfig << std::endl;
+	return false;
       }
     }
-    return CimplDynamicRobot::currentConfiguration(jrlConfig);
+    std::cout << "vectorN: " << jrlConfig << std::endl;
+    return CimplDynamicRobot::applyConfiguration(jrlConfig);
   }
   return false;
 }
@@ -428,7 +461,7 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
   bool updateDynamic = (inUpdateWhat == DYNAMIC || inUpdateWhat == BOTH);
 
   if (updateDynamic) {
-    if (!CimplDynamicRobot::currentConfiguration(inConfig)) {
+    if (!CimplDynamicRobot::applyConfiguration(inConfig)) {
       return false;
     }
   }
@@ -436,12 +469,9 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
     CkwsConfig kwsConfig(CkwsDeviceShPtr(this));
     unsigned int kwsConfigDim = kwsConfig.size();
     /* 
-       Count the number of extra dofs of the CkppDeviceComponent and set them to 0
+       Count the number of extra dofs of the CkppDeviceComponent.
     */
-    unsigned int rankInCkwsConfig;
-    for (rankInCkwsConfig=0; rankInCkwsConfig < countExtraDofs(); rankInCkwsConfig++) {
-      kwsConfig.dofValue(rankInCkwsConfig, 0);
-    }
+    unsigned int rankInCkwsConfig = countExtraDofs();
 
     std::vector< CkppJointComponentShPtr > kppJointVector;
     getJointComponentVector(kppJointVector);
@@ -455,7 +485,7 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
       /*
 	Get associated CjrlJoint
       */
-      CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint.get()]->jrlJoint();
+      CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint]->jrlJoint();
       unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
 
       /*
@@ -467,14 +497,203 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
 	return false;
       }
       /*
-	Fill dofs of this joint
+	Cast joint into one of the possible types
       */
-      for (unsigned int iJrlDof = jrlRankInConfig; iJrlDof < jrlRankInConfig+jointDim; iJrlDof++) {
-	kwsConfig.dofValue(rankInCkwsConfig, inConfig[iJrlDof]);
-	rankInCkwsConfig++;
+      if (CkppFreeFlyerJointComponentShPtr jointFF = KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
+									  kppJoint)) {
+	// Translations along x, y, z
+	kwsConfig.dofValue(rankInCkwsConfig, inConfig[jrlRankInConfig]);
+	kwsConfig.dofValue(rankInCkwsConfig+1, inConfig[jrlRankInConfig+1]);
+	kwsConfig.dofValue(rankInCkwsConfig+2, inConfig[jrlRankInConfig+2]);
+
+	double roll = inConfig[jrlRankInConfig+3];
+	double pitch = inConfig[jrlRankInConfig+4];
+	double yaw = inConfig[jrlRankInConfig+5];
+
+	// Convert KineoWorks rotation angles to roll, pitch, yaw
+	double rx, ry, rz;
+	RollPitchYawToYawPitchRoll(roll, pitch, yaw, rx, ry, rz);
+
+	kwsConfig.dofValue(rankInCkwsConfig+3, rx);
+	kwsConfig.dofValue(rankInCkwsConfig+4, ry);
+	kwsConfig.dofValue(rankInCkwsConfig+5, rz);
+      }
+      else if(CkppRotationJointComponentShPtr jointRot = KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
+									      kppJoint)) {
+	kwsConfig.dofValue(rankInCkwsConfig, inConfig[jrlRankInConfig]);
+      }
+      else if(CkppTranslationJointComponentShPtr jointTrans = KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
+										   kppJoint)) {
+	kwsConfig.dofValue(rankInCkwsConfig, inConfig[jrlRankInConfig]);
+      }
+      else {
+	std::cerr << "hppSetCurrentConfig: unknown type of joint." 
+		  << std::endl;
+	std::cout << "vectorN: " << inConfig << std::endl;
+	return false;
       }
     }
     return (CkppDeviceComponent::setCurrentConfig(kwsConfig) == KD_OK);
   }
   return false;
 }
+
+void ChppDevice::RollPitchYawToYawPitchRoll(const double& inRx, const double& inRy, const double& inRz,
+					    double& outRx, double& outRy, double& outRz)
+{
+  const double cRx=cos(inRx),sRx=sin(inRx),cRy=cos(inRy),sRy=sin(inRy),cRz=cos(inRz),sRz=sin(inRz);
+  double R[3][3];
+  R[0][0] = cRy*cRz;
+  R[0][1] = sRx*sRy*cRz - cRx*sRz;
+  R[0][2] = cRx*sRy*cRz + sRx*sRz;
+  R[1][0] = cRy*sRz;
+  R[1][1] = sRx*sRy*sRz + cRx*cRz;
+  R[1][2] = cRx*sRy*sRz - sRx*cRz;
+  //R[2][0] = -sRy;
+  //R[2][1] = sRx*cRy;
+  R[2][2] = cRx*cRy;
+  
+  // make sure all values are in [-1,1]
+  // as trigonometric functions would
+  // fail when given values such as 1.00000001
+  for(unsigned int i=0; i<3; i++) {
+    for(unsigned int j=0; j<3; j++) {
+      if(R[i][j] < -1.) {
+	R[i][j] = -1;
+      }
+      else if(R[i][j] > 1.) {
+	R[i][j] = 1;
+      }
+    }
+  }
+  
+  outRy = asin(R[0][2]);
+  double cosOutRy = cos(outRy);
+
+  double sinOutRz, cosOutRz;
+
+  if(fabs(cosOutRy) > 1e-6) {
+    double cosOutRx =  R[2][2] / cosOutRy;
+    double sinOutRx = -R[1][2] / cosOutRy;
+    
+    outRx = atan2(sinOutRx, cosOutRx);
+    
+    double cosOutRz =  R[0][0] / cosOutRy;
+    double sinOutRz = -R[0][1] / cosOutRy;
+    outRz = atan2(sinOutRz, cosOutRz);
+  }
+  else {
+    outRx = 0.;
+    
+    double cosOutRz = R[1][1];
+    double sinOutRz = R[1][0];
+    outRz = atan2(sinOutRz, cosOutRz);
+  }
+}
+
+void ChppDevice::YawPitchRollToRollPitchYaw(const double& inRx, const double& inRy, const double& inRz,
+					    double& outRx, double& outRy, double& outRz)
+{
+  const double cRx=cos(inRx),sRx=sin(inRx),cRy=cos(inRy),sRy=sin(inRy),cRz=cos(inRz),sRz=sin(inRz);
+  double R[3][3];
+  R[0][0] = cRz*cRy;
+  R[0][1] = -sRz*cRy;
+  //R[0][2] = sRy;
+  R[1][0] = cRz*sRy*sRx+sRz*cRx;
+  R[1][1] = cRz*cRx-sRz*sRy*sRx;
+  //R[1][2] = -cRy*sRx;
+  R[2][0] = sRz*sRx-cRz*sRy*cRx;
+  R[2][1] = sRz*sRy*cRx+cRz*sRx;
+  R[2][2] = cRx*cRy;
+
+  // make sure all values are in [-1,1]
+  // as trigonometric functions would
+  // fail when given values such as 1.00000001
+  for(unsigned int i=0; i<3; i++) {
+    for(unsigned int j=0; j<3; j++) {
+      if(R[i][j] < -1.) {
+	R[i][j] = -1;
+      }
+      else if(R[i][j] > 1.) {
+	R[i][j] = 1;
+      }
+    }
+  }
+  outRy = -asin(R[2][0]);
+  double cosOutRy = cos(outRy);
+
+  if (fabs(cosOutRy) > 1e-6) {
+    double sinOutRx = R[2][1]/cosOutRy;
+    double cosOutRx = R[2][2]/cosOutRy;
+    outRx = atan2(sinOutRx, cosOutRx);
+
+    double cosOutRz = R[0][0]/cosOutRy;
+    double sinOutRz = R[1][0]/cosOutRy;
+    outRz = atan2(sinOutRz, cosOutRz);
+  }
+  else {
+    outRx = 0;
+
+    double cosOutRz = R[1][1];
+    double sinOutRz = -R[0][1];
+    outRz = atan2(sinOutRz, cosOutRz);
+  }
+}
+
+// ==========================================================================
+
+template <class CkppJnt, class CjrlJnt> ChppJoint* ChppDevice::createJoint(std::string inName, 
+									   const CkitMat4& inInitialPosition)
+{
+  /*
+    Create kppJointComponent
+  */
+  CkppJointComponentShPtr kppJoint = CkppJnt::create(inName);
+  if (kppJoint) {
+    kppJoint->kwsJoint()->setCurrentPosition(inInitialPosition);
+  } else {
+    return NULL;
+  }
+
+  /*
+    Convert homogeneous matrix to abstract matrix type matrix4d
+  */
+  matrix4d initialPos = ChppJoint::abstractMatrixFromCkitMat4(inInitialPosition);
+  CjrlJoint* jrlJoint = new CjrlJnt(initialPos);
+  if (!jrlJoint) {
+    delete jrlJoint;
+    return NULL;
+  }
+
+  /*
+    Create ChppJoint
+  */
+  ChppJoint* hppJoint = new ChppJoint(kppJoint, jrlJoint, attWeakPtr);
+
+  registerJoint(hppJoint);
+  return hppJoint;
+}
+
+// ==========================================================================
+
+ChppJoint* ChppDevice::createFreeFlyer(std::string inName, const CkitMat4& inInitialPosition)
+{
+  ChppJoint* hppJoint = createJoint<CkppFreeFlyerJointComponent, CimplJointFreeFlyer>(inName, inInitialPosition);
+
+  return hppJoint;
+}
+
+// ==========================================================================
+
+ChppJoint* ChppDevice::createRotation(std::string inName, const CkitMat4& inInitialPosition)
+{
+  return createJoint<CkppRotationJointComponent, CimplJointRotation>(inName, inInitialPosition);
+}
+
+// ==========================================================================
+
+ChppJoint* ChppDevice::createTranslation(std::string inName, const CkitMat4& inInitialPosition)
+{
+  return createJoint<CkppTranslationJointComponent, CimplJointTranslation>(inName, inInitialPosition);
+}
+

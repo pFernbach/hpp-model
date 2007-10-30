@@ -59,7 +59,11 @@ dnl AC_SUBST(CIMPLJOINTROTATION)
 dnl CIMPLJOINTTRANSLATION=`$PKG_CONFIG $with_robotDynamics --variable=CimplJointTranslation`
 dnl AC_SUBST(CIMPLJOINTTRANSLATION)
 
+dnl --- kwsIO ------------------------------------------------
 
+PKG_CHECK_MODULES(KWSIO, kwsIO)
+AC_SUBST(KWSIO_CFLAGS)
+AC_SUBST(KWSIO_LIBS)
 
 AC_OUTPUT(
 	hppModel.pc

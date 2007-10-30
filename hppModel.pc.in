@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: @PACKAGE@
 Description: 
 Version: @VERSION@
-Requires: 
+Requires: @ROBOTDYNAMICSIMPL@, KineoController
 Libs: @ABSTRACTROBOTDYNAMICS_LIBS@ @KINEOCONTROLLER_LIBS@ -L${libdir} -lhppModel
-Cflags: @ABSTRACTROBOTDYNAMICS_CFLAGS@ @KINEOCONTROLLER_CFLAGS@ -I${includedir}
+Cflags: @ABSTRACTROBOTDYNAMICS_CFLAGS@ @KINEOCONTROLLER_CFLAGS@ -I${includedir}/hppModel

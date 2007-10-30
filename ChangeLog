@@ -1,3 +1,10 @@
+2007/10/30
+	4. First version successfully tested with hppWalkPlanner.
+	
+2007/10/22
+	3. hppBody::getInnerObjects() removed (use innerObjects() instead)
+	   hppBody::getOuterObjects() removed (use outerObjects() instead)
+
 2007/08/24
 	Reorganization of classes.
 	1. ChppJoint does not derive anymore from CjrlJoint and CkwsJoint

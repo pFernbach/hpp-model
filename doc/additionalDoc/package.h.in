@@ -12,7 +12,7 @@ This package contains classes representing robots, humanoid robots, joints and b
 \subsection subsec_hppDevice_robots Robots
 
 The following figure displays the inheritance diagram between classes of KineoWorks and robot dynamics packages and implementation classes of robot dynamics classes. classes CimplDynamicRobot and CimplHumanoidDynamicRobot are implementations of respectively CjrlDynamicRobot and CjrlHumanoidDynamicRobot. 
-\image html classDiagramRobot.png "Inheritance diagram between classes implementing robots."
+\image html classDiagramRobot.png "Inheritance diagram between classes implementing robots. Lines represent inheritance, thin lines reprensent virtual inheritance."
 
 \subsection subsec_hppDevice_joints Joints
 

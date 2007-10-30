@@ -8,16 +8,17 @@ digraph CD  {
 	CkppDeviceComponent [shape = box]
 	"ChppDevice" [shape = box]
 	"ChppHumanoidRobot" [shape = box]
-	"ChppDevice" -> CkppDeviceComponent
+	"ChppDevice" -> CkppDeviceComponent [style = bold]
 	"ChppDevice" -> CimplDynamicRobot
-	"ChppHumanoidRobot" -> "ChppDevice" 
-	"ChppHumanoidRobot" -> CimplHumanoidDynamicRobot 
+	"ChppHumanoidRobot" -> "ChppDevice" [style = bold]
+	"ChppHumanoidRobot" -> CimplHumanoidDynamicRobot [style = bold]
 
 	subgraph cluster0 {
 		CimplDynamicRobot [shape = box] 
 		CimplHumanoidDynamicRobot [shape = box]
 	}
 	CimplDynamicRobot -> CjrlDynamicRobot
-	CimplHumanoidDynamicRobot -> CjrlHumanoidDynamicRobot
+	CimplHumanoidDynamicRobot -> CjrlHumanoidDynamicRobot [style = bold]
+	CimplHumanoidDynamicRobot -> CimplDynamicRobot
 }
 

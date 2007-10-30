@@ -11,7 +11,7 @@
 #include "KineoKCDModel/kppKCDPolyhedron.h"
 #include "KineoKCDModel/kppKCDAssembly.h"
 
-#include "hppModel/hppBody.h"
+#include "hppBody.h"
 
 //=============================================================================
 
@@ -80,7 +80,8 @@ void ChppBody::setOuterObjects (const std::vector<CkcdObjectShPtr> &inOuterObjec
 
 //=============================================================================
 
-bool ChppBody::addSolidComponent(const CkppSolidComponentRefShPtr& inSolidComponentRef)
+bool ChppBody::addSolidComponent(const CkppSolidComponentRefShPtr& inSolidComponentRef,
+				 const CkitMat4& inPosition)
 {
   CkppSolidComponentShPtr solidComponent = inSolidComponentRef->referencedSolidComponent();
 
@@ -103,13 +104,29 @@ bool ChppBody::addSolidComponent(const CkppSolidComponentRefShPtr& inSolidCompon
   }
 
   /*
-    Add object to the inner object list
+    Add object to the inner object list in the given position.
   */
   std::vector<CkcdObjectShPtr> innerObjectList = innerObjects();
+  std::vector<CkitMat4> objectPosList = innerObjectRelativePositions();
   innerObjectList.push_back(kcdObject);
+  objectPosList.push_back(inPosition);
 
-  setInnerObjects(innerObjectList);
-  return true;
+  setInnerObjects(innerObjectList, objectPosList);
+
+  /*
+    Attach solid component to the joint associated to the body
+  */
+  ChppJoint* bodyJoint = hppJoint();
+  if (bodyJoint != NULL) {
+    CkppJointComponentShPtr kppJoint = bodyJoint->kppJoint();
+    solidComponent->setAbsolutePosition(inPosition);
+    kppJoint->addSolidComponentRef(inSolidComponentRef);
+    return true;
+  }
+  else {
+    std::cerr << "ChppBody::addSolidComponent: the body is not attached to any joint" << std::endl;
+  }
+  return false;
 }
 
 //=============================================================================
@@ -284,6 +301,91 @@ bool ChppBody::getCollision(unsigned int &outNbCollision,
     outObjectEnv.reset();
 
     return false;
+  }
+}
+
+
+//=============================================================================
+
+bool ChppBody::printCollisionStatus(const bool& detailInfoFlag )
+{
+  unsigned int nbCollisions;
+  std::vector<CkcdObjectShPtr> objectVec1, objectVec2;
+
+  if(getCollisionVec(nbCollisions, objectVec1, objectVec2) == true){
+    std::cout<<" ------- "<<nbCollisions<<" collision(s) detected.-------- " <<std::endl;
+    for(unsigned int i=0; i<nbCollisions; i++){
+
+      CkppPolyhedronShPtr kppPolyhedron1 = KIT_DYNAMIC_PTR_CAST(CkppPolyhedron, objectVec1[i]);
+      CkppPolyhedronShPtr kppPolyhedron2 = KIT_DYNAMIC_PTR_CAST(CkppPolyhedron, objectVec2[i]);
+      
+      std::cout<<kppPolyhedron1->name()<<" and "<<kppPolyhedron2->name()<<std::endl;
+    }
+    std::cout<<" --------------------------"<<std::endl;
+    return true;
+  }
+
+  if(detailInfoFlag){
+
+    std::cout<<std::endl<<" no collision detected. Closest objects: ";
+    double dist;
+    CkitPoint3 o_point1,  o_point2;
+    CkcdObjectShPtr object1, object2;
+      
+    if(getExactDistance(dist, o_point1, o_point2, object1, object2) == KD_OK){
+
+      CkppPolyhedronShPtr kppPolyhedron1 = KIT_DYNAMIC_PTR_CAST(CkppPolyhedron, object1);
+      CkppPolyhedronShPtr kppPolyhedron2 = KIT_DYNAMIC_PTR_CAST(CkppPolyhedron, object2);
+
+      std::cout<<std::endl<<" kppPolyhedron "<<kppPolyhedron1->name()<<" and "<<kppPolyhedron2->name()
+	       <<", distance "<<dist<<std::endl;
+      std::cout<<" at ["<<o_point1[0]<<"] ["<<o_point1[1]<<"] ["<<o_point1[0]<<"] and ["
+	       <<o_point2[0]<<"] ["<<o_point2[1]<<"] ["<<o_point2[0]<<"]"<<std::endl;
+      
+    }
+    else{
+      std::cout<<"no outerlist registered for getExactDistance"<<std::endl;
+    }
+  }
+  return false;
+}
+
+//=============================================================================
+
+void ChppBody::printCollisionStatusFast()
+{
+  unsigned int nbCollisions;
+  CkcdObjectShPtr object1, object2;
+
+  if(getCollision(nbCollisions, object1, object2) == true){
+    // collision
+    std::cout<<std::endl<<" ------- "<<nbCollisions<<" collision(s) detected.-------- " <<std::endl;
+
+    getCollision(nbCollisions, object1, object2);
+
+    CkppPolyhedronShPtr kppPolyhedron1 = KIT_DYNAMIC_PTR_CAST(CkppPolyhedron, object1);
+    CkppPolyhedronShPtr kppPolyhedron2 = KIT_DYNAMIC_PTR_CAST(CkppPolyhedron, object2);
+
+    std::cout<<"here"<<std::endl;
+    std::cout<<kppPolyhedron1->name();
+    std::cout<<" and "<<kppPolyhedron2->name()<<std::endl;
+    std::cout<<" --------------------------"<<std::endl;
+  }
+  else{
+    double dist;
+    CkcdObjectShPtr object1, object2;
+      
+    if(getEstimatedDistance(dist, object1, object2) == KD_OK){
+
+      std::cout<<std::endl<<" no collision detected. Closest objects: ";
+
+      CkppPolyhedronShPtr kppPolyhedron1 = KIT_DYNAMIC_PTR_CAST(CkppPolyhedron, object1);
+      CkppPolyhedronShPtr kppPolyhedron2 = KIT_DYNAMIC_PTR_CAST(CkppPolyhedron, object2);
+
+      std::cout<<std::endl<<" kppPolyhedron "<<kppPolyhedron1->name()<<" and "<<kppPolyhedron2->name()
+	       <<", distance "<<dist<<std::endl;
+      
+    }
   }
 }
 

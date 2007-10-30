@@ -1,5 +1,7 @@
 # 
-#  Copyright 
+#  Copyright 2007 LAAS-CNRS
+#
+#  Author: Florent Lamiraux
 # 
 
 hppDevicedir = @includedir@/hppModel

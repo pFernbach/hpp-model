@@ -8,10 +8,10 @@
 #include "KineoModel/kppRotationJointComponent.h"
 #include "KineoModel/kppTranslationJointComponent.h"
 
-#include "hppModel/hppDevice.h"
-#include "hppModel/hppBody.h"
+#include "hppDevice.h"
+#include "hppBody.h"
 
-static matrix4d abstractMatrixFromCkitMat4(const CkitMat4& inMatrix)
+matrix4d ChppJoint::abstractMatrixFromCkitMat4(const CkitMat4& inMatrix)
 {
   MAL_S4x4_MATRIX(abstractMatrix, double);
   for (unsigned int iRow=0; iRow<3; iRow++) {
@@ -20,6 +20,17 @@ static matrix4d abstractMatrixFromCkitMat4(const CkitMat4& inMatrix)
     }
   }
   return abstractMatrix;
+}
+
+CkitMat4 ChppJoint::CkitMat4MatrixFromAbstract(const matrix4d& inMatrix)
+{
+  CkitMat4 kitMat4;
+  for (unsigned int iRow=0; iRow<3; iRow++) {
+    for (unsigned int iCol=0; iCol<3; iCol++) {
+      kitMat4(iRow, iCol) = MAL_S4x4_MATRIX_ACCESS_I_J(inMatrix, iRow, iCol);
+    }
+  }
+  return kitMat4;
 }
 
 // ==========================================================================
@@ -57,27 +68,22 @@ ChppJoint* ChppJoint::childJoint(unsigned int inRank)
 
 // ==========================================================================
 
-bool ChppJoint::addChildJoint(ChppJoint& inJoint)
+bool ChppJoint::addChildJoint(ChppJoint* inJoint)
 {
   /*
-    Check that CkppJointComponent belongs to a robot. 
-    Otherwise, the joint cannot be registered in the device map (ChppDevice::attKppToHppJointMap).
+    Check that parent and child have been created by the same device
   */
-  if (ChppDeviceShPtr device = hppDevice()) {
-    /*
-      Register joint in device.
-    */
-    device->registerJoint(inJoint);
-
-    if (attKppJoint->addChildJointComponent(inJoint.attKppJoint) != KD_OK) {
+  if (hppDevice() == inJoint->hppDevice()) {
+    if (attKppJoint->addChildJointComponent(inJoint->attKppJoint) != KD_OK) {
       return false;
     }
-    if (!attJrlJoint->addChildJoint(*(inJoint.attJrlJoint))) {
-      attKppJoint->removeChildJointComponent(inJoint.attKppJoint);
+    if (!attJrlJoint->addChildJoint(*(inJoint->attJrlJoint))) {
+      attKppJoint->removeChildJointComponent(inJoint->attKppJoint);
       return false;
     }
     return true;
   }
+  std::cerr << "ChppJoint::addChildJoint: joints have not been created by the same device" << std::endl;
   return false;
 }
 
@@ -85,50 +91,9 @@ bool ChppJoint::addChildJoint(ChppJoint& inJoint)
 
 ChppDeviceShPtr ChppJoint::hppDevice()
 {
-  CkppDeviceComponentShPtr kppDevice = attKppJoint->deviceComponent();
-  ChppDeviceShPtr device;
-
-  device = KIT_DYNAMIC_PTR_CAST(ChppDevice, kppDevice);
-  return device;
+  return attDevice.lock();
 }
 
-
-// ==========================================================================
-
-template <class CkppJnt, class CjrlJnt> ChppJoint* ChppJoint::createJoint(std::string inName, 
-									  const CkitMat4& inInitialPosition)
-{
-  /*
-    Create ChppJoint
-  */
-  ChppJoint* hppJoint = new ChppJoint;
-  /*
-    Create kppJointComponent
-  */
-  CkppJointComponentShPtr kppJoint = CkppJnt::create(inName);
-  if (kppJoint) {
-    kppJoint->kwsJoint()->setCurrentPosition(inInitialPosition);
-  } else {
-    delete hppJoint;
-    return NULL;
-  }
-
-  /*
-    Convert homogeneous matrix to abstract matrix type matrix4d
-  */
-  matrix4d initialPos = abstractMatrixFromCkitMat4(inInitialPosition);
-  CjrlJoint* jrlJoint = new CjrlJnt(initialPos);
-  if (!jrlJoint) {
-    delete jrlJoint;
-    delete hppJoint;
-    return NULL;
-  }
-
-  hppJoint->attKppJoint = kppJoint;
-  hppJoint->attJrlJoint = jrlJoint;
-
-  return hppJoint;
-}
 
 // ==========================================================================
 
@@ -146,7 +111,7 @@ bool ChppJoint::setAttachedBody(const ChppBodyShPtr& inBody)
   /*
     Store pointer to the joint in body
   */
-  inBody->joint(this);
+  inBody->hppJoint(this);
 }
 
 // ==========================================================================
@@ -154,26 +119,5 @@ bool ChppJoint::setAttachedBody(const ChppBodyShPtr& inBody)
 ChppBodyShPtr ChppJoint::attachedBody()  
 {
   return KIT_DYNAMIC_PTR_CAST(ChppBody, kppJoint()->kwsJoint()->attachedBody());
-}
-
-// ==========================================================================
-
-ChppJoint* ChppJoint::createFreeFlyer(std::string inName, const CkitMat4& inInitialPosition)
-{
-  return createJoint<CkppFreeFlyerJointComponent, CimplJointFreeFlyer>(inName, inInitialPosition);
-}
-
-// ==========================================================================
-
-ChppJoint* ChppJoint::createRotation(std::string inName, const CkitMat4& inInitialPosition)
-{
-  return createJoint<CkppRotationJointComponent, CimplJointRotation>(inName, inInitialPosition);
-}
-
-// ==========================================================================
-
-ChppJoint* ChppJoint::createTranslation(std::string inName, const CkitMat4& inInitialPosition)
-{
-  return createJoint<CkppTranslationJointComponent, CimplJointTranslation>(inName, inInitialPosition);
 }
 
