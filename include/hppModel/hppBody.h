@@ -19,8 +19,8 @@ INCLUDE
 #include "kwsKcd2/kwsKCDBody.h"
 #include "KineoModel/kppSolidComponentRef.h"
 
-#include "hppImplRobotDynamics.h"
-#include "hppJoint.h"
+#include "hppModel/hppImplRobotDynamics.h"
+#include "hppModel/hppJoint.h"
 
 KIT_PREDEF_CLASS(ChppBody);
 

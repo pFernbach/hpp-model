@@ -16,8 +16,8 @@ libhppModel_la_LDFLAGS = \
 	$(KWSIO_LIBS)
 
 libhppModel_la_CPPFLAGS = \
-	-I$(top_srcdir)/include/hppModel \
-	-I$(top_builddir)/include/hppModel \
+	-I$(top_srcdir)/include \
+	-I$(top_builddir)/include \
 	$(ROBOTDYNAMICSIMPL_CFLAGS)$ \
 	$(KINEOCONTROLLER_CFLAGS)$ \
 	$(KWSIO_CFLAGS)

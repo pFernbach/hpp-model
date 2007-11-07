@@ -16,7 +16,7 @@
 #include "kcd2/kcdInterface.h"
 #include "kwsKcd2/kwsKCDBody.h"
 
-#include "hppImplRobotDynamics.h"
+#include "hppModel/hppImplRobotDynamics.h"
 
 class ChppJoint;
 KIT_PREDEF_CLASS(ChppDevice);

@@ -4,7 +4,7 @@
  *  Author: Florent Lamiraux
  */
 
-#include "hppHumanoidRobot.h"
+#include "hppModel/hppHumanoidRobot.h"
 
 
 

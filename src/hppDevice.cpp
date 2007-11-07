@@ -10,8 +10,8 @@
 #include "KineoModel/kppRotationJointComponent.h"
 #include "KineoModel/kppTranslationJointComponent.h"
 
-#include "hppDevice.h" 
-#include "hppBody.h"
+#include "hppModel/hppDevice.h" 
+#include "hppModel/hppBody.h"
 #include "kwsioConfig.h"
 
 // ==========================================================================

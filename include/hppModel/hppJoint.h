@@ -8,7 +8,7 @@
 #define HPPJOINT_H
 
 #include "KineoModel/kppJointComponent.h"
-#include "hppDevice.h"
+#include "hppModel/hppDevice.h"
 
 KIT_PREDEF_CLASS(ChppJoint)
 KIT_PREDEF_CLASS(ChppBody)

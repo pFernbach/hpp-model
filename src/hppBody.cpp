@@ -11,7 +11,7 @@
 #include "KineoKCDModel/kppKCDPolyhedron.h"
 #include "KineoKCDModel/kppKCDAssembly.h"
 
-#include "hppBody.h"
+#include "hppModel/hppBody.h"
 
 //=============================================================================
 

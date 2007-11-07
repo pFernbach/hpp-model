@@ -14,7 +14,7 @@
 #include "kcd2/kcdInterface.h"
 #include "kwsKcd2/kwsKCDBody.h"
 
-#include "hppDevice.h"
+#include "hppModel/hppDevice.h"
 
 KIT_PREDEF_CLASS(ChppHumanoidRobot);
 /**
