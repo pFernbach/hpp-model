@@ -304,6 +304,55 @@ bool ChppBody::getCollision(unsigned int &outNbCollision,
   }
 }
 
+//============================================================================
+
+// ==========================================================================
+// return minimum distance.
+// collision: dist = 0;
+// otherwise: smallest distance
+double ChppBody::getMinDistance()
+{
+  unsigned int nbCollisions;
+  std::vector<CkcdObjectShPtr> objectVec1, objectVec2;
+
+  if(getCollisionVec(nbCollisions, objectVec1, objectVec2) == true){
+    std::cout<<" ------- "<<nbCollisions<<" collision(s) detected.-------- " <<std::endl;
+    for(unsigned int i=0; i<nbCollisions; i++){
+
+      CkppPolyhedronShPtr kppPolyhedron1 = KIT_DYNAMIC_PTR_CAST(CkppPolyhedron, objectVec1[i]);
+      CkppPolyhedronShPtr kppPolyhedron2 = KIT_DYNAMIC_PTR_CAST(CkppPolyhedron, objectVec2[i]);
+      
+      std::cout<<kppPolyhedron1->name()<<" and "<<kppPolyhedron2->name()<<std::endl;
+    }
+    std::cout<<" --------------------------"<<std::endl;
+    return 0;
+  }
+
+  // std::cout<<std::endl<<" no collision detected. Closest objects: ";
+    double dist;
+    CkitPoint3 o_point1,  o_point2;
+    CkcdObjectShPtr object1, object2;
+      
+    if(getExactDistance(dist, o_point1, o_point2, object1, object2) == KD_OK){
+
+      return dist;
+      /*
+      CkppPolyhedronShPtr kppPolyhedron1 = KIT_DYNAMIC_PTR_CAST(CkppPolyhedron, object1);
+      CkppPolyhedronShPtr kppPolyhedron2 = KIT_DYNAMIC_PTR_CAST(CkppPolyhedron, object2);
+
+      std::cout<<std::endl<<" kppPolyhedron "<<kppPolyhedron1->name()<<" and "<<kppPolyhedron2->name()
+	       <<", distance "<<dist<<std::endl;
+      std::cout<<" at ["<<o_point1[0]<<"] ["<<o_point1[1]<<"] ["<<o_point1[0]<<"] and ["
+	       <<o_point2[0]<<"] ["<<o_point2[1]<<"] ["<<o_point2[0]<<"]"<<std::endl;
+      */
+      
+    }
+    else{
+      std::cout<<"no outerlist registered for getExactDistance"<<std::endl;
+      return -1;
+    }
+}
+
 
 //=============================================================================
 

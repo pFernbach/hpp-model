@@ -168,6 +168,14 @@ public:
 
   bool printCollisionStatus(const bool& detailInfoFlag = false);
   void printCollisionStatusFast();
+
+  /**
+     \brief Compute the minimum distance to the obstacle
+
+     \return the minimum distance to the obstacle
+  */
+  double getMinDistance();
+
   /**
      @}
   */
