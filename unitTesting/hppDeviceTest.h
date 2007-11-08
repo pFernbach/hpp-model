@@ -4,7 +4,7 @@
  *  Author: Florent Lamiraux
  */
 
-#include "hppDevice.h" 
+#include "hppModel/hppDevice.h" 
 
 /**
  \brief UnitTesting class of class ChppDevice
