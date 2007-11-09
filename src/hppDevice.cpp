@@ -398,6 +398,15 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
     for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size(); iKppJoint++) {
       CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
       unsigned int jointDim = kppJoint->countDofComponents();
+
+      /* 
+	 Check if the joint is found in the associated map
+      */
+      if(attKppToHppJointMap[kppJoint] == NULL){
+	std::cout<<"joint "<<kppJoint->name()<<" "<<"... not found. "<<endl;
+	continue;
+      }
+
       /*
 	Get associated CjrlJoint
       */
