@@ -10,6 +10,7 @@
 
 #include "hppModel/hppDevice.h"
 #include "hppModel/hppBody.h"
+#include "kwsIO/kwsioMat.h"
 
 matrix4d ChppJoint::abstractMatrixFromCkitMat4(const CkitMat4& inMatrix)
 {
@@ -89,6 +90,16 @@ bool ChppJoint::addChildJoint(ChppJoint* inJoint)
 
 // ==========================================================================
 
+unsigned int ChppJoint::countChildJoints()
+{
+  if (attKppJoint) {
+    return attKppJoint->countChildJointComponents();
+  }
+  return 0;
+}
+
+// ==========================================================================
+
 ChppDeviceShPtr ChppJoint::hppDevice()
 {
   return attDevice.lock();
@@ -121,3 +132,30 @@ ChppBodyShPtr ChppJoint::attachedBody()
   return KIT_DYNAMIC_PTR_CAST(ChppBody, kppJoint()->kwsJoint()->attachedBody());
 }
 
+std::ostream& operator<<(std::ostream& os, ChppJoint& inHppJoint)
+{
+  os << "Joint: " << inHppJoint.kppJoint()->name() << std::endl;
+  os << "Current transformation dynamic part:" << std::endl;
+  os << inHppJoint.jrlJoint()->currentTransformation() << std:: endl;
+  os << std::endl;
+  os << "Current transformation geometric part:" << std::endl;
+  os << inHppJoint.kppJoint()->kwsJoint()->currentPosition() << std:: endl;
+  
+  ChppBodyShPtr hppBody = inHppJoint.attachedBody();
+  if (hppBody) {
+    os << "Attached body:" << std::endl;
+    os << "Mass of the attached body: " << hppBody->mass() << std::endl;
+    os << "Local center of mass:" << hppBody->localCenterOfMass() << std::endl;
+    os << "Inertia matrix:" << std::endl;
+    os << hppBody->inertiaMatrix() << std::endl;
+  } else {
+    os << "No attached body" << std::endl;
+  }
+
+  for (unsigned int iChild=0; iChild < inHppJoint.countChildJoints(); iChild++) {
+    os << *(inHppJoint.childJoint(iChild)) << std::endl;
+    os << endl;
+  }
+
+  return os;
+}

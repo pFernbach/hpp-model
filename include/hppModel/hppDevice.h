@@ -7,6 +7,7 @@
 #ifndef HPPDEVICE_H
 #define HPPDEVICE_H
 
+#include <iostream>
 #include <map>
 
 #include "KineoWorks2/kwsInterface.h"
@@ -324,5 +325,7 @@ private:
   */
   std::map<CkppJointComponentShPtr, ChppJoint*> attKppToHppJointMap;
 };
+
+std::ostream& operator<<(std::ostream& os, ChppDevice& inHppDevice);
 
 #endif

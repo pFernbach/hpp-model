@@ -67,6 +67,11 @@ public:
      \brief Add a child to the joint
   */
   bool addChildJoint(ChppJoint* inJoint);
+
+  /**
+     \brief Get number of child joints
+  */
+  unsigned int countChildJoints();
   
   /**
      @}
@@ -243,5 +248,6 @@ protected:
 
 };
 
+std::ostream& operator<<(std::ostream& os, ChppJoint& inHppDevice);
 
 #endif

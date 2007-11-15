@@ -1,3 +1,6 @@
+2007/11/15
+	6. Added operator<< in classes ChppDevice and ChppJoint for debugging purposes.
+	
 2007/11/07
 	5. Reorganization of header files to solve some compilation problems.
 2007/10/30

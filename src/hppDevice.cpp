@@ -697,3 +697,25 @@ ChppJoint* ChppDevice::createTranslation(std::string inName, const CkitMat4& inI
   return createJoint<CkppTranslationJointComponent, CimplJointTranslation>(inName, inInitialPosition);
 }
 
+/**
+  \brief Write a device in a stream.
+*/
+std::ostream& operator<<(std::ostream& os, ChppDevice& inHppDevice)
+{
+  os << "Device: " << inHppDevice.name() << std::endl;
+  os << std::endl;
+  os << "  Current configuration: " << inHppDevice.currentConfiguration() << std::endl;
+  os << std::endl;
+  os << std::endl;
+  os << "  Writing kinematic chain" << std::endl;
+
+  //
+  // Go through joints and output each joint
+  //
+  ChppJoint* hppJoint = inHppDevice.getRootJoint();
+
+  if (hppJoint) {
+    os << *hppJoint << std::endl;
+  }
+  return os;
+}
