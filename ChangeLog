@@ -1,3 +1,6 @@
+2008/01/09
+	7. In function ChppBody::addSolidComponent, the only KPP joint is retrieved from the body to attach the solid component.
+	   This modification makes hppModel compatible with hppCorbaServer.
 2007/11/15
 	6. Added operator<< in classes ChppDevice and ChppJoint for debugging purposes.
 	

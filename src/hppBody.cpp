@@ -66,6 +66,7 @@ void ChppBody::setInnerObjects (const std::vector< CkcdObjectShPtr > &inInnerObj
   attExactAnalyzer->leftTestTree(tree);
 }
 
+//=============================================================================
 
 void ChppBody::setOuterObjects (const std::vector<CkcdObjectShPtr> &inOuterObjects)
 {
@@ -116,11 +117,13 @@ bool ChppBody::addSolidComponent(const CkppSolidComponentRefShPtr& inSolidCompon
   /*
     Attach solid component to the joint associated to the body
   */
-  ChppJoint* bodyJoint = hppJoint();
-  if (bodyJoint != NULL) {
-    CkppJointComponentShPtr kppJoint = bodyJoint->kppJoint();
+  CkwsJointShPtr bodyKwsJoint = CkwsBody::joint();
+  CkppJointComponentShPtr bodyKppJoint = KIT_DYNAMIC_PTR_CAST(CkppJointComponent, bodyKwsJoint);
+
+  // Test that body is attached to a joint
+  if (bodyKppJoint) {
     solidComponent->setAbsolutePosition(inPosition);
-    kppJoint->addSolidComponentRef(inSolidComponentRef);
+    bodyKppJoint->addSolidComponentRef(inSolidComponentRef);
     return true;
   }
   else {

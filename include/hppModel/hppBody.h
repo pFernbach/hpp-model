@@ -207,7 +207,7 @@ protected:
   ChppJoint* attJoint;
 
   /**
-     \brief Cosntructor by name.
+     \brief Constructor by name.
   */
   ChppBody(std::string inName) : attJoint(NULL), attName(inName) {};
 
