@@ -14,6 +14,8 @@
 #include "hppModel/hppBody.h"
 #include "kwsioConfig.h"
 
+#define ODEBUG(x) std::cerr << "hppDevice :" << x << std::endl
+
 // ==========================================================================
 
 ChppDevice::ChppDevice()
@@ -369,8 +371,9 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
   bool updateGeom = (inUpdateWhat == GEOMETRIC || inUpdateWhat == BOTH);
   bool updateDynamic = (inUpdateWhat == DYNAMIC || inUpdateWhat == BOTH);
 
+  ODEBUG("hppSetCurrentConfig: inConfig = " << inConfig);
+
   if (updateGeom) {
-    std::cout << "CkwsConfig: " << inConfig << std::endl;
     if (CkppDeviceComponent::setCurrentConfig(inConfig) != KD_OK) {
       return false;
     }
@@ -413,6 +416,8 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
       CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint]->jrlJoint();
       unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
 
+      ODEBUG("iKppJoint=" << iKppJoint << " jrlRankInConfig=" << jrlRankInConfig);
+
       /*
 	Check rank in configuration wrt  dimension.
       */
@@ -440,14 +445,25 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
 	jrlConfig[jrlRankInConfig+3] = roll;
 	jrlConfig[jrlRankInConfig+4] = pitch;
 	jrlConfig[jrlRankInConfig+5] = yaw;
+	ODEBUG("Joint value: " << jrlConfig[jrlRankInConfig] << ", "
+	       << jrlConfig[jrlRankInConfig+1] << ", "
+	       << jrlConfig[jrlRankInConfig+2] << ", "
+	       << jrlConfig[jrlRankInConfig+3] << ", "
+	       << jrlConfig[jrlRankInConfig+4] << ", "
+	       << jrlConfig[jrlRankInConfig+5]);
+	rankInCkwsConfig += 6;
       }
       else if(CkppRotationJointComponentShPtr jointRot = KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
 									      kppJoint)) {
 	jrlConfig[jrlRankInConfig] = inConfig.dofValue(rankInCkwsConfig);
+	ODEBUG("Joint value: " << jrlConfig[jrlRankInConfig]);
+	rankInCkwsConfig ++;
       }
       else if(CkppTranslationJointComponentShPtr jointTrans = KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
 										   kppJoint)) {
 	jrlConfig[jrlRankInConfig] = inConfig.dofValue(rankInCkwsConfig);
+	ODEBUG("Joint value: " << jrlConfig[jrlRankInConfig]);
+	rankInCkwsConfig ++;
       }
       else {
 	std::cerr << "hppSetCurrentConfig: unknown type of joint." 
@@ -456,8 +472,16 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
 	return false;
       }
     }
-    std::cout << "vectorN: " << jrlConfig << std::endl;
-    return CimplDynamicRobot::applyConfiguration(jrlConfig);
+
+    ODEBUG("hppSetCurrentConfig: jrlConfig = " << jrlConfig);
+
+    if (!CimplDynamicRobot::currentConfiguration(jrlConfig)) {
+      return false;
+    }
+    if (!CimplDynamicRobot::computeForwardKinematics()) {
+      return false;
+    }
+    return true;
   }
   return false;
 }
@@ -470,7 +494,10 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
   bool updateDynamic = (inUpdateWhat == DYNAMIC || inUpdateWhat == BOTH);
 
   if (updateDynamic) {
-    if (!CimplDynamicRobot::applyConfiguration(inConfig)) {
+    if (!CimplDynamicRobot::currentConfiguration(inConfig)) {
+      return false;
+    }
+    if (!CimplDynamicRobot::computeForwardKinematics()) {
       return false;
     }
   }
@@ -526,14 +553,18 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
 	kwsConfig.dofValue(rankInCkwsConfig+3, rx);
 	kwsConfig.dofValue(rankInCkwsConfig+4, ry);
 	kwsConfig.dofValue(rankInCkwsConfig+5, rz);
+	
+	rankInCkwsConfig+= 6;
       }
       else if(CkppRotationJointComponentShPtr jointRot = KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
 									      kppJoint)) {
 	kwsConfig.dofValue(rankInCkwsConfig, inConfig[jrlRankInConfig]);
+	rankInCkwsConfig++;
       }
       else if(CkppTranslationJointComponentShPtr jointTrans = KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
 										   kppJoint)) {
 	kwsConfig.dofValue(rankInCkwsConfig, inConfig[jrlRankInConfig]);
+	rankInCkwsConfig++;
       }
       else {
 	std::cerr << "hppSetCurrentConfig: unknown type of joint." 
