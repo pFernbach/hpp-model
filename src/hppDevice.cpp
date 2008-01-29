@@ -14,7 +14,8 @@
 #include "hppModel/hppBody.h"
 #include "kwsioConfig.h"
 
-#define ODEBUG(x) std::cerr << "hppDevice :" << x << std::endl
+#define ODEBUG(x)
+//#define ODEBUG(x) std::cerr << "hppDevice :" << x << std::endl
 
 // ==========================================================================
 
@@ -757,5 +758,16 @@ std::ostream& operator<<(std::ostream& os, ChppDevice& inHppDevice)
   if (hppJoint) {
     os << *hppJoint << std::endl;
   }
+  // Get position of center of mass
+  MAL_S3_VECTOR(com, double);
+  com = inHppDevice.positionCenterOfMass();
+  
+  //debug
+  cout<<"total mass "<<inHppDevice.mass() <<", COM: "<< MAL_S3_VECTOR_ACCESS(com, 0) 
+      <<", "<< MAL_S3_VECTOR_ACCESS(com, 1) 
+      <<", "<< MAL_S3_VECTOR_ACCESS(com, 2)
+      <<endl;
+
+
   return os;
 }
