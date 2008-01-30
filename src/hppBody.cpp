@@ -105,16 +105,6 @@ bool ChppBody::addSolidComponent(const CkppSolidComponentRefShPtr& inSolidCompon
   }
 
   /*
-    Add object to the inner object list in the given position.
-  */
-  std::vector<CkcdObjectShPtr> innerObjectList = innerObjects();
-  std::vector<CkitMat4> objectPosList = innerObjectRelativePositions();
-  innerObjectList.push_back(kcdObject);
-  objectPosList.push_back(inPosition);
-
-  setInnerObjects(innerObjectList, objectPosList);
-
-  /*
     Attach solid component to the joint associated to the body
   */
   CkwsJointShPtr bodyKwsJoint = CkwsBody::joint();

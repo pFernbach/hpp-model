@@ -372,9 +372,11 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
   bool updateGeom = (inUpdateWhat == GEOMETRIC || inUpdateWhat == BOTH);
   bool updateDynamic = (inUpdateWhat == DYNAMIC || inUpdateWhat == BOTH);
 
-  ODEBUG("hppSetCurrentConfig: inConfig = " << inConfig);
-
   if (updateGeom) {
+    ODEBUG("hppSetCurrentConfig: updating geometric part");
+    ODEBUG("hppSetCurrentConfig: inConfig = " << inConfig);
+
+
     if (CkppDeviceComponent::setCurrentConfig(inConfig) != KD_OK) {
       return false;
     }
@@ -482,9 +484,8 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
     if (!CimplDynamicRobot::computeForwardKinematics()) {
       return false;
     }
-    return true;
   }
-  return false;
+  return true;
 }
 
 // ==========================================================================
@@ -576,7 +577,7 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
     }
     return (CkppDeviceComponent::setCurrentConfig(kwsConfig) == KD_OK);
   }
-  return false;
+  return true;
 }
 
 void ChppDevice::RollPitchYawToYawPitchRoll(const double& inRx, const double& inRy, const double& inRz,
