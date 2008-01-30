@@ -165,7 +165,7 @@ public:
   inline bool bounds(unsigned int inDofRank, const double& inLowerBound, const double& inUpperBound) 
   {
     // KPP side
-    if (attKppJoint->kwsJoint()->dof(inDofRank)->bounds(inLowerBound, inUpperBound)==false) {
+    if (attKppJoint->kwsJoint()->dof(inDofRank)->bounds(inLowerBound, inUpperBound)==KD_ERROR) {
       return false;
     }
     // CjrlJoint side
