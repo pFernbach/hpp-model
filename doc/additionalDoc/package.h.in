@@ -4,7 +4,7 @@
 \section sec_intro_hppDevice Introduction
 
 This package contains classes representing robots, humanoid robots, joints and bodies with 
-\li dynamic properties (mass, inertia, velocity, acceleration,...) that are implemented through <a href="@ABSTRACTROBOTDYNAMICS_PREFIX@/share/doc/abstractRobotDynamics/main.html">robot dynamics</a> abstract interfaces and CjrlDynamicRobot
+\li dynamic properties (mass, inertia, velocity, acceleration,...) that are implemented through <a href="@ABSTRACTROBOTDYNAMICS_PREFIX@/share/doc/abstractRobotDynamics/main.html">robot dynamics</a> abstract interfaces,
 \li geometric properties (kinematic chain, distance to obstacles) that are implemented by <a href="@KINEOCONTROLLER_PREFIX@/share/doc/KPP SDK/html/main.html">KineoWorks</a>.
 
 \section sec_hppDevice_organization_classes Organization of the classes
@@ -13,6 +13,10 @@ This package contains classes representing robots, humanoid robots, joints and b
 
 The following figure displays the inheritance diagram between classes of KineoWorks and robot dynamics packages and implementation classes of robot dynamics classes. classes CimplDynamicRobot and CimplHumanoidDynamicRobot are implementations of respectively CjrlDynamicRobot and CjrlHumanoidDynamicRobot. 
 \image html classDiagramRobot.png "Inheritance diagram between classes implementing robots. Lines represent inheritance, thin lines reprensent virtual inheritance."
+
+\subsubsection subsubsec_humanoid_optimized Optimized implementation of humanoid robot.
+
+It is possible to instantiate an optimized implementation of a humanoid robot through a template mechanism explained in documentation of class ChppSpecificHumanoidRobot.
 
 \subsection subsec_hppDevice_joints Joints
 

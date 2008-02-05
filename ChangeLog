@@ -1,3 +1,6 @@
+2008/02/05
+	8. Added a template class ChppSpecificHumanoidRobot to allow optimized implementation of humanoid dynamic model.
+	
 2008/01/09
 	7. In function ChppBody::addSolidComponent, the only KPP joint is retrieved from the body to attach the solid component.
 	   This modification makes hppModel compatible with hppCorbaServer.
