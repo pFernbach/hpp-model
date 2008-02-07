@@ -1,3 +1,9 @@
+2008/02/07
+	9. Changed the class inheritance organization:
+	  9.1. ChppHumanoidRobot now virtually derives from CimplHumanoidDynamicRobot and is not anymore instanciated through the template mechanism,
+	  9.2. template <class HDR> ChppSpecificHumanoidRobot now derives from ChppHumanoidRobot and from HDR (optimized implementation of CimplHumanoidDynamicRobot).
+	9.1 is required by 9.2 and 9.2 makes the optimal implementation compatible with ChppHumanoidRobot.
+	
 2008/02/05
 	8. Added a template class ChppSpecificHumanoidRobot to allow optimized implementation of humanoid dynamic model.
 	

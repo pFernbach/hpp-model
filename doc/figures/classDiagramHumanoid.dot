@@ -10,10 +10,14 @@ digraph CD  {
 	"ChppSpecificHumanoidRobot<CoptHumanoidDynamicRobot>" [shape = box]
 	"ChppDevice" -> CkppDeviceComponent [style = bold]
 	"ChppDevice" -> CimplDynamicRobot
-	"ChppSpecificHumanoidRobot<CoptHumanoidDynamicRobot>" -> "ChppDevice" [style = bold]
+	"ChppSpecificHumanoidRobot<CoptHumanoidDynamicRobot>" -> "ChppHumanoidRobot" [style = bold]
 	"ChppSpecificHumanoidRobot<CoptHumanoidDynamicRobot>" -> CoptHumanoidDynamicRobot [style = bold]
 	"CoptHumanoidDynamicRobot" [shape = box]
-	"CoptHumanoidDynamicRobot" -> CimplHumanoidDynamicRobot [style = bold]
+	"CoptHumanoidDynamicRobot" -> CimplHumanoidDynamicRobot 
+
+	"ChppHumanoidRobot" [shape = box]
+	"ChppHumanoidRobot" -> "ChppDevice" [style = bold]
+	"ChppHumanoidRobot" -> CimplHumanoidDynamicRobot 
 
 	subgraph cluster0 {
 		CimplDynamicRobot [shape = box] 

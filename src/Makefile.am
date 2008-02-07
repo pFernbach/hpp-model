@@ -5,6 +5,7 @@
 
 lib_LTLIBRARIES = libhppModel.la
 libhppModel_la_SOURCES = \
+	hppHumanoidRobot.cpp \
 	hppDevice.cpp \
 	hppBody.cpp \
 	hppJoint.cpp 
