@@ -396,7 +396,8 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
       The difference of size between KppDeviceComponent and CjrldynamicRobot is
       the number of extra dofs.
     */
-    MAL_VECTOR_DIM(jrlConfig, double, kwsConfigDim-rankInCkwsConfig);
+    // MAL_VECTOR_DIM(jrlConfig, double, kwsConfigDim-rankInCkwsConfig);
+    MAL_VECTOR_DIM(jrlConfig, double, numberDof());
 
     /*
       Loop over CkppDeviceComponent joints
@@ -409,7 +410,7 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
 	 Check if the joint is found in the associated map
       */
       if(attKppToHppJointMap[kppJoint] == NULL){
-	std::cout<<"joint "<<kppJoint->name()<<" "<<"... not found. "<<endl;
+	// std::cout<<"joint "<<kppJoint->name()<<" "<<"... not found. "<<endl;
 	continue;
       }
 
