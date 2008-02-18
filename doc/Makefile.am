@@ -19,7 +19,7 @@ EXTRA_DIST = \
 	additionalDoc/package.h 
 
 
-install:html-doc 
+install: html-doc 
 	mkdir -p $(hppModeldir)
 	$(INSTALL_DATA) html/* $(hppModeldir)
 	mkdir -p $(hppModeldir)/pictures
