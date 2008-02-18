@@ -5,7 +5,7 @@ dnl
 dnl Author: Florent Lamiraux
 dnl
 
-AC_INIT([hppModel], [1.0], [hpp@laas.fr])
+AC_INIT([hppModel], [1.0.99], [hpp@laas.fr])
 AC_PREREQ(2.59)
 
 AM_INIT_AUTOMAKE([no-define])
