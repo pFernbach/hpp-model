@@ -5,7 +5,7 @@ dnl
 dnl Author: Florent Lamiraux
 dnl
 
-AC_INIT([hppModel], [1.0], [support@company.com])
+AC_INIT([hppModel], [1.0], [hpp@laas.fr])
 AC_PREREQ(2.59)
 
 AM_INIT_AUTOMAKE([no-define])
@@ -14,7 +14,9 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
-PKG_CHECK_MODULES(ABSTRACTROBOTDYNAMICS, abstractRobotDynamics)
+define(abtractiface_reqd, [abstractRobotDynamics >= 1.8])
+AC_SUBST(ABTRACTIFACE_REQD, "abtractiface_reqd")
+PKG_CHECK_MODULES(ABSTRACTROBOTDYNAMICS, abtractiface_reqd)
 ABSTRACTROBOTDYNAMICS_PREFIX=`$PKG_CONFIG abstractRobotDynamics --variable=prefix`
 AC_SUBST(ABSTRACTROBOTDYNAMICS_PREFIX)
 
@@ -31,9 +33,15 @@ dnl --- Implementation of jrlAbstractRobotDynamics --------------------
 AC_ARG_WITH(robotDynamics, AC_HELP_STRING([--with-robotDynamics], 
 	[which implementation of abstractRobotDynamics to use]),,with_robotDynamics=no)
 
-if test x${with_robotDynamics} = xno; then
-	AC_ERROR([please choose an implementation of abstract interfaces for robot dynamic model])
-fi
+case "${with_robotDynamics}" in
+   dynamicsJRLJapan) ;;
+   yes|no|*)
+	AC_MSG_WARN([You must choose an implementation of abstract interfaces])
+	AC_MSG_WARN([for robot dynamic model. Available implementations are:])
+	AC_MSG_WARN([	dynamicsJRLJapan])
+	AC_MSG_ERROR([--with-robotDynamics option missing])
+	;;
+esac
 
 PKG_CHECK_MODULES(ROBOTDYNAMICSIMPL, $with_robotDynamics)
 AC_SUBST(ROBOTDYNAMICSIMPL, $with_robotDynamics)
