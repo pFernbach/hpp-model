@@ -4,8 +4,11 @@
 
 
 noinst_PROGRAMS = testhppDevice
-testhppDevice_SOURCES = main.cpp \
-	hppDeviceTest.cpp
+
+testhppDevice_SOURCES=\
+	main.cpp 		\
+	hppDeviceTest.cpp	\
+	hppDeviceTest.h
 
 testhppDevice_CPPFLAGS = \
 	-I$(top_srcdir)/include \
