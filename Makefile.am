@@ -3,9 +3,10 @@
 # 
 
 SUBDIRS = \
-	src \
-	include \
-	unitTesting
+	src 		\
+	include 	\
+	unitTesting	\
+	doc
 
 hppModeldir = $(libdir)/pkgconfig
 hppModel_DATA = hppModel.pc
