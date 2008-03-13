@@ -420,14 +420,14 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
       CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint]->jrlJoint();
       unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
 
-      ODEBUG("iKppJoint=" << iKppJoint << " jrlRankInConfig=" << jrlRankInConfig);
+      ODEBUG("iKppJoint=" << kppJoint->name() << " jrlRankInConfig=" << jrlRankInConfig);
 
       /*
 	Check rank in configuration wrt  dimension.
       */
       if (jrlRankInConfig+jointDim > inConfig.size()) {
-	std::cerr << "hppSetCurrentConfig: rank in configuration is more than configuration dimension." 
-		  << std::endl;
+	std::cerr << "hppSetCurrentConfig: rank in configuration is more than configuration dimension(rank = " << jrlRankInConfig << ", dof = " << jointDim 
+		  << ")." << std::endl;
 	std::cout << "vectorN: " << jrlConfig << std::endl;
 	return false;
       }
@@ -482,8 +482,15 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
     if (!CimplDynamicRobot::currentConfiguration(jrlConfig)) {
       return false;
     }
-    if (!CimplDynamicRobot::computeForwardKinematics()) {
-      return false;
+    CimplHumanoidDynamicRobot *h;
+    if (h = dynamic_cast<CimplHumanoidDynamicRobot *>(this)){
+	if (!h->computeForwardKinematics()){
+	    return false;
+	}
+    }else{
+	if (!CimplDynamicRobot::computeForwardKinematics()) {
+	    return false;
+	}
     }
   }
   return true;
@@ -500,8 +507,15 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
     if (!CimplDynamicRobot::currentConfiguration(inConfig)) {
       return false;
     }
-    if (!CimplDynamicRobot::computeForwardKinematics()) {
-      return false;
+    CimplHumanoidDynamicRobot *h;
+    if (h = dynamic_cast<CimplHumanoidDynamicRobot *>(this)){
+	if (!h->computeForwardKinematics()) {
+	    return false;
+	}
+    }else{
+	if (!CimplDynamicRobot::computeForwardKinematics()) {
+	    return false;
+	}
     }
   }
   if (updateGeom) {
@@ -531,7 +545,7 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
 	Check rank in configuration wrt  dimension.
       */
       if (jrlRankInConfig > inConfig.size()) {
-	std::cerr << "hppSetCurrentConfig: rank in configuration is more than configuration dimension." 
+	std::cerr << "hppSetCurrentConfig: rank in configuration is more than configuration dimension(" << jrlRankInConfig << ")." 
 		  << std::endl;
 	return false;
       }
