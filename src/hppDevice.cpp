@@ -479,18 +479,11 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
 
     ODEBUG("hppSetCurrentConfig: jrlConfig = " << jrlConfig);
 
-    if (!CimplDynamicRobot::currentConfiguration(jrlConfig)) {
+    if (!currentConfiguration(jrlConfig)) {
       return false;
     }
-    CimplHumanoidDynamicRobot *h;
-    if (h = dynamic_cast<CimplHumanoidDynamicRobot *>(this)){
-	if (!h->computeForwardKinematics()){
-	    return false;
-	}
-    }else{
-	if (!CimplDynamicRobot::computeForwardKinematics()) {
-	    return false;
-	}
+    if (!computeForwardKinematics()) {
+	return false;
     }
   }
   return true;
@@ -504,18 +497,11 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
   bool updateDynamic = (inUpdateWhat == DYNAMIC || inUpdateWhat == BOTH);
 
   if (updateDynamic) {
-    if (!CimplDynamicRobot::currentConfiguration(inConfig)) {
+    if (!currentConfiguration(inConfig)) {
       return false;
     }
-    CimplHumanoidDynamicRobot *h;
-    if (h = dynamic_cast<CimplHumanoidDynamicRobot *>(this)){
-	if (!h->computeForwardKinematics()) {
-	    return false;
-	}
-    }else{
-	if (!CimplDynamicRobot::computeForwardKinematics()) {
-	    return false;
-	}
+    if (!computeForwardKinematics()) {
+	return false;
     }
   }
   if (updateGeom) {
