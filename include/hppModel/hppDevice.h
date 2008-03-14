@@ -99,6 +99,11 @@ public:
      \brief Create a Free-flyer joint
   */
   ChppJoint* createFreeFlyer(std::string inName, const CkitMat4& inInitialPosition);
+
+  /**
+     \brief Create a Free-flyer joint
+  */
+  ChppJoint* createAnchor(std::string inName, const CkitMat4& inInitialPosition);
   
   /**
      \brief Create a Free-flyer joint
