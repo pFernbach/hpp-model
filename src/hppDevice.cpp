@@ -740,6 +740,13 @@ ChppJoint* ChppDevice::createFreeFlyer(std::string inName, const CkitMat4& inIni
   return hppJoint;
 }
 
+ChppJoint* ChppDevice::createAnchor(std::string inName, const CkitMat4& inInitialPosition)
+{
+  ChppJoint* hppJoint = createJoint<CkppFreeFlyerJointComponent, CimplJointFreeFlyer>(inName, inInitialPosition);
+
+  return hppJoint;
+}
+
 // ==========================================================================
 
 ChppJoint* ChppDevice::createRotation(std::string inName, const CkitMat4& inInitialPosition)
