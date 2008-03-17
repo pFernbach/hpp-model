@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "KineoModel/kppFreeFlyerJointComponent.h"
+#include "KineoModel/kppAnchorJointComponent.h"
 #include "KineoModel/kppRotationJointComponent.h"
 #include "KineoModel/kppTranslationJointComponent.h"
 
@@ -728,7 +729,7 @@ ChppJoint* ChppDevice::createFreeFlyer(std::string inName, const CkitMat4& inIni
 
 ChppJoint* ChppDevice::createAnchor(std::string inName, const CkitMat4& inInitialPosition)
 {
-  ChppJoint* hppJoint = createJoint<CkppFreeFlyerJointComponent, CimplJointFreeFlyer>(inName, inInitialPosition);
+  ChppJoint* hppJoint = createJoint<CkppAnchorJointComponent, CimplJointFreeFlyer>(inName, inInitialPosition);
 
   return hppJoint;
 }
