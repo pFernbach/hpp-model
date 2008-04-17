@@ -383,7 +383,6 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
     }
   }
   if (updateDynamic) {
-    unsigned int kwsConfigDim = inConfig.size();
     /* 
        Count the number of extra dofs of the CkppDeviceComponent
        since the first degrees of freedom of inConfig correspond to these extra-dofs.
@@ -394,10 +393,8 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
 
     /*
       Allocate a vector for CjrldynamicRobot configuration
-      The difference of size between KppDeviceComponent and CjrldynamicRobot is
-      the number of extra dofs.
+      Dimension of vector is size of dynamic part of robot.
     */
-    // MAL_VECTOR_DIM(jrlConfig, double, kwsConfigDim-rankInCkwsConfig);
     MAL_VECTOR_DIM(jrlConfig, double, numberDof());
 
     /*
@@ -507,7 +504,6 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
   }
   if (updateGeom) {
     CkwsConfig kwsConfig(CkwsDeviceShPtr(this));
-    unsigned int kwsConfigDim = kwsConfig.size();
     /* 
        Count the number of extra dofs of the CkppDeviceComponent.
     */
@@ -521,7 +517,6 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
     */
     for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size(); iKppJoint++) {
       CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
-      unsigned int jointDim = kppJoint->countDofComponents();
       /*
 	Get associated CjrlJoint
       */
@@ -613,8 +608,6 @@ void ChppDevice::RollPitchYawToYawPitchRoll(const double& inRx, const double& in
   
   outRy = asin(R[0][2]);
   double cosOutRy = cos(outRy);
-
-  double sinOutRz, cosOutRz;
 
   if(fabs(cosOutRy) > 1e-6) {
     double cosOutRx =  R[2][2] / cosOutRy;

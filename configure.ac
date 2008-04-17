@@ -8,11 +8,28 @@ dnl
 AC_INIT([hppModel], [1.0.99], [hpp@laas.fr])
 AC_PREREQ(2.59)
 
+if test "$CFLAGS$CXXFLAGS" = ""; then
+  setdefaultflags=yes
+else
+  setdefaultflags=no
+fi
+
 AM_INIT_AUTOMAKE([no-define])
 
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
+
+if test "$setdefaultflags" = "yes"; then
+  if test "$GCC" = "yes"; then
+    CFLAGS="$CFLAGS -Wall"
+    AC_MSG_NOTICE([adding default "-Wall" c flags])
+  fi
+  if test "$GXX" = "yes"; then
+    CXXFLAGS="$CXXFLAGS -Wall"
+    AC_MSG_NOTICE([adding default "-Wall" c++ flags])
+  fi
+fi
 
 define(abtractiface_reqd, [abstractRobotDynamics >= 1.8])
 AC_SUBST(ABTRACTIFACE_REQD, "abtractiface_reqd")
