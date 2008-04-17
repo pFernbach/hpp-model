@@ -1,5 +1,5 @@
 2008/04/17
-	10. If CXXFLAGS and CFLAGS are not defined at configuration, they are set to "-Wall"
+	10. If CXXFLAGS and CFLAGS are not defined at configuration, they are set to "-Wall".
 	
 2008/02/07
 	9. Changed the class inheritance organization:
