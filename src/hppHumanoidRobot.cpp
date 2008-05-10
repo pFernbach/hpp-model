@@ -56,6 +56,48 @@ bool ChppHumanoidRobot::isComponentClonable() const
 
 // ==========================================================================
 
+ChppJoint* ChppHumanoidRobot::hppWaist()
+{
+  return jrlToHppJoint(waist());
+}
+  
+// ==========================================================================
+
+ChppJoint* ChppHumanoidRobot::hppLeftWrist()
+{
+  return jrlToHppJoint(leftWrist());
+}
+  
+// ==========================================================================
+  
+ChppJoint* ChppHumanoidRobot::hppRightWrist()
+{
+  return jrlToHppJoint(rightWrist());
+}
+  
+// ==========================================================================
+  
+ChppJoint* ChppHumanoidRobot::hppLeftFoot()
+{
+  return jrlToHppJoint(leftFoot());
+}
+  
+// ==========================================================================
+  
+ChppJoint* ChppHumanoidRobot::hppRightFoot()
+{
+  return jrlToHppJoint(rightFoot());
+}
+  
+// ==========================================================================
+  
+ChppJoint* ChppHumanoidRobot::hppGazeJoint()
+{
+  return jrlToHppJoint(gazeJoint());
+}
+
+// ==========================================================================
+
 ktStatus ChppHumanoidRobot::init(const ChppHumanoidRobotWkPtr& inDevWkPtr, const std::string &inName)
 {
   ktStatus success = ChppDevice::init(inDevWkPtr, inName);

@@ -58,6 +58,45 @@ public:
      @}
   */
 
+
+  /**
+     \name Joints specific to humanoid robots
+  */
+  
+  /**
+     \brief Get ChppJoint corresponding to the waist.
+  */
+  ChppJoint* hppWaist();
+  
+  /**
+     \brief Get ChppJoint corresponding to the left wrist.
+  */
+  ChppJoint* hppLeftWrist();
+  
+  /**
+     \brief Get ChppJoint corresponding to the right wrist.
+  */
+  ChppJoint* hppRightWrist();
+  
+  /**
+     \brief Get ChppJoint corresponding to the left foot.
+  */
+  ChppJoint* hppLeftFoot();
+  
+  /**
+     \brief Get ChppJoint corresponding to the right foot.
+  */
+  ChppJoint* hppRightFoot();
+  
+  /**
+     \brief Get gaze joint
+  */
+  ChppJoint* hppGazeJoint();
+  
+  /**
+     @}
+  */
+
   /**
      \brief Creation of a new humanoid robot
      \return a shared pointer to the new robot

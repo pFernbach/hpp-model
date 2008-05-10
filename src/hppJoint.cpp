@@ -123,6 +123,7 @@ bool ChppJoint::setAttachedBody(const ChppBodyShPtr& inBody)
     Store pointer to the joint in body
   */
   inBody->hppJoint(this);
+  return true;
 }
 
 // ==========================================================================

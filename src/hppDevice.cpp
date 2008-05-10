@@ -15,8 +15,16 @@
 #include "hppModel/hppBody.h"
 #include "kwsioConfig.h"
 
-#define ODEBUG(x)
-//#define ODEBUG(x) std::cerr << "hppDevice :" << x << std::endl
+#if DEBUG==2
+#define ODEBUG2(x) std::cout << "ChppDevice:" << x << std::endl
+#define ODEBUG1(x) std::cerr << "ChppDevice:" << x << std::endl
+#elif DEBUG==1
+#define ODEBUG2(x)
+#define ODEBUG1(x) std::cerr << "ChppDevice:" << x << std::endl
+#else
+#define ODEBUG2(x)
+#define ODEBUG1(x)
+#endif
 
 // ==========================================================================
 
@@ -127,7 +135,7 @@ ktStatus ChppDevice::axisAlignedBoundingBox (double& xMin, double& yMin, double&
     a=KIT_DYNAMIC_PTR_CAST(CkwsKCDBody, bodyVector[i]);
     if(!a)
     {
-      std::cerr << "Error in axisAlignedBoundingBox, the CkwsBody not of subtype CkwsKCDBody" <<std::endl;
+      ODEBUG1(":axisAlignedBoundingBox: Error, the CkwsBody not of type CkwsKCDBody");
       return KD_ERROR;
     }
     computeBodyBoundingBox(a,xMin,yMin,zMin,xMax,yMax,zMax);
@@ -169,7 +177,7 @@ ktStatus ChppDevice::ignoreDeviceForCollision (ChppDeviceShPtr inDevice ) {
       }
     }
     else {
-      std::cerr << "ChppDevice::ignoreDeviceForCollision : body is not KCD body." << std::endl;
+      ODEBUG1(":ignoreDeviceForCollision : body is not KCD body.");
       return KD_ERROR ;
     } 
   }
@@ -204,7 +212,7 @@ ktStatus ChppDevice::ignoreDeviceForCollision (ChppDeviceShPtr inDevice ) {
       thisKcdBody->ignoredOuterObjects(thisIgnoredObjectList) ;
     }
     else {
-      std::cerr << "ChppDevice::ignoreDeviceForCollision : body is not KCD body." << std::endl;
+      ODEBUG1(":ignoreDeviceForCollision : body is not KCD body.");
       return KD_ERROR ;
     } 
   }
@@ -360,10 +368,21 @@ void ChppDevice::registerJoint(ChppJoint* inHppJoint)
 ChppJoint* ChppDevice::kppToHppJoint(CkppJointComponentShPtr inKppJoint)
 {
   if (attKppToHppJointMap.count(inKppJoint) != 1) {
-    std::cerr << "ChppDevice::kppToHppJoint: no ChppJoint for this CkppJointComponent." << std::endl;
+    ODEBUG1(":kppToHppJoint: no ChppJoint for this CkppJointComponent.");
     return NULL;
   }
   return attKppToHppJointMap[inKppJoint];
+}
+
+// ==========================================================================
+
+ChppJoint* ChppDevice::jrlToHppJoint(CjrlJoint* inJrlJoint)
+{
+  if (attJrlToHppJointMap.count(inJrlJoint) != 1) {
+    ODEBUG1(":jrlToHppJoint: no ChppJoint for this CjrlJoint.");
+    return NULL;
+  }
+  return attJrlToHppJointMap[inJrlJoint];
 }
 
 // ==========================================================================
@@ -374,8 +393,8 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
   bool updateDynamic = (inUpdateWhat == DYNAMIC || inUpdateWhat == BOTH);
 
   if (updateGeom) {
-    ODEBUG("hppSetCurrentConfig: updating geometric part");
-    ODEBUG("hppSetCurrentConfig: inConfig = " << inConfig);
+    ODEBUG2("hppSetCurrentConfig: updating geometric part");
+    ODEBUG2("hppSetCurrentConfig: inConfig = " << inConfig);
 
 
     if (CkppDeviceComponent::setCurrentConfig(inConfig) != KD_OK) {
@@ -418,15 +437,15 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
       CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint]->jrlJoint();
       unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
 
-      ODEBUG("iKppJoint=" << kppJoint->name() << " jrlRankInConfig=" << jrlRankInConfig);
+      ODEBUG2("iKppJoint=" << kppJoint->name() << " jrlRankInConfig=" << jrlRankInConfig);
 
       /*
 	Check rank in configuration wrt  dimension.
       */
       if (jrlRankInConfig+jointDim > inConfig.size()) {
-	std::cerr << "hppSetCurrentConfig: rank in configuration is more than configuration dimension(rank = " << jrlRankInConfig << ", dof = " << jointDim 
-		  << ")." << std::endl;
-	std::cout << "vectorN: " << jrlConfig << std::endl;
+	ODEBUG1(":hppSetCurrentConfig: rank in configuration is more than configuration dimension(rank = " 
+		<< jrlRankInConfig << ", dof = " << jointDim << ").");
+	ODEBUG1(":hppSetCurrentConfig:   vectorN: " << jrlConfig);
 	return false;
       }
       /*
@@ -447,7 +466,7 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
 	jrlConfig[jrlRankInConfig+3] = roll;
 	jrlConfig[jrlRankInConfig+4] = pitch;
 	jrlConfig[jrlRankInConfig+5] = yaw;
-	ODEBUG("Joint value: " << jrlConfig[jrlRankInConfig] << ", "
+	ODEBUG2("Joint value: " << jrlConfig[jrlRankInConfig] << ", "
 	       << jrlConfig[jrlRankInConfig+1] << ", "
 	       << jrlConfig[jrlRankInConfig+2] << ", "
 	       << jrlConfig[jrlRankInConfig+3] << ", "
@@ -458,24 +477,23 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
       else if(CkppRotationJointComponentShPtr jointRot = KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
 									      kppJoint)) {
 	jrlConfig[jrlRankInConfig] = inConfig.dofValue(rankInCkwsConfig);
-	ODEBUG("Joint value: " << jrlConfig[jrlRankInConfig]);
+	ODEBUG2("Joint value: " << jrlConfig[jrlRankInConfig]);
 	rankInCkwsConfig ++;
       }
       else if(CkppTranslationJointComponentShPtr jointTrans = KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
 										   kppJoint)) {
 	jrlConfig[jrlRankInConfig] = inConfig.dofValue(rankInCkwsConfig);
-	ODEBUG("Joint value: " << jrlConfig[jrlRankInConfig]);
+	ODEBUG2("Joint value: " << jrlConfig[jrlRankInConfig]);
 	rankInCkwsConfig ++;
       }
       else {
-	std::cerr << "hppSetCurrentConfig: unknown type of joint." 
-		  << std::endl;
-	std::cout << "vectorN: " << jrlConfig << std::endl;
+	ODEBUG1(":hppSetCurrentConfig: unknown type of joint.");
+	ODEBUG1(":hppSetCurrentConfig:    vectorN: " << jrlConfig);
 	return false;
       }
     }
 
-    ODEBUG("hppSetCurrentConfig: jrlConfig = " << jrlConfig);
+    ODEBUG2("hppSetCurrentConfig: jrlConfig = " << jrlConfig);
 
     if (!currentConfiguration(jrlConfig)) {
       return false;
@@ -527,8 +545,8 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
 	Check rank in configuration wrt  dimension.
       */
       if (jrlRankInConfig > inConfig.size()) {
-	std::cerr << "hppSetCurrentConfig: rank in configuration is more than configuration dimension(" << jrlRankInConfig << ")." 
-		  << std::endl;
+	ODEBUG1(":hppSetCurrentConfig: rank in configuration is more than configuration dimension(" 
+		<< jrlRankInConfig << ").");
 	return false;
       }
       /*
@@ -566,9 +584,8 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
 	rankInCkwsConfig++;
       }
       else {
-	std::cerr << "hppSetCurrentConfig: unknown type of joint." 
-		  << std::endl;
-	std::cout << "vectorN: " << inConfig << std::endl;
+	ODEBUG1(":hppSetCurrentConfig: unknown type of joint.");
+	ODEBUG1(":hppSetCurrentConfig:   vectorN: " << inConfig);
 	return false;
       }
     }

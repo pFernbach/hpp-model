@@ -96,6 +96,11 @@ public:
   ChppJoint* kppToHppJoint(CkppJointComponentShPtr inKppJoint);
 
   /**
+     \brief Get ChppJoint containing a given CkppJointComponent
+  */
+  ChppJoint* jrlToHppJoint(CjrlJoint* inJrlJoint);
+
+  /**
      \brief Create a Free-flyer joint
   */
   ChppJoint* createFreeFlyer(std::string inName, const CkitMat4& inInitialPosition);
@@ -326,7 +331,7 @@ private:
   std::map<CjrlJoint*, ChppJoint*> attJrlToHppJointMap;
 
   /**
-     \brief Map to retrieve the ChppJoint by name.
+     \brief Map to retrieve the ChppJoint that contains a given CkppJointComponent.
   */
   std::map<CkppJointComponentShPtr, ChppJoint*> attKppToHppJointMap;
 };
