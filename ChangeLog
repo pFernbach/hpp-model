@@ -1,38 +1,51 @@
-hppModel 1.1 released May 13, 2008.
-	
-	12. Added access functions to ChppJoints corresponding to feet, hand and gaze.
-	
-	11. If CXXFLAGS and CFLAGS are not defined at configuration, they are set to "-Wall".
 
-	10. Added Anchor Joint for fixed joints.
+hppModel 1.3 released May 14, 2008.
+
+	13. Fix version numbering error.
+
+hppModel 1.1 released May 13, 2008.
+
+        12. Added access functions to ChppJoints corresponding to feet,
+            hand and gaze.
+
+        11. If CXXFLAGS and CFLAGS are not defined at configuration, they
+            are set to "-Wall".
+        10. Added Anchor Joint for fixed joints.
 
 hppModel 1.0 released February 18, 2008.
-	
-	9. Changed the class inheritance organization:
-	  9.1. ChppHumanoidRobot now virtually derives from CimplHumanoidDynamicRobot 
-	       and is not anymore instanciated through the template mechanism,
-	  9.2. template <class HDR> ChppSpecificHumanoidRobot now derives from 
-	       ChppHumanoidRobot and from HDR (optimized implementation of CimplHumanoidDynamicRobot).
-	9.1 is required by 9.2 and 9.2 makes the optimal implementation compatible with ChppHumanoidRobot.
-	
-	8. Added a template class ChppSpecificHumanoidRobot to allow optimized 
-	   implementation of humanoid dynamic model.
-	
-	7. In function ChppBody::addSolidComponent, the only KPP joint is retrieved 
-	   from the body to attach the solid component.
-	   This modification makes hppModel compatible with hppCorbaServer.
-	6. Added operator<< in classes ChppDevice and ChppJoint for debugging purposes.
-	
-	5. Reorganization of header files to solve some compilation problems.
 
-	4. First version successfully tested with hppWalkPlanner.
-	
-	3. hppBody::getInnerObjects() removed (use innerObjects() instead)
-	   hppBody::getOuterObjects() removed (use outerObjects() instead)
+        9. Changed the class inheritance organization:
+          9.1. ChppHumanoidRobot now virtually derives from
+               CimplHumanoidDynamicRobot and is not anymore instanciated
+               through the template mechanism,
+          9.2. template <class HDR> ChppSpecificHumanoidRobot now derives
+               from ChppHumanoidRobot and from HDR (optimized
+               implementation of CimplHumanoidDynamicRobot).
 
-	2. Reorganization of classes.
-	   1. ChppJoint does not derive anymore from CjrlJoint and CkwsJoint
-	   2. ChppJointFreeFlyer, ChppJointRotation and ChppJointTranslation have been removed.
-	
-	1. remove methods getOuterObjects, getOuterObjects and attributes inner, outer 
-	   since they are implemented in CkwsKCDBody.
+           9.1 is required by 9.2 and 9.2 makes the optimal implementation
+           compatible with ChppHumanoidRobot.
+
+        8. Added a template class ChppSpecificHumanoidRobot to allow
+           optimized implementation of humanoid dynamic model.
+
+        7. In function ChppBody::addSolidComponent, the only KPP joint is
+           retrieved
+           from the body to attach the solid component.
+           This modification makes hppModel compatible with hppCorbaServer.
+        6. Added operator<< in classes ChppDevice and ChppJoint for
+           debugging purposes.
+
+        5. Reorganization of header files to solve some compilation problems.
+
+        4. First version successfully tested with hppWalkPlanner.
+
+        3. hppBody::getInnerObjects() removed (use innerObjects() instead)
+           hppBody::getOuterObjects() removed (use outerObjects() instead)
+
+        2. Reorganization of classes.
+           1. ChppJoint does not derive anymore from CjrlJoint and CkwsJoint
+           2. ChppJointFreeFlyer, ChppJointRotation and
+              ChppJointTranslation have been removed.
+
+        1. remove methods getOuterObjects, getOuterObjects and attributes
+           inner, outer since they are implemented in CkwsKCDBody.

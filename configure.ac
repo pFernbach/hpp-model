@@ -1,11 +1,11 @@
-dnl 
-dnl configure.ac file for package hppModel 
+dnl
+dnl configure.ac file for package hppModel
 dnl Copyright 2007 (c) LAAS-CNRS
-dnl 
+dnl
 dnl Author: Florent Lamiraux
 dnl
 
-AC_INIT([hppModel], [1.1.99], [hpp@laas.fr])
+AC_INIT([hppModel], [1.3.99], [hpp@laas.fr])
 AC_PREREQ(2.59)
 
 if test "$CFLAGS$CXXFLAGS" = ""; then
@@ -47,7 +47,7 @@ AC_SUBST(ROBOTDYNAMICSIMPL_REQUIRE, [])
 
 dnl --- Implementation of jrlAbstractRobotDynamics --------------------
 
-AC_ARG_WITH(robotDynamics, AC_HELP_STRING([--with-robotDynamics], 
+AC_ARG_WITH(robotDynamics, AC_HELP_STRING([--with-robotDynamics],
 	[which implementation of abstractRobotDynamics to use]),,with_robotDynamics=no)
 
 case "${with_robotDynamics}" in
