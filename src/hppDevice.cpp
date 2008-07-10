@@ -583,6 +583,9 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
 	kwsConfig.dofValue(rankInCkwsConfig, inConfig[jrlRankInConfig]);
 	rankInCkwsConfig++;
       }
+      else if(CkppAnchorJointComponentShPtr jointAnchor = KIT_DYNAMIC_PTR_CAST(CkppAnchorJointComponent, kppJoint)){
+	  // do nothing
+      }
       else {
 	ODEBUG1(":hppSetCurrentConfig: unknown type of joint.");
 	ODEBUG1(":hppSetCurrentConfig:   vectorN: " << inConfig);
@@ -739,7 +742,7 @@ ChppJoint* ChppDevice::createFreeFlyer(std::string inName, const CkitMat4& inIni
 
 ChppJoint* ChppDevice::createAnchor(std::string inName, const CkitMat4& inInitialPosition)
 {
-  ChppJoint* hppJoint = createJoint<CkppAnchorJointComponent, CimplJointFreeFlyer>(inName, inInitialPosition);
+  ChppJoint* hppJoint = createJoint<CkppAnchorJointComponent, CimplJointAnchor>(inName, inInitialPosition);
 
   return hppJoint;
 }
