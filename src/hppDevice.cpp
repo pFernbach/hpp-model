@@ -513,6 +513,8 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
   bool updateDynamic = (inUpdateWhat == DYNAMIC || inUpdateWhat == BOTH);
 
   if (updateDynamic) {
+    ODEBUG2("hppSetCurrentConfig: updating dynamic part");
+    ODEBUG2("hppSetCurrentConfig: inConfig = " << inConfig);
     if (!currentConfiguration(inConfig)) {
       return false;
     }
@@ -521,11 +523,12 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
     }
   }
   if (updateGeom) {
-    CkwsConfig kwsConfig(CkwsDeviceShPtr(this));
+    std::vector<double> dofValues(countDofs());
+    this->getCurrentDofValues(dofValues);
     /* 
        Count the number of extra dofs of the CkppDeviceComponent.
     */
-    unsigned int rankInCkwsConfig = countExtraDofs();
+    unsigned int rankInDofValues = countExtraDofs();
 
     std::vector< CkppJointComponentShPtr > kppJointVector;
     getJointComponentVector(kppJointVector);
@@ -535,18 +538,21 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
     */
     for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size(); iKppJoint++) {
       CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
+      unsigned int jointDim = kppJoint->countDofComponents();
       /*
 	Get associated CjrlJoint
       */
       CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint]->jrlJoint();
       unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
 
+      ODEBUG2("iKppJoint=" << kppJoint->name() << " jrlRankInConfig=" << jrlRankInConfig);
+
       /*
 	Check rank in configuration wrt  dimension.
       */
-      if (jrlRankInConfig > inConfig.size()) {
-	ODEBUG1(":hppSetCurrentConfig: rank in configuration is more than configuration dimension(" 
-		<< jrlRankInConfig << ").");
+      if (jrlRankInConfig+jointDim > inConfig.size()) {
+	ODEBUG1(":hppSetCurrentConfig: rank in configuration is more than configuration dimension(rank = " 
+		<< jrlRankInConfig << ", dof = " << jointDim << ").");
 	return false;
       }
       /*
@@ -555,9 +561,9 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
       if (CkppFreeFlyerJointComponentShPtr jointFF = KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
 									  kppJoint)) {
 	// Translations along x, y, z
-	kwsConfig.dofValue(rankInCkwsConfig, inConfig[jrlRankInConfig]);
-	kwsConfig.dofValue(rankInCkwsConfig+1, inConfig[jrlRankInConfig+1]);
-	kwsConfig.dofValue(rankInCkwsConfig+2, inConfig[jrlRankInConfig+2]);
+	dofValues[rankInDofValues  ] = inConfig[jrlRankInConfig  ];
+	dofValues[rankInDofValues+1] = inConfig[jrlRankInConfig+1];
+	dofValues[rankInDofValues+2] = inConfig[jrlRankInConfig+2];
 
 	double roll = inConfig[jrlRankInConfig+3];
 	double pitch = inConfig[jrlRankInConfig+4];
@@ -567,21 +573,21 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
 	double rx, ry, rz;
 	RollPitchYawToYawPitchRoll(roll, pitch, yaw, rx, ry, rz);
 
-	kwsConfig.dofValue(rankInCkwsConfig+3, rx);
-	kwsConfig.dofValue(rankInCkwsConfig+4, ry);
-	kwsConfig.dofValue(rankInCkwsConfig+5, rz);
+	dofValues[rankInDofValues+3] = rx;
+	dofValues[rankInDofValues+4] = ry;
+	dofValues[rankInDofValues+5] = rz;
 	
-	rankInCkwsConfig+= 6;
+	rankInDofValues+= 6;
       }
       else if(CkppRotationJointComponentShPtr jointRot = KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
 									      kppJoint)) {
-	kwsConfig.dofValue(rankInCkwsConfig, inConfig[jrlRankInConfig]);
-	rankInCkwsConfig++;
+	dofValues[rankInDofValues] = inConfig[jrlRankInConfig];
+	rankInDofValues++;
       }
       else if(CkppTranslationJointComponentShPtr jointTrans = KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
 										   kppJoint)) {
-	kwsConfig.dofValue(rankInCkwsConfig, inConfig[jrlRankInConfig]);
-	rankInCkwsConfig++;
+	dofValues[rankInDofValues] = inConfig[jrlRankInConfig];
+	rankInDofValues++;
       }
       else if(CkppAnchorJointComponentShPtr jointAnchor = KIT_DYNAMIC_PTR_CAST(CkppAnchorJointComponent, kppJoint)){
 	  // do nothing
@@ -592,7 +598,8 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
 	return false;
       }
     }
-    return (CkppDeviceComponent::setCurrentConfig(kwsConfig) == KD_OK);
+
+    return (CkppDeviceComponent::setCurrentDofValues(dofValues) == KD_OK);
   }
   return true;
 }
