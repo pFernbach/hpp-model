@@ -174,6 +174,21 @@ public:
     return true;
   };
 
+  /**
+     \brief Set the velocity bounds of the degrees of freedom of the joint
+
+     \param inDofRank Rank of the degree of freedom that is bounded
+     \param inLowerVelocityBound lower velocity bound of this degree of freedom
+     \param inUpperVelocityBound upper velocity bound of this degree of freedom
+  */
+  inline bool velocityBounds(unsigned int inDofRank, const double& inLowerVelocityBound, const double& inUpperVelocityBound) 
+  {
+    // KPP side
+    // CjrlJoint side
+    attJrlJoint->lowerVelocityBound(inDofRank, inLowerVelocityBound);
+    attJrlJoint->upperVelocityBound(inDofRank, inUpperVelocityBound);
+    return true;
+  };
   
   /**
      @}
