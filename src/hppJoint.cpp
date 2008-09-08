@@ -26,8 +26,8 @@ matrix4d ChppJoint::abstractMatrixFromCkitMat4(const CkitMat4& inMatrix)
 CkitMat4 ChppJoint::CkitMat4MatrixFromAbstract(const matrix4d& inMatrix)
 {
   CkitMat4 kitMat4;
-  for (unsigned int iRow=0; iRow<3; iRow++) {
-    for (unsigned int iCol=0; iCol<3; iCol++) {
+  for (unsigned int iRow=0; iRow<4; iRow++) {
+    for (unsigned int iCol=0; iCol<4; iCol++) {
       kitMat4(iRow, iCol) = MAL_S4x4_MATRIX_ACCESS_I_J(inMatrix, iRow, iCol);
     }
   }
