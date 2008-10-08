@@ -1,11 +1,11 @@
 dnl
 dnl configure.ac file for package hppModel
-dnl Copyright 2007 (c) LAAS-CNRS
+dnl Copyright 2007-2008 (c) LAAS-CNRS
 dnl
 dnl Author: Florent Lamiraux
 dnl
 
-AC_INIT([hppModel], [1.3.99], [hpp@laas.fr])
+AC_INIT([hppModel], [1.4], [hpp@laas.fr])
 AC_PREREQ(2.59)
 
 if test "$CFLAGS$CXXFLAGS" = ""; then
@@ -31,7 +31,7 @@ if test "$setdefaultflags" = "yes"; then
   fi
 fi
 
-define(abtractiface_reqd, [abstractRobotDynamics >= 1.10])
+define(abtractiface_reqd, [abstractRobotDynamics >= 1.11])
 AC_SUBST(ABTRACTIFACE_REQD, "abtractiface_reqd")
 PKG_CHECK_MODULES(ABSTRACTROBOTDYNAMICS, abtractiface_reqd)
 ABSTRACTROBOTDYNAMICS_PREFIX=`$PKG_CONFIG abstractRobotDynamics --variable=prefix`

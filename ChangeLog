@@ -1,4 +1,11 @@
 
+hppModel 1.4 released Oct  8, 2008.
+
+	 17. Fixed bug in CkitMat4MatrixFromAbstract()
+	 16. Added ChppJoint::velocityBounds()
+	 15. Fixed bug in ChppDevice::hppSetCurrentConfig(const vectorN&, EwitchPart)
+	 14. Modifications to used fixed joints.
+
 hppModel 1.3 released May 14, 2008.
 
 	13. Fix version numbering error.
