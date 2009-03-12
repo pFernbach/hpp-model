@@ -1,9 +1,11 @@
 # 
-#  Copyright 
+#  Copyright 2007 CNRS
+#
+#  Author: Florent Lamiraux
 # 
 
 
-hppModeldir = $(datadir)/doc/hppModel
+hppModeldir = $(datadir)/doc/hppModel/html
 
 EXTRA_DIST = \
 	header.html \
@@ -24,8 +26,7 @@ install: html-doc
 	$(INSTALL_DATA) html/* $(hppModeldir)
 	mkdir -p $(hppModeldir)/pictures
 	$(INSTALL_DATA) $(srcdir)/pictures/* $(hppModeldir)/pictures
-	mkdir -p $(datadir)/doc/doxytag
-	$(INSTALL_DATA) hppModel.doxytag $(datadir)/doc/doxytag
+	$(INSTALL_DATA) hppModel.doxytag $(hppModeldir)
 
 html-doc: package.dox
 	doxygen $<

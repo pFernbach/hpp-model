@@ -34,8 +34,8 @@ fi
 define(abtractiface_reqd, [abstractRobotDynamics >= 1.11])
 AC_SUBST(ABTRACTIFACE_REQD, "abtractiface_reqd")
 PKG_CHECK_MODULES(ABSTRACTROBOTDYNAMICS, abtractiface_reqd)
-ABSTRACTROBOTDYNAMICS_PREFIX=`$PKG_CONFIG abstractRobotDynamics --variable=prefix`
-AC_SUBST(ABSTRACTROBOTDYNAMICS_PREFIX)
+ABSTRACTROBOTDYNAMICS_DOCDIR=`$PKG_CONFIG abstractRobotDynamics --variable=docdir`
+AC_SUBST(ABSTRACTROBOTDYNAMICS_DOCDIR)
 
 PKG_CHECK_MODULES(KINEOCONTROLLER, KineoController)
 KINEOCONTROLLER_PREFIX=`$PKG_CONFIG KineoController --variable=prefix`
@@ -64,8 +64,8 @@ PKG_CHECK_MODULES(ROBOTDYNAMICSIMPL, $with_robotDynamics)
 AC_SUBST(ROBOTDYNAMICSIMPL, $with_robotDynamics)
 AC_SUBST(ROBOTDYNAMICSIMPL_CFLAGS)
 AC_SUBST(ROBOTDYNAMICSIMPL_LIBS)
-ROBOTDYNAMICSIMPL_PREFIX=`$PKG_CONFIG $with_robotDynamics --variable=prefix`
-AC_SUBST(ROBOTDYNAMICSIMPL_PREFIX)
+ROBOTDYNAMICSIMPL_DOCDIR=`$PKG_CONFIG $with_robotDynamics --variable=docdir`
+AC_SUBST(ROBOTDYNAMICSIMPL_DOCDIR)
 
 dnl --- Get name of classes ---------------------------------
 

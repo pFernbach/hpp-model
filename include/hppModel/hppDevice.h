@@ -130,6 +130,28 @@ public:
   */
 
   /**
+     \brief Convert a KineoWorks config into a jrlDynamicRobot config
+
+     \param inKwsDofVector vector of degrees of freedom of CkwsConfig
+     \retval outJrlDynamicsDofVector vector of degrees of freedom of jrlDynamicRobot config
+
+     \return true if success, false if error.
+  */
+  bool kwsToJrlDynamicsDofValues(const std::vector& inKwsDofVector, 
+				 vectorN& outJrlDynamicsDofVector);
+
+  /**
+     \brief Convert a jrlDynamicRobot config into a KineoWorks config
+
+     \param inJrlDynamicsDofVector vector of degrees of freedom of jrlDynamicRobot config
+     \retval outKwsDofVector vector of degrees of freedom of CkwsConfig
+
+     \return true if success, false if error.
+  */
+  bool jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector,
+				 std::vector& outKwsDofVector);
+
+  /**
      \brief Put the robot in a given configuration
 
      \param inConfig The configuration

@@ -159,8 +159,8 @@ SKIP_FUNCTION_MACROS   = YES
 # Configuration::additions related to external references   
 #---------------------------------------------------------------------------
 TAGFILES               = \
-	@ABSTRACTROBOTDYNAMICS_PREFIX@/share/doc/doxytag/abstractRobotDynamics.doxytag=@ABSTRACTROBOTDYNAMICS_PREFIX@/share/doc/abstractRobotDynamics \
-	@ROBOTDYNAMICSIMPL_PREFIX@/share/doc/doxytag/@ROBOTDYNAMICSIMPL@.doxytag=@ROBOTDYNAMICSIMPL_PREFIX@/share/doc/@ROBOTDYNAMICSIMPL@
+	@ABSTRACTROBOTDYNAMICS_DOCDIR@/html/abstractRobotDynamics.doxytag=@ABSTRACTROBOTDYNAMICS_DOCDIR@/html \
+	@ROBOTDYNAMICSIMPL_DOCDIR@/html/@ROBOTDYNAMICSIMPL@.doxytag=@ROBOTDYNAMICSIMPL_DOCDIR@/html
 
 GENERATE_TAGFILE       = hppModel.doxytag
 ALLEXTERNALS           = NO

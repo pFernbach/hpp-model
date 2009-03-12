@@ -4,7 +4,7 @@
 \section sec_intro_hppDevice Introduction
 
 This package contains classes representing robots, humanoid robots, joints and bodies with 
-\li dynamic properties (mass, inertia, velocity, acceleration,...) that are implemented through <a href="@ABSTRACTROBOTDYNAMICS_PREFIX@/share/doc/abstractRobotDynamics/main.html">robot dynamics</a> abstract interfaces,
+\li dynamic properties (mass, inertia, velocity, acceleration,...) that are implemented through <a href="@ABSTRACTROBOTDYNAMICS_DOCDIR@/html/main.html">robot dynamics</a> abstract interfaces,
 \li geometric properties (kinematic chain, distance to obstacles) that are implemented by <a href="@KINEOCONTROLLER_PREFIX@/share/doc/KPP SDK/html/main.html">KineoWorks</a>.
 
 \section sec_hppDevice_organization_classes Organization of the classes
