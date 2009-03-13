@@ -16,9 +16,11 @@
 #include "kwsioConfig.h"
 
 #if DEBUG==2
+#undef NDEBUG
 #define ODEBUG2(x) std::cout << "ChppDevice:" << x << std::endl
 #define ODEBUG1(x) std::cerr << "ChppDevice:" << x << std::endl
 #elif DEBUG==1
+#undef NDEBUG
 #define ODEBUG2(x)
 #define ODEBUG1(x) std::cerr << "ChppDevice:" << x << std::endl
 #else
@@ -387,6 +389,189 @@ ChppJoint* ChppDevice::jrlToHppJoint(CjrlJoint* inJrlJoint)
 
 // ==========================================================================
 
+
+bool ChppDevice::kwsToJrlDynamicsDofValues(const std::vector<double>& inKwsDofVector, 
+					   vectorN& outJrlDynamicsDofVector)
+{
+  /* 
+     Count the number of extra dofs of the CkppDeviceComponent
+     since the first degrees of freedom of inKwsDofVector correspond to these extra-dofs.
+  */
+  unsigned int rankInCkwsConfig = countExtraDofs();
+  std::vector< CkppJointComponentShPtr > kppJointVector;
+  getJointComponentVector(kppJointVector);
+
+  /*
+    Resize vector if needed
+  */
+  KWS_PRECONDITION(outJrlDynamicsDofVector.size() == numberDof());
+
+  /*
+    Loop over CkppDeviceComponent joints
+  */
+  for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size(); iKppJoint++) {
+    CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
+
+    /* 
+       Check if the joint is found in the associated map
+    */
+    if(attKppToHppJointMap[kppJoint] == NULL){
+      // std::cout<<"joint "<<kppJoint->name()<<" "<<"... not found. "<<endl;
+      continue;
+    }
+
+    /*
+      Get associated CjrlJoint
+    */
+    CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint]->jrlJoint();
+    unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
+
+    ODEBUG2(":kwsToJrlDynamicsDofValues: iKppJoint=" << kppJoint->name() << " jrlRankInConfig=" << jrlRankInConfig);
+
+    /*
+      Check rank in configuration wrt  dimension.
+    */
+    unsigned int jointDim = kppJoint->countDofComponents();
+    if (jrlRankInConfig+jointDim > inKwsDofVector.size()) {
+      ODEBUG1(":kwsToJrlDynamicsDofValues: rank in configuration is more than configuration dimension(rank = " 
+	      << jrlRankInConfig << ", dof = " << jointDim << ").");
+      ODEBUG1(":kwsToJrlDynamicsDofValues:   vectorN: " << outJrlDynamicsDofVector);
+      return false;
+    }
+
+    /*
+      Cast joint into one of the possible types
+    */
+    if (CkppFreeFlyerJointComponentShPtr jointFF = KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
+									kppJoint)) {
+      // Translations along x, y, z
+      outJrlDynamicsDofVector[jrlRankInConfig] = inKwsDofVector[rankInCkwsConfig];
+      outJrlDynamicsDofVector[jrlRankInConfig+1] = inKwsDofVector[rankInCkwsConfig+1];
+      outJrlDynamicsDofVector[jrlRankInConfig+2] = inKwsDofVector[rankInCkwsConfig+2];
+      double rx = inKwsDofVector[rankInCkwsConfig+3];
+      double ry = inKwsDofVector[rankInCkwsConfig+4];
+      double rz = inKwsDofVector[rankInCkwsConfig+5];
+      // Convert KineoWorks rotation angles to roll, pitch, yaw
+      double roll, pitch, yaw;
+      YawPitchRollToRollPitchYaw(rx, ry, rz, roll, pitch, yaw);
+      outJrlDynamicsDofVector[jrlRankInConfig+3] = roll;
+      outJrlDynamicsDofVector[jrlRankInConfig+4] = pitch;
+      outJrlDynamicsDofVector[jrlRankInConfig+5] = yaw;
+      ODEBUG2("Joint value: " << outJrlDynamicsDofVector[jrlRankInConfig] << ", "
+	      << outJrlDynamicsDofVector[jrlRankInConfig+1] << ", "
+	      << outJrlDynamicsDofVector[jrlRankInConfig+2] << ", "
+	      << outJrlDynamicsDofVector[jrlRankInConfig+3] << ", "
+	      << outJrlDynamicsDofVector[jrlRankInConfig+4] << ", "
+	      << outJrlDynamicsDofVector[jrlRankInConfig+5]);
+      rankInCkwsConfig += 6;
+    }
+    else if(CkppRotationJointComponentShPtr jointRot = KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
+									    kppJoint)) {
+      outJrlDynamicsDofVector[jrlRankInConfig] = inKwsDofVector[rankInCkwsConfig];
+      ODEBUG2("Joint value: " << outJrlDynamicsDofVector[jrlRankInConfig]);
+      rankInCkwsConfig ++;
+    }
+    else if(CkppTranslationJointComponentShPtr jointTrans = KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
+										 kppJoint)) {
+      outJrlDynamicsDofVector[jrlRankInConfig] = inKwsDofVector[rankInCkwsConfig];
+      ODEBUG2("Joint value: " << outJrlDynamicsDofVector[jrlRankInConfig]);
+      rankInCkwsConfig ++;
+    }
+    else {
+      ODEBUG1(":kwsToJrlDynamicsDofValues: unknown type of joint.");
+      ODEBUG1(":kwsToJrlDynamicsDofValues:    vectorN: " << outJrlDynamicsDofVector);
+      return false;
+    }
+  }
+
+  ODEBUG2("hppSetCurrentConfig: outJrlDynamicsDofVector = " << outJrlDynamicsDofVector);
+  return true;
+}
+
+
+// ==========================================================================
+
+bool ChppDevice::jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector,
+					   std::vector<double>& outKwsDofVector)
+{
+  /* 
+     Count the number of extra dofs of the CkppDeviceComponent.
+  */
+  unsigned int rankInDofValues = countExtraDofs();
+
+  std::vector< CkppJointComponentShPtr > kppJointVector;
+  getJointComponentVector(kppJointVector);
+
+  /*
+    Loop over CkppDeviceComponent joints
+  */
+  for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size(); iKppJoint++) {
+    CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
+    unsigned int jointDim = kppJoint->countDofComponents();
+    /*
+      Get associated CjrlJoint
+    */
+    CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint]->jrlJoint();
+    unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
+
+    ODEBUG2(":jrlDynamicsToKwsDofValues: iKppJoint=" << kppJoint->name() << " jrlRankInConfig=" << jrlRankInConfig);
+
+    /*
+      Check rank in configuration wrt  dimension.
+    */
+    if (jrlRankInConfig+jointDim > inJrlDynamicsDofVector.size()) {
+      ODEBUG1(":jrlDynamicsToKwsDofValues: rank in configuration is more than configuration dimension(rank = " 
+	      << jrlRankInConfig << ", dof = " << jointDim << ").");
+      return false;
+    }
+    /*
+      Cast joint into one of the possible types
+    */
+    if (CkppFreeFlyerJointComponentShPtr jointFF = KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
+									kppJoint)) {
+      // Translations along x, y, z
+      outKwsDofVector[rankInDofValues  ] = inJrlDynamicsDofVector[jrlRankInConfig  ];
+      outKwsDofVector[rankInDofValues+1] = inJrlDynamicsDofVector[jrlRankInConfig+1];
+      outKwsDofVector[rankInDofValues+2] = inJrlDynamicsDofVector[jrlRankInConfig+2];
+
+      double roll = inJrlDynamicsDofVector[jrlRankInConfig+3];
+      double pitch = inJrlDynamicsDofVector[jrlRankInConfig+4];
+      double yaw = inJrlDynamicsDofVector[jrlRankInConfig+5];
+
+      // Convert KineoWorks rotation angles to roll, pitch, yaw
+      double rx, ry, rz;
+      RollPitchYawToYawPitchRoll(roll, pitch, yaw, rx, ry, rz);
+
+      outKwsDofVector[rankInDofValues+3] = rx;
+      outKwsDofVector[rankInDofValues+4] = ry;
+      outKwsDofVector[rankInDofValues+5] = rz;
+	
+      rankInDofValues+= 6;
+    }
+    else if(CkppRotationJointComponentShPtr jointRot = KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
+									    kppJoint)) {
+      outKwsDofVector[rankInDofValues] = inJrlDynamicsDofVector[jrlRankInConfig];
+      rankInDofValues++;
+    }
+    else if(CkppTranslationJointComponentShPtr jointTrans = KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
+										 kppJoint)) {
+      outKwsDofVector[rankInDofValues] = inJrlDynamicsDofVector[jrlRankInConfig];
+      rankInDofValues++;
+    }
+    else if(CkppAnchorJointComponentShPtr jointAnchor = KIT_DYNAMIC_PTR_CAST(CkppAnchorJointComponent, kppJoint)){
+      // do nothing
+    }
+    else {
+      ODEBUG1(":jrlDynamicsToKwsDofValues: unknown type of joint.");
+      ODEBUG1(":jrlDynamicsToKwsDofValues:   vectorN: " << inJrlDynamicsDofVector);
+      return false;
+    }
+  }
+  return true;
+}
+
+// ==========================================================================
+
 bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUpdateWhat)
 {
   bool updateGeom = (inUpdateWhat == GEOMETRIC || inUpdateWhat == BOTH);
@@ -402,98 +587,16 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
     }
   }
   if (updateDynamic) {
-    /* 
-       Count the number of extra dofs of the CkppDeviceComponent
-       since the first degrees of freedom of inConfig correspond to these extra-dofs.
-    */
-    unsigned int rankInCkwsConfig = countExtraDofs();
-    std::vector< CkppJointComponentShPtr > kppJointVector;
-    getJointComponentVector(kppJointVector);
-
     /*
       Allocate a vector for CjrldynamicRobot configuration
       Dimension of vector is size of dynamic part of robot.
     */
     MAL_VECTOR_DIM(jrlConfig, double, numberDof());
-
-    /*
-      Loop over CkppDeviceComponent joints
-    */
-    for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size(); iKppJoint++) {
-      CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
-      unsigned int jointDim = kppJoint->countDofComponents();
-
-      /* 
-	 Check if the joint is found in the associated map
-      */
-      if(attKppToHppJointMap[kppJoint] == NULL){
-	// std::cout<<"joint "<<kppJoint->name()<<" "<<"... not found. "<<endl;
-	continue;
-      }
-
-      /*
-	Get associated CjrlJoint
-      */
-      CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint]->jrlJoint();
-      unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
-
-      ODEBUG2("iKppJoint=" << kppJoint->name() << " jrlRankInConfig=" << jrlRankInConfig);
-
-      /*
-	Check rank in configuration wrt  dimension.
-      */
-      if (jrlRankInConfig+jointDim > inConfig.size()) {
-	ODEBUG1(":hppSetCurrentConfig: rank in configuration is more than configuration dimension(rank = " 
-		<< jrlRankInConfig << ", dof = " << jointDim << ").");
-	ODEBUG1(":hppSetCurrentConfig:   vectorN: " << jrlConfig);
-	return false;
-      }
-      /*
-	Cast joint into one of the possible types
-      */
-      if (CkppFreeFlyerJointComponentShPtr jointFF = KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
-									  kppJoint)) {
-	// Translations along x, y, z
-	jrlConfig[jrlRankInConfig] = inConfig.dofValue(rankInCkwsConfig);
-	jrlConfig[jrlRankInConfig+1] = inConfig.dofValue(rankInCkwsConfig+1);
-	jrlConfig[jrlRankInConfig+2] = inConfig.dofValue(rankInCkwsConfig+2);
-	double rx = inConfig.dofValue(rankInCkwsConfig+3);
-	double ry = inConfig.dofValue(rankInCkwsConfig+4);
-	double rz = inConfig.dofValue(rankInCkwsConfig+5);
-	// Convert KineoWorks rotation angles to roll, pitch, yaw
-	double roll, pitch, yaw;
-	YawPitchRollToRollPitchYaw(rx, ry, rz, roll, pitch, yaw);
-	jrlConfig[jrlRankInConfig+3] = roll;
-	jrlConfig[jrlRankInConfig+4] = pitch;
-	jrlConfig[jrlRankInConfig+5] = yaw;
-	ODEBUG2("Joint value: " << jrlConfig[jrlRankInConfig] << ", "
-	       << jrlConfig[jrlRankInConfig+1] << ", "
-	       << jrlConfig[jrlRankInConfig+2] << ", "
-	       << jrlConfig[jrlRankInConfig+3] << ", "
-	       << jrlConfig[jrlRankInConfig+4] << ", "
-	       << jrlConfig[jrlRankInConfig+5]);
-	rankInCkwsConfig += 6;
-      }
-      else if(CkppRotationJointComponentShPtr jointRot = KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
-									      kppJoint)) {
-	jrlConfig[jrlRankInConfig] = inConfig.dofValue(rankInCkwsConfig);
-	ODEBUG2("Joint value: " << jrlConfig[jrlRankInConfig]);
-	rankInCkwsConfig ++;
-      }
-      else if(CkppTranslationJointComponentShPtr jointTrans = KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
-										   kppJoint)) {
-	jrlConfig[jrlRankInConfig] = inConfig.dofValue(rankInCkwsConfig);
-	ODEBUG2("Joint value: " << jrlConfig[jrlRankInConfig]);
-	rankInCkwsConfig ++;
-      }
-      else {
-	ODEBUG1(":hppSetCurrentConfig: unknown type of joint.");
-	ODEBUG1(":hppSetCurrentConfig:    vectorN: " << jrlConfig);
-	return false;
-      }
+    std::vector<double> kwsDofVector;
+    inConfig.getDofValues(kwsDofVector);
+    if (!kwsToJrlDynamicsDofValues(kwsDofVector, jrlConfig)) {
+      return false;
     }
-
-    ODEBUG2("hppSetCurrentConfig: jrlConfig = " << jrlConfig);
 
     if (!currentConfiguration(jrlConfig)) {
       return false;
@@ -525,78 +628,8 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
   if (updateGeom) {
     std::vector<double> dofValues(countDofs());
     this->getCurrentDofValues(dofValues);
-    /* 
-       Count the number of extra dofs of the CkppDeviceComponent.
-    */
-    unsigned int rankInDofValues = countExtraDofs();
-
-    std::vector< CkppJointComponentShPtr > kppJointVector;
-    getJointComponentVector(kppJointVector);
-
-    /*
-      Loop over CkppDeviceComponent joints
-    */
-    for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size(); iKppJoint++) {
-      CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
-      unsigned int jointDim = kppJoint->countDofComponents();
-      /*
-	Get associated CjrlJoint
-      */
-      CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint]->jrlJoint();
-      unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
-
-      ODEBUG2("iKppJoint=" << kppJoint->name() << " jrlRankInConfig=" << jrlRankInConfig);
-
-      /*
-	Check rank in configuration wrt  dimension.
-      */
-      if (jrlRankInConfig+jointDim > inConfig.size()) {
-	ODEBUG1(":hppSetCurrentConfig: rank in configuration is more than configuration dimension(rank = " 
-		<< jrlRankInConfig << ", dof = " << jointDim << ").");
-	return false;
-      }
-      /*
-	Cast joint into one of the possible types
-      */
-      if (CkppFreeFlyerJointComponentShPtr jointFF = KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
-									  kppJoint)) {
-	// Translations along x, y, z
-	dofValues[rankInDofValues  ] = inConfig[jrlRankInConfig  ];
-	dofValues[rankInDofValues+1] = inConfig[jrlRankInConfig+1];
-	dofValues[rankInDofValues+2] = inConfig[jrlRankInConfig+2];
-
-	double roll = inConfig[jrlRankInConfig+3];
-	double pitch = inConfig[jrlRankInConfig+4];
-	double yaw = inConfig[jrlRankInConfig+5];
-
-	// Convert KineoWorks rotation angles to roll, pitch, yaw
-	double rx, ry, rz;
-	RollPitchYawToYawPitchRoll(roll, pitch, yaw, rx, ry, rz);
-
-	dofValues[rankInDofValues+3] = rx;
-	dofValues[rankInDofValues+4] = ry;
-	dofValues[rankInDofValues+5] = rz;
-	
-	rankInDofValues+= 6;
-      }
-      else if(CkppRotationJointComponentShPtr jointRot = KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
-									      kppJoint)) {
-	dofValues[rankInDofValues] = inConfig[jrlRankInConfig];
-	rankInDofValues++;
-      }
-      else if(CkppTranslationJointComponentShPtr jointTrans = KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
-										   kppJoint)) {
-	dofValues[rankInDofValues] = inConfig[jrlRankInConfig];
-	rankInDofValues++;
-      }
-      else if(CkppAnchorJointComponentShPtr jointAnchor = KIT_DYNAMIC_PTR_CAST(CkppAnchorJointComponent, kppJoint)){
-	  // do nothing
-      }
-      else {
-	ODEBUG1(":hppSetCurrentConfig: unknown type of joint.");
-	ODEBUG1(":hppSetCurrentConfig:   vectorN: " << inConfig);
-	return false;
-      }
+    if (!jrlDynamicsToKwsDofValues(inConfig, dofValues)) {
+      return false;
     }
 
     return (CkppDeviceComponent::setCurrentDofValues(dofValues) == KD_OK);

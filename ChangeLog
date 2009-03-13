@@ -1,4 +1,11 @@
-
+	19. Implementation of configuration conversion functions
+	    kwsToJrlDynamicsDofValues (KineoWorks -> jrlDynamics)
+	    jrlDynamicsToKwsDofValues (jrlDynamics -> KineoWorks)
+	    RollPitchYawToYawPitchRoll (SO3: jrlDynamics -> KineoWorks)
+	    YawPitchRollToRollPitchYaw (SO3: KineoWorks -> jrlDynamics)
+	
+	18. Update documentation installation and dependencies.
+	
 hppModel 1.4 released Oct  8, 2008.
 
 	 17. Fixed bug in CkitMat4MatrixFromAbstract()

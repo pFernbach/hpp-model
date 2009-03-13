@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <map>
+#include <vector>
 
 #include "KineoWorks2/kwsInterface.h"
 #include "KineoUtility/kitInterface.h"
@@ -134,10 +135,12 @@ public:
 
      \param inKwsDofVector vector of degrees of freedom of CkwsConfig
      \retval outJrlDynamicsDofVector vector of degrees of freedom of jrlDynamicRobot config
+     \pre outJrlDynamicsDofVector.size() == numberDof()
 
+     \note KineoWorks configurations are represented as dof values instead of CkwsConfig since objects of this latter type are subject to the constraints of the device they belong to.
      \return true if success, false if error.
   */
-  bool kwsToJrlDynamicsDofValues(const std::vector& inKwsDofVector, 
+  bool kwsToJrlDynamicsDofValues(const std::vector<double>& inKwsDofVector, 
 				 vectorN& outJrlDynamicsDofVector);
 
   /**
@@ -145,11 +148,84 @@ public:
 
      \param inJrlDynamicsDofVector vector of degrees of freedom of jrlDynamicRobot config
      \retval outKwsDofVector vector of degrees of freedom of CkwsConfig
+     \note KineoWorks configurations are represented as dof values instead of CkwsConfig since objects of this latter type are subject to the constraints of the device they belong to.
 
      \return true if success, false if error.
   */
   bool jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector,
-				 std::vector& outKwsDofVector);
+				 std::vector<double>& outKwsDofVector);
+
+  /**
+     \brief Conversion of rotation 
+
+     Convert 3D-rotation from standard (Roll, Pitch, Yaw) coordinates to Kineo (Yaw, Pitch, Roll) coordinates
+     \f{eqnarray*}
+     R_{rpy}(inRx,inRy,inRz)&=&
+     \left(\begin{array}{ccc}
+     \cos(inRy)\ \cos(inRz) & \sin(inRx)\ \sin(inRy)\ \cos(inRz) - \cos(inRx)\ \sin(inRz) & \cos(inRx)\ \sin(inRy)\ \cos(inRz) + \sin(inRx)\ \sin(inRz) \\
+     \cos(inRy)\ \sin(inRz) & \sin(inRx)\ \sin(inRy)\ \sin(inRz) + \cos(inRx)\ \cos(inRz) & \cos(inRx)\ \sin(inRy)\ \sin(inRz) - \sin(inRx)\ \cos(inRz) \\
+     -\sin(inRy) & \sin(inRx)\ \cos(inRy) & \cos(inRx)\ \cos(inRy) 
+     \end{array}\right) \\
+     \\
+     &=&
+     \left( \begin {array}{ccc} \cos \left( {\it outRz} \right) \cos \left( {\it outRy} \right) &-\sin \left( {\it outRz} \right) \cos
+     \left( {\it outRy} \right) &\sin \left( {\it outRy} \right) \\\noalign{\medskip}\cos \left( {\it outRz} \right) \sin \left( {\it outRy}
+     \right) \sin \left( {\it outRx} \right) +\sin \left( {\it outRz} \right) \cos \left( {\it outRx} \right) &\cos \left( {\it outRz}
+     \right) \cos \left( {\it outRx} \right) -\sin \left( {\it outRz} \right) \sin \left( {\it outRy} \right) \sin \left( {\it outRx} \right)
+     &-\cos \left( {\it outRy} \right) \sin \left( {\it outRx} \right) \\\noalign{\medskip}\sin \left( {\it outRz} \right) \sin \left( {\it
+     outRx} \right) -\cos \left( {\it outRz} \right) \sin \left( {\it outRy} \right) \cos \left( {\it outRx} \right) &\sin \left( {\it outRz}
+     \right) \sin \left( {\it outRy} \right) \cos \left( {\it outRx} \right) +\cos \left( {\it outRz} \right) \sin \left( {\it outRx} \right)
+     &\cos \left( {\it outRy} \right) \cos \left( {\it outRx} \right) \end {array} \right)\\
+     \\
+     &=&
+     R_{ypr}(outRx, outRy, outRz)\\
+     \\
+     &&-\pi < outRx \leq \pi\\
+     &&-\pi/2 <outRy \leq \pi/2 \\
+     &&-\pi < outRz \leq \pi\\
+     \f}
+
+
+
+  */
+  void RollPitchYawToYawPitchRoll(const double& inRx, const double& inRy, const double& inRz,
+				  double& outRx, double& outRy, double& outRz);
+
+  /**
+     \brief Conversion of rotation 
+
+     Convert 3D-rotation from Kineo (Yaw, Pitch, Roll) coordinates to standard (Roll, Pitch, Yaw) coordinates
+     \f{eqnarray*}
+     R_{ypr}(inRx,inRy,inRz)&=&
+     \left( \begin {array}{ccc} \cos \left( {\it inRz} \right) \cos \left( {\it inRy} \right) &-\sin \left( {\it inRz} \right) \cos
+     \left( {\it inRy} \right) &\sin \left( {\it inRy} \right) \\\noalign{\medskip}\cos \left( {\it inRz} \right) \sin \left( {\it inRy}
+     \right) \sin \left( {\it inRx} \right) +\sin \left( {\it inRz} \right) \cos \left( {\it inRx} \right) &\cos \left( {\it inRz}
+     \right) \cos \left( {\it inRx} \right) -\sin \left( {\it inRz} \right) \sin \left( {\it inRy} \right) \sin \left( {\it inRx} \right)
+     &-\cos \left( {\it inRy} \right) \sin \left( {\it inRx} \right) \\\noalign{\medskip}\sin \left( {\it inRz} \right) \sin \left( {\it
+     inRx} \right) -\cos \left( {\it inRz} \right) \sin \left( {\it inRy} \right) \cos \left( {\it inRx} \right) &\sin \left( {\it inRz}
+     \right) \sin \left( {\it inRy} \right) \cos \left( {\it inRx} \right) +\cos \left( {\it inRz} \right) \sin \left( {\it inRx} \right)
+     &\cos \left( {\it inRy} \right) \cos \left( {\it inRx} \right) \end {array} \right)\\
+     \\
+     &=&
+     \left(\begin{array}{ccc}
+     \cos(outRy)\ \cos(outRz) & \sin(outRx)\ \sin(outRy)\ \cos(outRz) - \cos(outRx)\ \sin(outRz) & \cos(outRx)\ \sin(outRy)\ \cos(outRz) + \sin(outRx)\ \sin(outRz) \\
+     \cos(outRy)\ \sin(outRz) & \sin(outRx)\ \sin(outRy)\ \sin(outRz) + \cos(outRx)\ \cos(outRz) & \cos(outRx)\ \sin(outRy)\ \sin(outRz) - \sin(outRx)\ \cos(outRz) \\
+     -\sin(outRy) & \sin(outRx)\ \cos(outRy) & \cos(outRx)\ \cos(outRy) 
+     \end{array}\right) \\
+     \\
+     &=&
+     R_{rpy}(outRx, outRy, outRz)\\
+     \\
+     &&-\pi < outRx \leq \pi\\
+     &&-\pi/2 <outRy \leq \pi/2 \\
+     &&-\pi < outRz \leq \pi\\
+     \f}
+
+
+
+  */
+  void YawPitchRollToRollPitchYaw(const double& inRx, const double& inRy, const double& inRz,
+				  double& outRx, double& outRy, double& outRz);
 
   /**
      \brief Put the robot in a given configuration
@@ -274,78 +350,6 @@ private:
   void ckcdObjectBoundingBox(const CkcdObjectShPtr& object, double& xMin, double& yMin, 
 			     double& zMin, double& xMax, double& yMax, double& zMax) const;
 
-
-  /**
-     \brief Conversion of rotation 
-
-     Convert 3D-rotation from standard (Roll, Pitch, Yaw) coordinates to Kineo (Yaw, Pitch, Roll) coordinates
-     \f{eqnarray*}
-     R_{rpy}(inRx,inRy,inRz)&=&
-     \left(\begin{array}{ccc}
-     \cos(inRy)\ \cos(inRz) & \sin(inRx)\ \sin(inRy)\ \cos(inRz) - \cos(inRx)\ \sin(inRz) & \cos(inRx)\ \sin(inRy)\ \cos(inRz) + \sin(inRx)\ \sin(inRz) \\
-     \cos(inRy)\ \sin(inRz) & \sin(inRx)\ \sin(inRy)\ \sin(inRz) + \cos(inRx)\ \cos(inRz) & \cos(inRx)\ \sin(inRy)\ \sin(inRz) - \sin(inRx)\ \cos(inRz) \\
-     -\sin(inRy) & \sin(inRx)\ \cos(inRy) & \cos(inRx)\ \cos(inRy) 
-     \end{array}\right) \\
-     \\
-     &=&
-     \left( \begin {array}{ccc} \cos \left( {\it outRz} \right) \cos \left( {\it outRy} \right) &-\sin \left( {\it outRz} \right) \cos
-     \left( {\it outRy} \right) &\sin \left( {\it outRy} \right) \\\noalign{\medskip}\cos \left( {\it outRz} \right) \sin \left( {\it outRy}
-     \right) \sin \left( {\it outRx} \right) +\sin \left( {\it outRz} \right) \cos \left( {\it outRx} \right) &\cos \left( {\it outRz}
-     \right) \cos \left( {\it outRx} \right) -\sin \left( {\it outRz} \right) \sin \left( {\it outRy} \right) \sin \left( {\it outRx} \right)
-     &-\cos \left( {\it outRy} \right) \sin \left( {\it outRx} \right) \\\noalign{\medskip}\sin \left( {\it outRz} \right) \sin \left( {\it
-     outRx} \right) -\cos \left( {\it outRz} \right) \sin \left( {\it outRy} \right) \cos \left( {\it outRx} \right) &\sin \left( {\it outRz}
-     \right) \sin \left( {\it outRy} \right) \cos \left( {\it outRx} \right) +\cos \left( {\it outRz} \right) \sin \left( {\it outRx} \right)
-     &\cos \left( {\it outRy} \right) \cos \left( {\it outRx} \right) \end {array} \right)\\
-     \\
-     &=&
-     R_{ypr}(outRx, outRy, outRz)\\
-     \\
-     &&-\pi < outRx \leq \pi\\
-     &&-\pi/2 <outRy \leq \pi/2 \\
-     &&-\pi < outRz \leq \pi\\
-     \f}
-
-
-
-  */
-  void RollPitchYawToYawPitchRoll(const double& inRx, const double& inRy, const double& inRz,
-				  double& outRx, double& outRy, double& outRz);
-
-  /**
-     \brief Conversion of rotation 
-
-     Convert 3D-rotation from Kineo (Yaw, Pitch, Roll) coordinates to standard (Roll, Pitch, Yaw) coordinates
-     \f{eqnarray*}
-     R_{ypr}(inRx,inRy,inRz)&=&
-     \left( \begin {array}{ccc} \cos \left( {\it inRz} \right) \cos \left( {\it inRy} \right) &-\sin \left( {\it inRz} \right) \cos
-     \left( {\it inRy} \right) &\sin \left( {\it inRy} \right) \\\noalign{\medskip}\cos \left( {\it inRz} \right) \sin \left( {\it inRy}
-     \right) \sin \left( {\it inRx} \right) +\sin \left( {\it inRz} \right) \cos \left( {\it inRx} \right) &\cos \left( {\it inRz}
-     \right) \cos \left( {\it inRx} \right) -\sin \left( {\it inRz} \right) \sin \left( {\it inRy} \right) \sin \left( {\it inRx} \right)
-     &-\cos \left( {\it inRy} \right) \sin \left( {\it inRx} \right) \\\noalign{\medskip}\sin \left( {\it inRz} \right) \sin \left( {\it
-     inRx} \right) -\cos \left( {\it inRz} \right) \sin \left( {\it inRy} \right) \cos \left( {\it inRx} \right) &\sin \left( {\it inRz}
-     \right) \sin \left( {\it inRy} \right) \cos \left( {\it inRx} \right) +\cos \left( {\it inRz} \right) \sin \left( {\it inRx} \right)
-     &\cos \left( {\it inRy} \right) \cos \left( {\it inRx} \right) \end {array} \right)\\
-     \\
-     &=&
-     \left(\begin{array}{ccc}
-     \cos(outRy)\ \cos(outRz) & \sin(outRx)\ \sin(outRy)\ \cos(outRz) - \cos(outRx)\ \sin(outRz) & \cos(outRx)\ \sin(outRy)\ \cos(outRz) + \sin(outRx)\ \sin(outRz) \\
-     \cos(outRy)\ \sin(outRz) & \sin(outRx)\ \sin(outRy)\ \sin(outRz) + \cos(outRx)\ \cos(outRz) & \cos(outRx)\ \sin(outRy)\ \sin(outRz) - \sin(outRx)\ \cos(outRz) \\
-     -\sin(outRy) & \sin(outRx)\ \cos(outRy) & \cos(outRx)\ \cos(outRy) 
-     \end{array}\right) \\
-     \\
-     &=&
-     R_{rpy}(outRx, outRy, outRz)\\
-     \\
-     &&-\pi < outRx \leq \pi\\
-     &&-\pi/2 <outRy \leq \pi/2 \\
-     &&-\pi < outRz \leq \pi\\
-     \f}
-
-
-
-  */
-  void YawPitchRollToRollPitchYaw(const double& inRx, const double& inRy, const double& inRz,
-				  double& outRx, double& outRy, double& outRz);
 
   /**
      \brief Map to retrieve the ChppJoint that contains a given CjrlJoint
