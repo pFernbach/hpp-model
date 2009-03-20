@@ -402,7 +402,7 @@ bool ChppDevice::kwsToJrlDynamicsDofValues(const std::vector<double>& inKwsDofVe
   getJointComponentVector(kppJointVector);
 
   /*
-    Resize vector if needed
+    Output vectors should be of right size
   */
   KWS_PRECONDITION(outJrlDynamicsDofVector.size() == numberDof());
 
@@ -501,6 +501,11 @@ bool ChppDevice::jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector
 
   std::vector< CkppJointComponentShPtr > kppJointVector;
   getJointComponentVector(kppJointVector);
+
+  /*
+    Output vectors should be of right size
+  */
+  KWS_PRECONDITION(outKwsDofVector.size() == countDofs());
 
   /*
     Loop over CkppDeviceComponent joints
