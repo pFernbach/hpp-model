@@ -52,7 +52,21 @@ public:
   const std::string& name() {return attName;};
 
   /**
-     \name Collision lists
+     \brief Add geometry to the body
+     
+     \param inSolidComponentRef Reference to the solid component to add.
+     \param inPosition Position of the object before attaching it to the body (default value=Identity).
+     \return true if success, false otherwise.
+
+     The object is added to the inner object list of the body.
+
+     \note The body must be attached to a joint.
+  */
+  bool addSolidComponent(const CkppSolidComponentRefShPtr& inSolidComponentRef, 
+			 const CkitMat4& inPosition=CkitMat4());
+
+  /**
+     \name Geometric objects for collision testing and distance computation
      @{
   */
   /**
@@ -100,23 +114,6 @@ public:
   /**
      @}
   */
-  /**
-     \brief Add geometry to the body
-     
-     \param inSolidComponentRef Reference to the solid component to add.
-     \param inPosition Position of the object before attaching it to the body (default value=Identity).
-     \return true if success, false otherwise.
-
-     The input solid component is dynamically cast into
-     \li a CkppKCDPolyhedron or 
-     \li a CkppKCDAssembly
-     The object is then added to the inner object list of the body.
-     The collision analyser attExactAnalyzer is also updated.
-
-     \note The body must be attached to a joint.
-  */
-  bool addSolidComponent(const CkppSolidComponentRefShPtr& inSolidComponentRef, const CkitMat4& inPosition=CkitMat4());
-
   /**
      \name Collision and distance computation
      @{

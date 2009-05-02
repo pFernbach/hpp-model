@@ -1,5 +1,11 @@
 2009-05-02  Florent Lamiraux  <florent@laas.fr>
 
+	Make documentation reflect implementation.
+	* include/hppModel/hppBody.h: documentation of
+	addSolidComponent was obsolete.
+
+2009-05-02  Florent Lamiraux  <florent@laas.fr>
+
 	Declare setInnerObjects as deprecated.
 	* include/hppModel/hppBody.h: Use addSolidComponent() on each 
 	object of inInnerObjects instead.
