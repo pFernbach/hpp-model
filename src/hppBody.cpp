@@ -13,6 +13,19 @@
 
 #include "hppModel/hppBody.h"
 
+#if DEBUG==2
+#undef NDEBUG
+#define ODEBUG2(x) std::cout << "ChppBody:" << x << std::endl
+#define ODEBUG1(x) std::cerr << "ChppBody:" << x << std::endl
+#elif DEBUG==1
+#undef NDEBUG
+#define ODEBUG2(x)
+#define ODEBUG1(x) std::cerr << "ChppBody:" << x << std::endl
+#else
+#define ODEBUG2(x)
+#define ODEBUG1(x)
+#endif
+
 //=============================================================================
 
 ChppBodyShPtr ChppBody::create(std::string inName)
@@ -22,7 +35,7 @@ ChppBodyShPtr ChppBody::create(std::string inName)
   ChppBodyWkPtr hppBodyWkPtr = hppBodyShPtr;
   
   if (hppBody->init(hppBodyWkPtr) != KD_OK) {
-    std::cerr<<"error in ChppBody::create() "<<std::endl;
+    ODEBUG1(" error in create() ");
     hppBodyShPtr.reset();
   }
   return hppBodyShPtr;
@@ -87,24 +100,6 @@ bool ChppBody::addSolidComponent(const CkppSolidComponentRefShPtr& inSolidCompon
   CkppSolidComponentShPtr solidComponent = inSolidComponentRef->referencedSolidComponent();
 
   /*
-    The input solid component is dynamically cast into
-     1. a CkppKCDPolyhedron or 
-     2. a CkppKCDAssembly
-  */
-  
-  CkcdObjectShPtr kcdObject;
-  if (CkppKCDPolyhedronShPtr polyhedron = KIT_DYNAMIC_PTR_CAST(CkppKCDPolyhedron, solidComponent)) {
-    kcdObject = polyhedron;
-  }
-  else if (CkppKCDAssemblyShPtr assembly = KIT_DYNAMIC_PTR_CAST(CkppKCDAssembly, solidComponent)) {
-    kcdObject = assembly;
-  }
-  else {
-    std::cerr << "ChppBody::addSolidComponent: solid component is neither an assembly nor a polyhedron" << std::endl;
-    return false;
-  }
-
-  /*
     Attach solid component to the joint associated to the body
   */
   CkwsJointShPtr bodyKwsJoint = CkwsBody::joint();
@@ -117,7 +112,7 @@ bool ChppBody::addSolidComponent(const CkppSolidComponentRefShPtr& inSolidCompon
     return true;
   }
   else {
-    std::cerr << "ChppBody::addSolidComponent: the body is not attached to any joint" << std::endl;
+    ODEBUG1("ChppBody::addSolidComponent: the body is not attached to any joint");
   }
   return false;
 }
