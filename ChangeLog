@@ -1,5 +1,11 @@
 2009-05-02  Florent Lamiraux  <florent@laas.fr>
 
+	Declare setInnerObjects as deprecated.
+	* include/hppModel/hppBody.h: Use addSolidComponent() on each 
+	object of inInnerObjects instead.
+
+2009-05-02  Florent Lamiraux  <florent@laas.fr>
+
 	Remove useless code.
 	* src/hppBody.cpp: In addSolidComponent(), 
 	variable kcdObject was defined and initialized,

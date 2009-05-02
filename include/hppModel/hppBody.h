@@ -62,9 +62,12 @@ public:
      Previous objects if any are detached. 
 
      Objects are put in the left test tree of attExactAnalyzer for exact distance computation.
+
+     \deprecated Use addSolidComponent() on each object of  inInnerObjects 
+     instead.
   */
 
-  void 	setInnerObjects (const std::vector< CkcdObjectShPtr > &inInnerObjects);
+  void 	setInnerObjects (const std::vector< CkcdObjectShPtr > &inInnerObjects)__attribute__ ((deprecated));
 
   /**
      \brief Attach objects to the body in specified position
@@ -74,10 +77,13 @@ public:
      Previous objects if any are detached. 
 
      Objects are put in the left test tree of attExactAnalyzer for exact distance computation.
+
+     \deprecated Use addSolidComponent() on each object of  inInnerObjects 
+     instead.
   */
 
   void 	setInnerObjects (const std::vector< CkcdObjectShPtr > &inInnerObjects, 
-			 const std::vector< CkitMat4 > &inPlacementVector);
+			 const std::vector< CkitMat4 > &inPlacementVector)__attribute__ ((deprecated));
 
 
   /**
