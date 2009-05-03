@@ -12,14 +12,17 @@
 INCLUDE
 **************************************/
 
+#include "KineoUtility/kitDefine.h"
 #include "hppModel/hppImplRobotDynamics.h"
-//#include "kcd2/kcdAnalysisType.h"
+#include "kcd2/kcdAnalysisType.h"
+#include "kwsKcd2/kwsKCDBody.h"
 
 KIT_PREDEF_CLASS(ChppBody);
 KIT_PREDEF_CLASS(CkcdObject);
+KIT_PREDEF_CLASS(CkppSolidComponentRef);
 
-#include "kwsKcd2/kwsKCDBody.h"
 class ChppJoint;
+class CkitMat4;
 
 /*************************************
 CLASS
@@ -91,7 +94,7 @@ public:
 		      bool inDistanceComputation=false);
 
   /**
-     \brief Specify that an object should be taken into account
+     \brief Add an object for collision testing with the body
 
      \param inOuterObject new object
      \param inDistanceComputation whether distance analyses should be added for
@@ -106,6 +109,53 @@ public:
   */
   void resetOuterObjects();
 
+  /**
+     @}
+  */
+  /**
+     \name Add obstacle to selected body by overloading
+     @{
+  */
+
+  /**
+     \brief Add an object for collision testing with the body
+
+     \param inBody body to which the object is attached
+     \param inOuterObject new object
+     \param inDistanceComputation whether distance analyses should be added for
+     this object.
+  */
+
+  static void addOuterObject(const ChppBodyShPtr& inBody,
+			     const CkcdObjectShPtr& inOuterObject, 
+			     bool inDistanceComputation=true);
+
+  /**
+     \brief Add an object for collision testing with the body
+
+     \param inBody body to which the object is attached
+     \param inOuterObject new object
+     \param inDistanceComputation whether distance analyses should be added for
+     this object.
+  */
+
+  static void addOuterObject(const CkwsKCDBodyShPtr& inBody,
+			     const CkcdObjectShPtr& inOuterObject, 
+			     bool inDistanceComputation=true);
+
+  /**
+     \brief Add an object for collision testing with the body
+
+     \param inBody body to which the object is attached
+     \param inOuterObject new object
+     \param inDistanceComputation whether distance analyses should be added for
+     this object.
+  */
+
+  static void addOuterObject(const CkwsBodyShPtr& inBody,
+			     const CkcdObjectShPtr& inOuterObject, 
+			     bool inDistanceComputation=true);
+  
   /**
      @}
   */
@@ -332,8 +382,10 @@ protected:
 
   /**
      \brief Initialization of body
+
+     \param inBodyWkPtr weak pointer to itself
   */
-  ktStatus init(const ChppBodyWkPtr bodyWkPtr);
+  ktStatus init(const ChppBodyWkPtr inBodyWkPtr);
   
 private:
 
@@ -365,6 +417,11 @@ private:
      define analyses.
   */
   std::vector<CkcdAnalysisShPtr> attDistCompPairs;
+
+  /**
+     \brief Weak pointer to itself
+  */
+  ChppBodyWkPtr attWeakPtr;
 };
 
 
