@@ -130,19 +130,40 @@ ChppBody::addInnerObject(const CkppSolidComponentRefShPtr& inSolidComponentRef,
   return true;
 }
 
-//=============================================================================
-
-void ChppBody::addOuterObject(const ChppBodyShPtr& inBody,
+void ChppBody::addOuterObject(const CkwsBodyShPtr& inBody,
 			      const CkcdObjectShPtr& inOuterObject, 
 			      bool inDistanceComputation)
+{
+  if (ChppBodyShPtr hppBody = KIT_DYNAMIC_PTR_CAST(ChppBody, inBody)) {
+    ODEBUG2(":addOuterObject: ChppBody type.");
+    hppBody->addOuterObject(inOuterObject, inDistanceComputation);
+  }
+  else if (CkwsKCDBodyShPtr kcdBody = 
+	   KIT_DYNAMIC_PTR_CAST(CkwsKCDBody, inBody)) {
+    ODEBUG2(":addOuterObject: CkwsKCDBody type.");
+    /*
+      Append object at the end of KineoWorks set of outer objects
+      for collision checking
+    */
+    std::vector<CkcdObjectShPtr> outerList = kcdBody->outerObjects();
+    outerList.push_back(inOuterObject);
+    kcdBody->outerObjects(outerList);
+  }
+}
+
+//=============================================================================
+
+void ChppBody::addOuterObject(const CkcdObjectShPtr& inOuterObject, 
+			      bool inDistanceComputation)
+
 {
   /*
     Append object at the end of KineoWorks set of outer objects
     for collision checking
   */
-  std::vector<CkcdObjectShPtr> outerList = inBody->outerObjects();
+  std::vector<CkcdObjectShPtr> outerList = outerObjects();
   outerList.push_back(inOuterObject);
-  inBody->outerObjects(outerList);
+  outerObjects(outerList);
     
   /**
      If distance computation is requested, build necessary CkcdAnalysis 
@@ -152,13 +173,13 @@ void ChppBody::addOuterObject(const ChppBodyShPtr& inBody,
     /*
       Store object in case inner objects are added a posteriori
     */
-    inBody->attOuterObjForDist.push_back(inOuterObject);
+    attOuterObjForDist.push_back(inOuterObject);
 
     /*
       Build distance computation objects (CkcdAnalysis)
     */
     const CkcdObjectShPtr& outerObject=inOuterObject;
-    const std::vector<CkcdObjectShPtr> innerList = inBody->attInnerObjForDist;
+    const std::vector<CkcdObjectShPtr> innerList = attInnerObjForDist;
     for (std::vector<CkcdObjectShPtr>::const_iterator it = innerList.begin();
 	 it < innerList.end();
 	 it++) {
@@ -176,41 +197,9 @@ void ChppBody::addOuterObject(const ChppBodyShPtr& inBody,
       analysis->leftTestTree(leftTree);
       analysis->rightTestTree(rightTree);
       
-      inBody->attDistCompPairs.push_back(analysis);
+      attDistCompPairs.push_back(analysis);
     }
   }
-}
-
-//=============================================================================
-
-void ChppBody::addOuterObject(const CkwsKCDBodyShPtr& inBody,
-			      const CkcdObjectShPtr& inOuterObject, 
-			      bool inDistanceComputation)
-{
-  /*
-    Append object at the end of KineoWorks set of outer objects
-    for collision checking
-  */
-  std::vector<CkcdObjectShPtr> outerList = inBody->outerObjects();
-  outerList.push_back(inOuterObject);
-  inBody->outerObjects(outerList);
-    
-}
-
-void ChppBody::addOuterObject(const CkwsBodyShPtr& inBody,
-			      const CkcdObjectShPtr& inOuterObject, 
-			      bool inDistanceComputation)
-{
-  ODEBUG1(":addOuterObject: nothing to do for CkwsBody.");
-}
-
-//=============================================================================
-
-void ChppBody::addOuterObject(const CkcdObjectShPtr& inOuterObject, 
-			      bool inDistanceComputation)
-
-{
-  addOuterObject(attWeakPtr.lock(), inOuterObject, inDistanceComputation);
 }
 
 //=============================================================================

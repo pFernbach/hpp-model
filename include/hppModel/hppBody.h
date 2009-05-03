@@ -105,51 +105,16 @@ public:
 		       bool inDistanceComputation=true);
 
   /**
-     \brief Reset the list of outer objects
-  */
-  void resetOuterObjects();
-
-  /**
-     @}
-  */
-  /**
-     \name Add obstacle to selected body by overloading
-     @{
-  */
-
-  /**
-     \brief Add an object for collision testing with the body
+     \brief Add object for bodies of various types
 
      \param inBody body to which the object is attached
      \param inOuterObject new object
      \param inDistanceComputation whether distance analyses should be added for
      this object.
-  */
 
-  static void addOuterObject(const ChppBodyShPtr& inBody,
-			     const CkcdObjectShPtr& inOuterObject, 
-			     bool inDistanceComputation=true);
-
-  /**
-     \brief Add an object for collision testing with the body
-
-     \param inBody body to which the object is attached
-     \param inOuterObject new object
-     \param inDistanceComputation whether distance analyses should be added for
-     this object.
-  */
-
-  static void addOuterObject(const CkwsKCDBodyShPtr& inBody,
-			     const CkcdObjectShPtr& inOuterObject, 
-			     bool inDistanceComputation=true);
-
-  /**
-     \brief Add an object for collision testing with the body
-
-     \param inBody body to which the object is attached
-     \param inOuterObject new object
-     \param inDistanceComputation whether distance analyses should be added for
-     this object.
+     Dynamically cast inBody into 
+     \li ChppBody and call ChppBody::addOuterObject() or
+     \li CkwsKCDBody and add object to outer list.
   */
 
   static void addOuterObject(const CkwsBodyShPtr& inBody,
@@ -157,8 +122,14 @@ public:
 			     bool inDistanceComputation=true);
   
   /**
+     \brief Reset the list of outer objects
+  */
+  void resetOuterObjects();
+
+  /**
      @}
   */
+
   /**
      \name Distance computation
      @{

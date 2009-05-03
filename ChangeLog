@@ -1,5 +1,11 @@
 2009-05-03  Florent Lamiraux  <florent@laas.fr>
 
+	Correct selective call to addOuterObject.
+	* include/hppModel/hppBody.h: 
+	* src/hppBody.cpp: 
+
+2009-05-03  Florent Lamiraux  <florent@laas.fr>
+
 	Implement functions to add an obstacle to a body.
 	* include/hppModel/hppBody.h, src/hppBody.cpp: These functions takes as
 	first argument either ChppBody, CkwsKCDBody or CkwsBody and replace 
