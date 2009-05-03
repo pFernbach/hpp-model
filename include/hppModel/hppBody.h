@@ -99,7 +99,7 @@ public:
   */
 
   void 	addOuterObject(const CkcdObjectShPtr& inOuterObject, 
-		       bool inDistanceComputation=false);
+		       bool inDistanceComputation=true);
 
   /**
      \brief Reset the list of outer objects

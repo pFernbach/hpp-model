@@ -1,5 +1,10 @@
 2009-05-03  Florent Lamiraux  <florent@laas.fr>
 
+	Distance computation for obstacles is set to true by default.
+	* include/hppModel/hppBody.h: 
+
+2009-05-03  Florent Lamiraux  <florent@laas.fr>
+
 	Completely reorganize ChppBody class.
 	* include/hppModel/hppBody.h,
 	src/hppBody.cpp: declare most methods as
