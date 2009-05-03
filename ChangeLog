@@ -1,3 +1,8 @@
+2009-05-03  Florent Lamiraux  <florent@laas.fr>
+
+	Upgrade package.doc.in.
+	* doc/package.dox.in: Remove obsolete commands.
+
 2009-05-02  Florent Lamiraux  <florent@laas.fr>
 
 	Make documentation reflect implementation.
