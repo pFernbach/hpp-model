@@ -1,3 +1,4 @@
+
 /*
 
   Copyright 2007 LAAS-CNRS
@@ -10,8 +11,17 @@
 #include "KineoModel/kppSolidComponentRef.h"
 #include "KineoKCDModel/kppKCDPolyhedron.h"
 #include "KineoKCDModel/kppKCDAssembly.h"
+#include "kcd2/kcdAnalysis.h"
 
 #include "hppModel/hppBody.h"
+#include "hppModel/hppJoint.h"
+
+#if 0
+#include "KineoWorks2/kwsInterface.h"
+#include "KineoUtility/kitDefine.h"
+#include "KineoUtility/kitInterface.h"
+#include "KineoModel/kppSolidComponentRef.h"
+#endif
 
 #if DEBUG==2
 #undef NDEBUG
@@ -56,6 +66,197 @@ ktStatus ChppBody::init(const ChppBodyWkPtr bodyWkPtr)
 
 //=============================================================================
 
+bool 
+ChppBody::addInnerObject(const CkppSolidComponentRefShPtr& inSolidComponentRef, 
+			 const CkitMat4& inPosition, 
+			 bool inDistanceComputation)
+{
+  CkppSolidComponentShPtr solidComponent = inSolidComponentRef->referencedSolidComponent();
+  
+  /*
+    Attach solid component to the joint associated to the body
+  */
+  CkwsJointShPtr bodyKwsJoint = CkwsBody::joint();
+  CkppJointComponentShPtr bodyKppJoint = KIT_DYNAMIC_PTR_CAST(CkppJointComponent, bodyKwsJoint);
+  
+  // Test that body is attached to a joint
+  if (bodyKppJoint) {
+    solidComponent->setAbsolutePosition(inPosition);
+    bodyKppJoint->addSolidComponentRef(inSolidComponentRef);
+    return true;
+  }
+  else {
+    ODEBUG1("ChppBody::addSolidComponent: the body is not attached to any joint");
+    return false;
+  }
+  
+  /*
+    If requested, add the object in the list of objects the distance to which 
+    needs to be computed and build the corresponding analyses.
+  */
+  if (inDistanceComputation) {
+    CkcdObjectShPtr innerObject = 
+      KIT_DYNAMIC_PTR_CAST(CkcdObject, solidComponent);
+    if (innerObject) {
+      attInnerObjForDist.push_back(innerObject);
+      /*
+	Build Exact distance computation analyses for this object
+      */
+      const std::vector<CkcdObjectShPtr>& outerList = attOuterObjForDist;
+      for (std::vector<CkcdObjectShPtr>::const_iterator it = outerList.begin();
+	   it < outerList.end(); it++) {
+	const CkcdObjectShPtr& outerObject = *it;
+
+	/* Instantiate the analysis object */
+	CkcdAnalysisShPtr analysis = CkcdAnalysis::create();
+	analysis->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
+
+	/* retrieve the test trees associated with the objects */
+	CkcdTestTreeShPtr leftTree = innerObject->collectTestTrees();
+	CkcdTestTreeShPtr rightTree = outerObject->collectTestTrees();
+
+	// associate the lists with the analysis object
+	analysis->leftTestTree(leftTree);
+	analysis->rightTestTree(rightTree);
+	
+	attDistCompPairs.push_back(analysis);
+      }
+    }
+    else {
+      ODEBUG1("addSolidComponent: cannot cast solid component into CkcdObject.");
+    }
+  }
+  return true;
+}
+
+//=============================================================================
+
+void ChppBody::addOuterObject(const CkcdObjectShPtr& inOuterObject, 
+			      bool inDistanceComputation)
+
+{
+  /*
+    Append object at the end of KineoWorks set of outer objects
+    for collision checking
+  */
+  std::vector<CkcdObjectShPtr> outerList = outerObjects();
+  outerList.push_back(inOuterObject);
+  outerObjects(outerList);
+    
+  /**
+     If distance computation is requested, build necessary CkcdAnalysis 
+     objects
+  */
+  if (inDistanceComputation) {
+    /*
+      Store object in case inner objects are added a posteriori
+    */
+    attOuterObjForDist.push_back(inOuterObject);
+
+    /*
+      Build distance computation objects (CkcdAnalysis)
+    */
+    const CkcdObjectShPtr& outerObject=inOuterObject;
+    const std::vector<CkcdObjectShPtr> innerList = attInnerObjForDist;
+    for (std::vector<CkcdObjectShPtr>::const_iterator it = innerList.begin();
+	 it < innerList.end();
+	 it++) {
+      const CkcdObjectShPtr& innerObject=*it;
+
+      /* Instantiate the analysis object */
+      CkcdAnalysisShPtr analysis = CkcdAnalysis::create();
+      analysis->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
+
+      /* retrieve the test trees associated with the objects */
+      CkcdTestTreeShPtr leftTree = innerObject->collectTestTrees();
+      CkcdTestTreeShPtr rightTree = outerObject->collectTestTrees();
+      
+      // associate the lists with the analysis object
+      analysis->leftTestTree(leftTree);
+      analysis->rightTestTree(rightTree);
+      
+      attDistCompPairs.push_back(analysis);
+    }
+  }
+}
+
+//=============================================================================
+
+void ChppBody::resetOuterObjects()
+{
+  attOuterObjForDist.clear();
+  attDistCompPairs.clear();
+}
+
+
+//=============================================================================
+
+ktStatus 
+ChppBody::distAndPairsOfPoints(unsigned int inPairId,
+			       double& outDistance, 
+			       CkitPoint3& outPointBody, 
+			       CkitPoint3& outPointEnv,
+			       CkcdObjectShPtr &outObjectBody, 
+			       CkcdObjectShPtr &outObjectEnv, 
+			       CkcdAnalysisType::Type inType)
+{
+  KWS_PRECONDITION(inType < nbDistPairs());
+
+  const CkcdAnalysisShPtr& analysis = attDistCompPairs[inPairId];
+
+  analysis->analysisType(inType);
+
+  analysis->compute();
+  unsigned int nbDistances = analysis->countExactDistanceReports();
+      
+  if(nbDistances == 0) {
+    //no distance information available, return 0 for instance;
+    outDistance = 0;
+
+    outObjectBody.reset(); 
+    outObjectEnv.reset();
+
+    return KD_ERROR;
+  } 
+  else{
+
+    CkcdExactDistanceReportShPtr distanceReport;
+    CkitPoint3 leftPoint, rightPoint;
+
+    //distances are ordered from lowest value, to highest value. 
+    distanceReport = analysis->exactDistanceReport(0); 
+
+    //exact distance between two lists is always stored at the first rank of Distance reports.
+    outDistance = distanceReport->distance();
+
+    if(distanceReport->countPairs()>0)
+      {
+	CkitMat4 firstPos, secondPos;
+	// get points in the frame of the object
+	distanceReport->getPoints(0,leftPoint,rightPoint) ;
+        // get geometry
+	outObjectBody = distanceReport->pair(0).first->geometry();
+	outObjectEnv = distanceReport->pair(0).second->geometry();
+	outObjectBody->getAbsolutePosition(firstPos);
+	outObjectEnv->getAbsolutePosition(secondPos);
+        //from these geometry points we can get points in absolute frame(world) or relative frame(geometry).
+	//here we want points in the absolute frame.
+	outPointBody= firstPos * leftPoint;
+	outPointEnv = secondPos * rightPoint;
+      }
+ 
+    // get object
+    outObjectBody = distanceReport->leftCollisionEntity();
+    outObjectEnv = distanceReport->rightCollisionEntity();
+   
+    return KD_OK;
+  }
+
+  return KD_OK;
+}
+
+//=============================================================================
+
 void ChppBody::setInnerObjects (const std::vector<CkcdObjectShPtr> &inInnerObjects)
 {
   innerObjects(inInnerObjects);
@@ -94,27 +295,13 @@ void ChppBody::setOuterObjects (const std::vector<CkcdObjectShPtr> &inOuterObjec
 
 //=============================================================================
 
-bool ChppBody::addSolidComponent(const CkppSolidComponentRefShPtr& inSolidComponentRef,
-				 const CkitMat4& inPosition)
+bool 
+ChppBody::addSolidComponent(const CkppSolidComponentRefShPtr& inSolidComponentRef,
+			    const CkitMat4& inPosition,
+			    bool inDistanceComputation)
 {
-  CkppSolidComponentShPtr solidComponent = inSolidComponentRef->referencedSolidComponent();
-
-  /*
-    Attach solid component to the joint associated to the body
-  */
-  CkwsJointShPtr bodyKwsJoint = CkwsBody::joint();
-  CkppJointComponentShPtr bodyKppJoint = KIT_DYNAMIC_PTR_CAST(CkppJointComponent, bodyKwsJoint);
-
-  // Test that body is attached to a joint
-  if (bodyKppJoint) {
-    solidComponent->setAbsolutePosition(inPosition);
-    bodyKppJoint->addSolidComponentRef(inSolidComponentRef);
-    return true;
-  }
-  else {
-    ODEBUG1("ChppBody::addSolidComponent: the body is not attached to any joint");
-  }
-  return false;
+  return 
+    addInnerObject(inSolidComponentRef, inPosition, inDistanceComputation);
 }
 
 //=============================================================================

@@ -12,28 +12,44 @@
 INCLUDE
 **************************************/
 
-#include "KineoWorks2/kwsInterface.h"
-#include "KineoUtility/kitDefine.h"
-#include "KineoUtility/kitInterface.h"
-#include "kcd2/kcdInterface.h"
-#include "kwsKcd2/kwsKCDBody.h"
-#include "KineoModel/kppSolidComponentRef.h"
-
 #include "hppModel/hppImplRobotDynamics.h"
-#include "hppModel/hppJoint.h"
+//#include "kcd2/kcdAnalysisType.h"
 
 KIT_PREDEF_CLASS(ChppBody);
+KIT_PREDEF_CLASS(CkcdObject);
 
+#include "kwsKcd2/kwsKCDBody.h"
+class ChppJoint;
 
 /*************************************
 CLASS
 **************************************/
 /**
- \brief This class represents bodies (solid components attached to a joint). It derives from 
- KineoWorks CkwsKCDBody class. In order to store more information, we have derived CkwsKCDBody class. 
- A name is given at the creation of the body (ChppBody::create(std::string inName)). 
- The constructor is protected and method create returns a shared pointer to the device.
-\sa Smart pointers documentation: http://www.boost.org/libs/smart_ptr/smart_ptr.htm 
+ \brief This class represents bodies (geometric objects attached to a joint). 
+
+ It derives from KineoWorks CkwsKCDBody class and from an implementation of 
+ CjrlJoint.
+
+ Objects attached to a body (called inner objects) are used for collision 
+ checking with selected objects of the environment (called outer objects).
+
+ To attach an object to the body, call addInnerObject(). To select an object
+ for collision checking with the body, call addOuterObject().
+
+ Distances between pairs of inner objects and outer objects can also
+ be computed. Setting <code>inDistanceComputation</code> to true in
+ addInnerObject() or addOuterObject() specifies that distances should
+ be computed for these objects. Each pair of such specified (inner,
+ outer) objects gives rise to one distance computation when calling
+ distAndPairsOfPoints(). The number of such pairs can be retrieved by
+ calling nbDistPairs(). distAndPairsOfPoints() also returns distances
+ and pairs of closest points for each computed pair.
+ 
+ The constructor is protected and method create returns a shared
+ pointer to the device.
+
+ \sa Smart pointers documentation:
+ http://www.boost.org/libs/smart_ptr/smart_ptr.htm
 */
 
 class ChppBody : public CkwsKCDBody, public CimplBody
@@ -52,88 +68,65 @@ public:
   const std::string& name() {return attName;};
 
   /**
-     \brief Add geometry to the body
+     \name Define inner and outer objects
+     @{
+  */
+  /**
+     \brief Add a geometric object to the body
      
      \param inSolidComponentRef Reference to the solid component to add.
-     \param inPosition Position of the object before attaching it to the body (default value=Identity).
+     \param inPosition Position of the object before attaching it to the body 
+     (default value=Identity).
+     \param inDistanceComputation whether this object should be put in the 
+     distance computation analysis.
+
      \return true if success, false otherwise.
 
      The object is added to the inner object list of the body.
 
      \note The body must be attached to a joint.
   */
-  bool addSolidComponent(const CkppSolidComponentRefShPtr& inSolidComponentRef, 
-			 const CkitMat4& inPosition=CkitMat4());
+  bool addInnerObject(const CkppSolidComponentRefShPtr& inSolidComponentRef, 
+		      const CkitMat4& inPosition=CkitMat4(),
+		      bool inDistanceComputation=false);
 
   /**
-     \name Geometric objects for collision testing and distance computation
-     @{
-  */
-  /**
-     \brief Attach objects to the body.
-     \param inInnerObjects list of objects to attach to the body
+     \brief Specify that an object should be taken into account
 
-     Previous objects if any are detached. 
-
-     Objects are put in the left test tree of attExactAnalyzer for exact distance computation.
-
-     \deprecated Use addSolidComponent() on each object of  inInnerObjects 
-     instead.
+     \param inOuterObject new object
+     \param inDistanceComputation whether distance analyses should be added for
+     this object.
   */
 
-  void 	setInnerObjects (const std::vector< CkcdObjectShPtr > &inInnerObjects)__attribute__ ((deprecated));
+  void 	addOuterObject(const CkcdObjectShPtr& inOuterObject, 
+		       bool inDistanceComputation=false);
 
   /**
-     \brief Attach objects to the body in specified position
-     \param inInnerObjects list of objects to attach to the body
-     \param inPlacementVector Vector of homogeneous matrix specifying the position of each object in inInnerObjects.
-
-     Previous objects if any are detached. 
-
-     Objects are put in the left test tree of attExactAnalyzer for exact distance computation.
-
-     \deprecated Use addSolidComponent() on each object of  inInnerObjects 
-     instead.
+     \brief Reset the list of outer objects
   */
-
-  void 	setInnerObjects (const std::vector< CkcdObjectShPtr > &inInnerObjects, 
-			 const std::vector< CkitMat4 > &inPlacementVector)__attribute__ ((deprecated));
-
-
-  /**
-     \brief Defines the list of objects to be tested for collision with this body.
-     \param inOuterObjects list of objects to be tested for collision for this body
-
-     Previous objects if any are removed. 
-
-     Objects are put in the right test tree of attExactAnalyzer for exact distance computation.
-  */
-
-  void 	setOuterObjects (const std::vector< CkcdObjectShPtr > &inOuterObjects);
+  void resetOuterObjects();
 
   /**
      @}
   */
   /**
-     \name Collision and distance computation
+     \name Distance computation
      @{
   */
+
+
+  /**
+     \brief Get the number of pairs of object for which distance is computed
+  */
+  inline unsigned int nbDistPairs() { return attDistCompPairs.size(); };
 
   /**
      \brief Compute exact distance and closest points between body and set of outer objects.
 
-     \retval outDistance Distance between body and outer objects
-     \retval outPointBody Closest point on body
-     \retval outPointEnv Closest point in outer object set
-     \retval outObjectBody Closest object on body
-     \retval outObjectEnv Closest object in outer object list
-  */
-  ktStatus getExactDistance(double& outDistance, CkitPoint3& outPointBody, CkitPoint3& outPointEnv,
-			    CkcdObjectShPtr &outObjectBody, CkcdObjectShPtr &outObjectEnv);
-
-
-  /**
-     \brief Compute a lower bound of distance between body and set of outer objects.
+     \param inPairId id of the pair of objects
+     \param inType Type of distance computation 
+     (either CkcdAnalysisType::EXACT_DISTANCE or 
+     CkcdAnalysisType::ESTIMATED_DISTANCE)
 
      \retval outDistance Distance between body and outer objects
      \retval outPointBody Closest point on body
@@ -141,43 +134,15 @@ public:
      \retval outObjectBody Closest object on body
      \retval outObjectEnv Closest object in outer object list
   */
-  ktStatus getEstimatedDistance(double &outDistance, 
-				CkcdObjectShPtr &outObjectBody, CkcdObjectShPtr &outObjectEnv);
-   
-  
-  /**
-     \brief Compute the set of inner and outer objects that are in collision with each other.
+  ktStatus distAndPairsOfPoints(unsigned int inPairId, 
+				double& outDistance, 
+				CkitPoint3& outPointBody, 
+				CkitPoint3& outPointEnv,
+				CkcdObjectShPtr &outObjectBody, 
+				CkcdObjectShPtr &outObjectEnv, 
+				CkcdAnalysisType::Type inType=
+				CkcdAnalysisType::EXACT_DISTANCE);
 
-     \retval outNbCollision Number of pairs of objects in collision.
-     \retval outObjectBodyVector Vector of objects in collision of the body.
-     \retval outObjectEnvVector Vector of objects in collision in the outer object list.
-
-     \return Whether there is a collision.
-  */
-  bool getCollisionVec(unsigned int &outNbCollision, std::vector<CkcdObjectShPtr>& outObjectBodyVector, 
-		       std::vector<CkcdObjectShPtr>& outObjectEnvVector);
-
-  /**
-     \brief Compute collision and return the two first objects found in collision.
-
-     \retval outNbCollision Number of pairs of object in collision found.
-     \retval outObjectBody First object of the body found in collision.
-     \retval outObjectEnv First object in the body outer list found in collision.
-
-     \return Whether there is a collision.
-  */
-  bool getCollision(unsigned int& outNbCollision,
-		    CkcdObjectShPtr &outObjectBody, CkcdObjectShPtr &outObjectEnv);
-
-  bool printCollisionStatus(const bool& detailInfoFlag = false);
-  void printCollisionStatusFast();
-
-  /**
-     \brief Compute the minimum distance to the obstacle
-
-     \return the minimum distance to the obstacle
-  */
-  double getMinDistance();
 
   /**
      @}
@@ -197,6 +162,157 @@ public:
      \brief Get a pointer to the joint the body is attached to
   */
   ChppJoint* hppJoint() const { return attJoint; };
+
+  /**
+     @}
+  */
+
+  /**
+     \name Deprecated methods
+     @{
+  */
+
+  /**
+     \brief Add geometry to the body
+     
+     \param inSolidComponentRef Reference to the solid component to add.
+     \param inPosition Position of the object before attaching it to the body 
+     (default value=Identity).
+     \param inDistanceComputation whether this object should be put in the 
+     distance computation analysis.
+
+     \return true if success, false otherwise.
+
+     The object is added to the inner object list of the body.
+
+     \note The body must be attached to a joint.
+
+     \deprecated Call addInnerObject() instead
+  */
+  bool addSolidComponent(const CkppSolidComponentRefShPtr& inSolidComponentRef, 
+			 const CkitMat4& inPosition=CkitMat4(),
+			 bool inDistanceComputation=false)__attribute__ ((deprecated));
+
+  /**
+     \brief Attach objects to the body.
+     \param inInnerObjects list of objects to attach to the body
+
+     Previous objects if any are detached. 
+
+     Objects are put in the left test tree of attExactAnalyzer for exact distance computation.
+
+     \deprecated call addInnerObject() on each object of  inInnerObjects 
+     instead.
+  */
+
+  void 	setInnerObjects (const std::vector< CkcdObjectShPtr > &inInnerObjects)__attribute__ ((deprecated));
+
+  /**
+     \brief Attach objects to the body in specified position
+     \param inInnerObjects list of objects to attach to the body
+     \param inPlacementVector Vector of homogeneous matrix specifying the position of each object in inInnerObjects.
+
+     Previous objects if any are detached. 
+
+     Objects are put in the left test tree of attExactAnalyzer for exact distance computation.
+
+     \deprecated call addInnerObject() on each object of  inInnerObjects 
+     instead.
+  */
+
+  void 	setInnerObjects (const std::vector< CkcdObjectShPtr > &inInnerObjects, 
+			 const std::vector< CkitMat4 > &inPlacementVector)__attribute__ ((deprecated));
+
+
+  /**
+     \brief Defines the list of objects to be tested for collision with this body.
+     \param inOuterObjects list of objects to be tested for collision for this body
+
+     Previous objects if any are removed. 
+
+     Objects are put in the right test tree of attExactAnalyzer for exact distance computation.
+
+     \deprecated Call addOuterObject on each object of inOuterObjects instead
+  */
+
+  void 	setOuterObjects (const std::vector< CkcdObjectShPtr > &inOuterObjects)__attribute__ ((deprecated));
+
+  /**
+     \brief Compute exact distance and closest points between body and set of outer objects.
+
+     \retval outDistance Distance between body and outer objects
+     \retval outPointBody Closest point on body
+     \retval outPointEnv Closest point in outer object set
+     \retval outObjectBody Closest object on body
+     \retval outObjectEnv Closest object in outer object list
+     
+     \deprecated Call distAndPairsOfPoints() instead.
+  */
+  ktStatus getExactDistance(double& outDistance, CkitPoint3& outPointBody, CkitPoint3& outPointEnv,
+			    CkcdObjectShPtr &outObjectBody, CkcdObjectShPtr &outObjectEnv)__attribute__ ((deprecated));
+
+
+  /**
+     \brief Compute a lower bound of distance between body and set of outer objects.
+
+     \retval outDistance Distance between body and outer objects
+     \retval outPointBody Closest point on body
+     \retval outPointEnv Closest point in outer object set
+     \retval outObjectBody Closest object on body
+     \retval outObjectEnv Closest object in outer object list
+
+     \deprecated Who does need this functions ?
+  */
+  ktStatus getEstimatedDistance(double &outDistance, 
+				CkcdObjectShPtr &outObjectBody, CkcdObjectShPtr &outObjectEnv)__attribute__ ((deprecated));
+   
+  
+  /**
+     \brief Compute the set of inner and outer objects that are in collision with each other.
+
+     \retval outNbCollision Number of pairs of objects in collision.
+     \retval outObjectBodyVector Vector of objects in collision of the body.
+     \retval outObjectEnvVector Vector of objects in collision in the outer object list.
+
+     \return Whether there is a collision.
+
+     \deprecated Who does need this function ?
+  */
+  bool getCollisionVec(unsigned int &outNbCollision, std::vector<CkcdObjectShPtr>& outObjectBodyVector, 
+		       std::vector<CkcdObjectShPtr>& outObjectEnvVector)__attribute__ ((deprecated));
+
+  /**
+     \brief Compute collision and return the two first objects found in collision.
+
+     \retval outNbCollision Number of pairs of object in collision found.
+     \retval outObjectBody First object of the body found in collision.
+     \retval outObjectEnv First object in the body outer list found in collision.
+
+     \return Whether there is a collision.
+
+     \deprecated What does need this function ?
+  */
+  bool getCollision(unsigned int& outNbCollision,
+		    CkcdObjectShPtr &outObjectBody, CkcdObjectShPtr &outObjectEnv)__attribute__ ((deprecated));
+
+  /**
+    \deprecated What does this function do ?
+  */
+  bool printCollisionStatus(const bool& detailInfoFlag = false)__attribute__ ((deprecated));
+
+  /**
+    \deprecated What does this function do ?
+  */
+  void printCollisionStatusFast()__attribute__ ((deprecated));
+
+  /**
+     \brief Compute the minimum distance to the obstacle
+
+     \return the minimum distance to the obstacle
+
+     \deprecated Is this function really useful ?
+  */
+  double getMinDistance()__attribute__ ((deprecated));
 
   /**
      @}
@@ -230,6 +346,25 @@ private:
      \brief Collision analyser for this body
   */
   CkcdAnalysisShPtr attExactAnalyzer;
+
+  /**
+     \brief Set of inner objects for which distance computation is performed
+  */
+  std::vector<CkcdObjectShPtr> attInnerObjForDist;
+
+  /**
+     \brief Set of outer objects for which distance computation is performed
+  */
+  std::vector<CkcdObjectShPtr> attOuterObjForDist;
+
+  /**
+     \brief Collision analyses for this body
+
+     Each pair (inner object, outer object) potentially defines an exact
+     distance analysis. Only inner objects specified in attDistanceObjects
+     define analyses.
+  */
+  std::vector<CkcdAnalysisShPtr> attDistCompPairs;
 };
 
 

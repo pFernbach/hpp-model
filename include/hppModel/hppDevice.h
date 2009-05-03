@@ -271,11 +271,14 @@ public:
   ktStatus ignoreDeviceForCollision (ChppDeviceShPtr inDevice) ;
 
   /**
-   * \brief Add obstacle to the list.
-   * \param inObject a new object.
-   * \note Compute collision entities.
+     \brief Add obstacle to the list.
+     \param inObject a new object.
+     \param inDistanceComputation whether this object should be taken into 
+     account for distance computation for all bodies.
+
    */
-  ktStatus addObstacle(const CkcdObjectShPtr& inObject);
+  ktStatus addObstacle(const CkcdObjectShPtr& inObject, 
+		       bool inDistanceComputation=false);
 
   /**
      @}

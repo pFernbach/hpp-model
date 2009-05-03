@@ -1,5 +1,15 @@
 2009-05-03  Florent Lamiraux  <florent@laas.fr>
 
+	Completely reorganize ChppBody class.
+	* include/hppModel/hppBody.h,
+	src/hppBody.cpp: declare most methods as
+	deprecated and define methods with more intuitive names.
+	* include/hppModel/hppDevice.h: Change prototype of addObstacle().
+	* src/hppDevice.cpp: Replace calls to deprecated methods by
+        calls to new methods
+
+2009-05-03  Florent Lamiraux  <florent@laas.fr>
+
 	Include required headers.
 	* src/hppJoint.cpp: These headers were formerly included 
 	in other headers. When possible, it is better to include 

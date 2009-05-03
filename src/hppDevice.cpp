@@ -11,6 +11,7 @@
 #include "KineoModel/kppRotationJointComponent.h"
 #include "KineoModel/kppTranslationJointComponent.h"
 
+#include "hppModel/hppJoint.h" 
 #include "hppModel/hppDevice.h" 
 #include "hppModel/hppBody.h"
 #include "kwsioConfig.h"
@@ -296,7 +297,8 @@ void ChppDevice::ckcdObjectBoundingBox(const CkcdObjectShPtr& object, double& xM
 
 // ==========================================================================
 
-ktStatus ChppDevice::addObstacle(const CkcdObjectShPtr& inObject)
+ktStatus ChppDevice::addObstacle(const CkcdObjectShPtr& inObject, 
+				 bool inDistanceComputation)
 {
   // Get robot vector of bodies.
   CkwsDevice::TBodyVector bodyVector;
@@ -307,19 +309,19 @@ ktStatus ChppDevice::addObstacle(const CkcdObjectShPtr& inObject)
     // Try to cast body into CkwsKCDBody
     CkwsKCDBodyShPtr kcdBody;
     ChppBodyShPtr hppBody;
-    if (kcdBody = boost::dynamic_pointer_cast<CkwsKCDBody>(*bodyIter)) {
-      std::vector< CkcdObjectShPtr > collisionList = kcdBody->outerObjects();
-      collisionList.push_back(inObject);
-
-      if(hppBody = boost::dynamic_pointer_cast<ChppBody>(kcdBody)){
-	hppBody->setOuterObjects(collisionList);
+    if (kcdBody = KIT_DYNAMIC_PTR_CAST(CkwsKCDBody, *bodyIter)) {
+      if(hppBody = KIT_DYNAMIC_PTR_CAST(ChppBody, kcdBody)) {
+	hppBody->addOuterObject(inObject, inDistanceComputation);
       }
-      else
+      else {
+	std::vector< CkcdObjectShPtr > collisionList = 
+	  kcdBody->outerObjects();
+	collisionList.push_back(inObject);
 	kcdBody->outerObjects(collisionList);
-
+      }
     }
     else {
-      std::cout << "ChppDevice::addObstacle: body is not KCD body. Obstacle is not inserted." << std::endl;
+      ODEBUG1(":addObstacle: body is not KCD body. Obstacle is not inserted.");
     }
   }
   return KD_OK;
