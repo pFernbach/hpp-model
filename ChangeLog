@@ -1,5 +1,12 @@
 2009-05-03  Florent Lamiraux  <florent@laas.fr>
 
+	Include required headers.
+	* src/hppJoint.cpp: These headers were formerly included 
+	in other headers. When possible, it is better to include 
+	headers in source files instead of in header files
+
+2009-05-03  Florent Lamiraux  <florent@laas.fr>
+
 	Upgrade package.doc.in.
 	* doc/package.dox.in: Remove obsolete commands.
 

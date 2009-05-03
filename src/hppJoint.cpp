@@ -8,9 +8,12 @@
 #include "KineoModel/kppRotationJointComponent.h"
 #include "KineoModel/kppTranslationJointComponent.h"
 
+#include "kwsIO/kwsioMat.h"
+#include "KineoUtility/kitDefine.h"
+
 #include "hppModel/hppDevice.h"
 #include "hppModel/hppBody.h"
-#include "kwsIO/kwsioMat.h"
+#include "hppModel/hppJoint.h"
 
 matrix4d ChppJoint::abstractMatrixFromCkitMat4(const CkitMat4& inMatrix)
 {
