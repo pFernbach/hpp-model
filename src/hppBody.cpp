@@ -72,19 +72,21 @@ ChppBody::addInnerObject(const CkppSolidComponentRefShPtr& inSolidComponentRef,
 			 const CkitMat4& inPosition, 
 			 bool inDistanceComputation)
 {
+  ODEBUG2(":addInnerObject: inDistanceComputation=" << inDistanceComputation);
+
   CkppSolidComponentShPtr solidComponent = inSolidComponentRef->referencedSolidComponent();
   
   /*
     Attach solid component to the joint associated to the body
   */
   CkwsJointShPtr bodyKwsJoint = CkwsBody::joint();
-  CkppJointComponentShPtr bodyKppJoint = KIT_DYNAMIC_PTR_CAST(CkppJointComponent, bodyKwsJoint);
+  CkppJointComponentShPtr bodyKppJoint = 
+    KIT_DYNAMIC_PTR_CAST(CkppJointComponent, bodyKwsJoint);
   
   // Test that body is attached to a joint
   if (bodyKppJoint) {
     solidComponent->setAbsolutePosition(inPosition);
     bodyKppJoint->addSolidComponentRef(inSolidComponentRef);
-    return true;
   }
   else {
     ODEBUG1("ChppBody::addSolidComponent: the body is not attached to any joint");
@@ -99,6 +101,8 @@ ChppBody::addInnerObject(const CkppSolidComponentRefShPtr& inSolidComponentRef,
     CkcdObjectShPtr innerObject = 
       KIT_DYNAMIC_PTR_CAST(CkcdObject, solidComponent);
     if (innerObject) {
+      ODEBUG2(":addInnerObject: adding " << solidComponent->name()
+	      << " to list of objects for distance computation.");
       attInnerObjForDist.push_back(innerObject);
       /*
 	Build Exact distance computation analyses for this object
@@ -124,7 +128,7 @@ ChppBody::addInnerObject(const CkppSolidComponentRefShPtr& inSolidComponentRef,
       }
     }
     else {
-      ODEBUG1("addSolidComponent: cannot cast solid component into CkcdObject.");
+      ODEBUG1("addInnerObject: cannot cast solid component into CkcdObject.");
     }
   }
   return true;

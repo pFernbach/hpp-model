@@ -1,3 +1,8 @@
+2009-05-04  Florent Lamiraux  <florent@laas.fr>
+
+	In addInnerObject() do not return before the end of the function.
+	* src/hppBody.cpp: removed extra return and added output.
+
 2009-05-03  Florent Lamiraux  <florent@laas.fr>
 
 	Correct selective call to addOuterObject.
