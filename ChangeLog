@@ -1,3 +1,5 @@
+hppModel 1.6 released May  28, 2009.
+
 2009-05-28  Florent Lamiraux  <florent@laas.fr>
 
 	Remove static method ChppBody::addOuterObject.
