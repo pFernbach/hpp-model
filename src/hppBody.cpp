@@ -36,19 +36,6 @@
 #define ODEBUG1(x)
 #endif
 
-class addOuter {
-public:
-  void operator()(const ChppBody& inBody) {
-    std::cout << "addInner: ChppBody" << std::endl;
-  }
-  void operator()(const CkwsKCDBody& inBody) {
-    std::cout << "addInner: CkwsKCDBody" << std::endl;
-  }
-  void operator()(const CkwsBody& inBody) {
-    std::cout << "addInner: CkwsBody" << std::endl;
-  }
-};
-
 //=============================================================================
 
 ChppBodyShPtr ChppBody::create(std::string inName)
@@ -159,29 +146,6 @@ ChppBody::addInnerObject(const CkppSolidComponentRefShPtr& inSolidComponentRef,
     }
   }
   return true;
-}
-
-void ChppBody::addOuterObject(const CkwsBodyShPtr& inBody,
-			      const CkcdObjectShPtr& inOuterObject, 
-			      bool inDistanceComputation)
-{
-  addOuter outer;
-  outer(*inBody);
-  if (ChppBodyShPtr hppBody = KIT_DYNAMIC_PTR_CAST(ChppBody, inBody)) {
-    ODEBUG2(":addOuterObject: ChppBody type.");
-    hppBody->addOuterObject(inOuterObject, inDistanceComputation);
-  }
-  else if (CkwsKCDBodyShPtr kcdBody = 
-	   KIT_DYNAMIC_PTR_CAST(CkwsKCDBody, inBody)) {
-    ODEBUG2(":addOuterObject: CkwsKCDBody type.");
-    /*
-      Append object at the end of KineoWorks set of outer objects
-      for collision checking
-    */
-    std::vector<CkcdObjectShPtr> outerList = kcdBody->outerObjects();
-    outerList.push_back(inOuterObject);
-    kcdBody->outerObjects(outerList);
-  }
 }
 
 //=============================================================================

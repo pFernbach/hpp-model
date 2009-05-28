@@ -1,3 +1,9 @@
+2009-05-28  Florent Lamiraux  <florent@laas.fr>
+
+	Remove static method ChppBody::addOuterObject.
+	* include/hppModel/hppBody.h: here
+	* src/hppBody.cpp: and here.
+
 2009-05-08  Florent Lamiraux  <florent@laas.fr>
 
 	Add debug output relative to distance computation.

@@ -105,23 +105,6 @@ public:
 		       bool inDistanceComputation=true);
 
   /**
-     \brief Add object for bodies of various types
-
-     \param inBody body to which the object is attached
-     \param inOuterObject new object
-     \param inDistanceComputation whether distance analyses should be added for
-     this object.
-
-     Dynamically cast inBody into 
-     \li ChppBody and call ChppBody::addOuterObject() or
-     \li CkwsKCDBody and add object to outer list.
-  */
-
-  static void addOuterObject(const CkwsBodyShPtr& inBody,
-			     const CkcdObjectShPtr& inOuterObject, 
-			     bool inDistanceComputation=true);
-  
-  /**
      \brief Reset the list of outer objects
   */
   void resetOuterObjects();
