@@ -1,3 +1,8 @@
+2009-05-28  Florent Lamiraux  <florent@laas.fr>
+
+	Dump current version as 1.6.0.99.
+	* configure.ac: here.
+
 hppModel 1.6 released May  28, 2009.
 
 2009-05-28  Florent Lamiraux  <florent@laas.fr>
