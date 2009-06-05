@@ -133,8 +133,8 @@ public:
      CkcdAnalysisType::ESTIMATED_DISTANCE)
 
      \retval outDistance Distance between body and outer objects
-     \retval outPointBody Closest point on body
-     \retval outPointEnv Closest point in outer object set
+     \retval outPointBody Closest point on body (in global reference frame)
+     \retval outPointEnv Closest point in outer object set (in global reference frame)
      \retval outObjectBody Closest object on body
      \retval outObjectEnv Closest object in outer object list
   */

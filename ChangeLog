@@ -1,3 +1,9 @@
+2009-06-05  Florent Lamiraux  <florent@laas.fr>
+
+	Add some information in comment.
+	* include/hppModel/hppBody.h: Specify that points in function 
+	distAndPairsOfPoints are expressed in the global reference frame.
+
 2009-05-28  Florent Lamiraux  <florent@laas.fr>
 
 	Dump current version as 1.6.0.99.
