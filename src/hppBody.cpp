@@ -55,12 +55,6 @@ ChppBodyShPtr ChppBody::create(std::string inName)
 
 ktStatus ChppBody::init(const ChppBodyWkPtr inBodyWkPtr)
 {
-
-  attExactAnalyzer = CkcdAnalysis::create();
-
-  // attExactAnalyzer->setAnalysisType(CkcdAnalysis::EXHAUSTIVE_BOOLEAN_COLLISION);
-  attExactAnalyzer->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
-
   attWeakPtr = inBodyWkPtr;
   return CkwsKCDBody::init(inBodyWkPtr);
 }

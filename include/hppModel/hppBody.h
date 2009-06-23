@@ -198,11 +198,6 @@ private:
   std::string attName;
 
   /**
-     \brief Collision analyser for this body
-  */
-  CkcdAnalysisShPtr attExactAnalyzer;
-
-  /**
      \brief Set of inner objects for which distance computation is performed
   */
   std::vector<CkcdObjectShPtr> attInnerObjForDist;
