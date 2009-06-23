@@ -1,1 +1,14 @@
-Write in this file the news related to package hppDevice.
+
+	For distance computations between ChppBody objects and objects of the 
+	environment, tolerance is now ignored.
+
+	Deprecated functions in ChppBody have been removed
+
+05/28/2009 Release 1.6
+03/14/2009 Release 1.5
+10/09/2008 Release 1.4
+05/13/2008 Release 1.3
+05/13/2008 Release 1.2
+02/18/2008 Release 1.0
+
+

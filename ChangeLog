@@ -1,5 +1,11 @@
 2009-06-23  Florent Lamiraux  <florent@laas.fr>
 
+	Ignore tolrerance in distance computation relative to ChppBody.
+	* NEWS: start diffusing some news for further release.
+	* src/hppBody.cpp: here.
+
+2009-06-23  Florent Lamiraux  <florent@laas.fr>
+
 	Remove obsolete attribute attExactAnalyzer in class ChppBody.
 	* include/hppModel/hppBody.h: .
 	* src/hppBody.cpp: .
