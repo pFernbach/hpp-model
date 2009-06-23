@@ -1,3 +1,9 @@
+2009-06-23  Florent Lamiraux  <florent@laas.fr>
+
+	Remove deprecated functions in class ChppBody.
+	* include/hppModel/hppBody.h: 
+	* src/hppBody.cpp: 
+
 2009-06-05  Florent Lamiraux  <florent@laas.fr>
 
 	Add some information in comment.
