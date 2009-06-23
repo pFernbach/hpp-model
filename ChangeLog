@@ -1,5 +1,11 @@
 2009-06-23  Florent Lamiraux  <florent@laas.fr>
 
+	Release 1.7.0.
+	* NEWS: Notify release
+	* configure.ac: upgrade version number.
+
+2009-06-23  Florent Lamiraux  <florent@laas.fr>
+
 	Ignore tolrerance in distance computation relative to ChppBody.
 	* NEWS: start diffusing some news for further release.
 	* src/hppBody.cpp: here.

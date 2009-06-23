@@ -5,7 +5,7 @@ dnl
 dnl Author: Florent Lamiraux
 dnl
 
-AC_INIT([hppModel], [1.6.0.99], [hpp@laas.fr])
+AC_INIT([hppModel], [1.7.0], [hpp@laas.fr])
 AC_PREREQ(2.59)
 
 if test "$CFLAGS$CXXFLAGS" = ""; then
@@ -31,7 +31,7 @@ if test "$setdefaultflags" = "yes"; then
   fi
 fi
 
-define(abtractiface_reqd, [abstractRobotDynamics >= 1.13])
+define(abtractiface_reqd, [abstractRobotDynamics >= 1.14.0])
 AC_SUBST(ABTRACTIFACE_REQD, "abtractiface_reqd")
 PKG_CHECK_MODULES(ABSTRACTROBOTDYNAMICS, abtractiface_reqd)
 ABSTRACTROBOTDYNAMICS_DOCDIR=`$PKG_CONFIG abstractRobotDynamics --variable=docdir`
