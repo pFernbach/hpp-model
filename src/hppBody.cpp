@@ -13,15 +13,9 @@
 #include "KineoKCDModel/kppKCDAssembly.h"
 #include "kcd2/kcdAnalysis.h"
 
+#include "MatrixAbstractLayer/MatrixAbstractLayer.h"
 #include "hppModel/hppBody.h"
 #include "hppModel/hppJoint.h"
-
-#if 0
-#include "KineoWorks2/kwsInterface.h"
-#include "KineoUtility/kitDefine.h"
-#include "KineoUtility/kitInterface.h"
-#include "KineoModel/kppSolidComponentRef.h"
-#endif
 
 #if DEBUG==2
 #undef NDEBUG

@@ -11,6 +11,7 @@
 #include "KineoModel/kppRotationJointComponent.h"
 #include "KineoModel/kppTranslationJointComponent.h"
 
+#include "MatrixAbstractLayer/MatrixAbstractLayer.h"
 #include "hppModel/hppJoint.h" 
 #include "hppModel/hppDevice.h" 
 #include "hppModel/hppBody.h"
