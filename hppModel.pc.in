@@ -11,3 +11,5 @@ Version: @VERSION@
 Requires: @ABTRACTIFACE_REQD@, @ROBOTDYNAMICSIMPL@, KineoController, kwsIO
 Libs: -L${libdir} -lhppModel
 Cflags: -I${includedir}
+
+robotDynamics_impl=@ROBOTDYNAMICSIMPL@
