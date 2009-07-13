@@ -79,14 +79,14 @@ ChppJoint* ChppHumanoidRobot::hppRightWrist()
   
 ChppJoint* ChppHumanoidRobot::hppLeftFoot()
 {
-  return jrlToHppJoint(leftFoot()->associatedAnkle());
+  return jrlToHppJoint(leftAnkle());
 }
   
 // ==========================================================================
   
 ChppJoint* ChppHumanoidRobot::hppRightFoot()
 {
-  return jrlToHppJoint(rightFoot()->associatedAnkle());
+  return jrlToHppJoint(rightAnkle());
 }
   
 // ==========================================================================
