@@ -30,7 +30,8 @@ KIT_PREDEF_CLASS(ChppHumanoidRobot);
 
 */
 
-class ChppHumanoidRobot : public ChppDevice, public virtual CimplHumanoidDynamicRobot
+class ChppHumanoidRobot : public ChppDevice,
+  public virtual CimplHumanoidDynamicRobot
 {
 public:
   /**
@@ -62,37 +63,37 @@ public:
   /**
      \name Joints specific to humanoid robots
   */
-  
+
   /**
      \brief Get ChppJoint corresponding to the waist.
   */
   ChppJoint* hppWaist();
-  
+
   /**
      \brief Get ChppJoint corresponding to the left wrist.
   */
   ChppJoint* hppLeftWrist();
-  
+
   /**
      \brief Get ChppJoint corresponding to the right wrist.
   */
   ChppJoint* hppRightWrist();
-  
+
   /**
      \brief Get ChppJoint corresponding to the left foot.
   */
   ChppJoint* hppLeftFoot();
-  
+
   /**
      \brief Get ChppJoint corresponding to the right foot.
   */
   ChppJoint* hppRightFoot();
-  
+
   /**
      \brief Get gaze joint
   */
   ChppJoint* hppGazeJoint();
-  
+
   /**
      @}
   */
@@ -109,20 +110,23 @@ public:
      \return A shared pointer to new device.
      \param inDevice Device to be copied.
   */
-  static ChppHumanoidRobotShPtr createCopy(const ChppHumanoidRobotShPtr& inDevice);
+  static ChppHumanoidRobotShPtr
+    createCopy(const ChppHumanoidRobotShPtr& inDevice);
 
 protected:
   /**
      \brief Initialization.
   */
 
-  ktStatus init(const ChppHumanoidRobotWkPtr& inWeakPtr, const std::string& inName);
+  ktStatus
+    init(const ChppHumanoidRobotWkPtr& inWeakPtr, const std::string& inName);
 
   /**
      \brief Initialization with shared pointer.
   */
 
-  ktStatus init(const ChppHumanoidRobotWkPtr& inWeakPtr, const ChppHumanoidRobotShPtr& inDevice);
+  ktStatus init(const ChppHumanoidRobotWkPtr& inWeakPtr,
+		const ChppHumanoidRobotShPtr& inDevice);
 
 private:
 
@@ -130,9 +134,7 @@ private:
      \brief Store weak pointer to object.
   */
   ChppHumanoidRobotWkPtr attWeakPtr;
-  
+
 };
 
 #endif
-
-

@@ -18,15 +18,18 @@
 #include "robotDynamics/jrlHumanoidDynamicRobot.h"
 #include "hppModel/hppHumanoidRobot.h"
 
-template <class HDR = CimplHumanoidDynamicRobot> class ChppSpecificHumanoidRobot;
+template <class HDR = CimplHumanoidDynamicRobot>
+  class ChppSpecificHumanoidRobot;
 
-#define ChppSpecificHumanoidRobotShPtr boost::shared_ptr< ChppSpecificHumanoidRobot<HDR> >
-#define ChppSpecificHumanoidRobotWkPtr boost::weak_ptr< ChppSpecificHumanoidRobot<HDR> >
+#define ChppSpecificHumanoidRobotShPtr \
+  boost::shared_ptr< ChppSpecificHumanoidRobot<HDR> >
+#define ChppSpecificHumanoidRobotWkPtr \
+  boost::weak_ptr< ChppSpecificHumanoidRobot<HDR> >
 
 /**
    \brief Specific implementation of humanoid robot with geometric and dynamic model .
 
-   This template class enables a developer to define a composite humanoid robot class based on an optimized implementation of CimplHumanoidDynamicRobot. To do so, 
+   This template class enables a developer to define a composite humanoid robot class based on an optimized implementation of CimplHumanoidDynamicRobot. To do so,
    \li derive CimplHumanoidDynamicRobot into CoptHumanoidDynamicRobot and overload the methods you want to optimize,
    \li define your own ChppSpecificHumanoidRobot class by instanciating the template with your implementation:
    \code
@@ -36,7 +39,8 @@ template <class HDR = CimplHumanoidDynamicRobot> class ChppSpecificHumanoidRobot
    \image html classDiagramHumanoid.png "Inheritance diagram of a composite humanoid robot class based on an optimized implementation of the humanoid robot dynamic model."
 */
 
-template <class HDR> class ChppSpecificHumanoidRobot : public ChppHumanoidRobot, public HDR
+template <class HDR> class ChppSpecificHumanoidRobot :
+public ChppHumanoidRobot, public HDR
 {
 public:
   /**
@@ -76,20 +80,23 @@ public:
      \return A shared pointer to new device.
      \param inDevice Device to be copied.
   */
-  static ChppSpecificHumanoidRobotShPtr createCopy(const ChppSpecificHumanoidRobotShPtr& inDevice);
+  static ChppSpecificHumanoidRobotShPtr
+    createCopy(const ChppSpecificHumanoidRobotShPtr& inDevice);
 
 protected:
   /**
      \brief Initialization.
   */
 
-  ktStatus init(const ChppSpecificHumanoidRobotWkPtr& inWeakPtr, const std::string& inName);
+  ktStatus init(const ChppSpecificHumanoidRobotWkPtr& inWeakPtr,
+		const std::string& inName);
 
   /**
      \brief Initialization with shared pointer.
   */
 
-  ktStatus init(const ChppSpecificHumanoidRobotWkPtr& inWeakPtr, const ChppSpecificHumanoidRobotShPtr& inDevice);
+  ktStatus init(const ChppSpecificHumanoidRobotWkPtr& inWeakPtr,
+		const ChppSpecificHumanoidRobotShPtr& inDevice);
 
 private:
 
@@ -97,16 +104,17 @@ private:
      \brief Store weak pointer to object.
   */
   ChppSpecificHumanoidRobotWkPtr attWeakPtr;
-  
+
 };
 
 
 // ==========================================================================
 
-template <class HDR> ChppSpecificHumanoidRobotShPtr 
+template <class HDR> ChppSpecificHumanoidRobotShPtr
 ChppSpecificHumanoidRobot<HDR>::create(std::string inName)
 {
-  ChppSpecificHumanoidRobot<HDR> *hppDevice = new ChppSpecificHumanoidRobot<HDR>;
+  ChppSpecificHumanoidRobot<HDR> *hppDevice =
+    new ChppSpecificHumanoidRobot<HDR>;
   ChppSpecificHumanoidRobotShPtr hppDeviceShPtr(hppDevice);
 
   if (hppDevice->init(hppDeviceShPtr, inName) != KD_OK) {
@@ -117,10 +125,12 @@ ChppSpecificHumanoidRobot<HDR>::create(std::string inName)
 
 // ==========================================================================
 
-template <class HDR> ChppSpecificHumanoidRobotShPtr 
-ChppSpecificHumanoidRobot<HDR>::createCopy(const ChppSpecificHumanoidRobotShPtr& inDevice)
+template <class HDR> ChppSpecificHumanoidRobotShPtr
+ChppSpecificHumanoidRobot<HDR>::createCopy
+(const ChppSpecificHumanoidRobotShPtr& inDevice)
 {
-  ChppSpecificHumanoidRobot<HDR>* ptr = new ChppSpecificHumanoidRobot<HDR>(*inDevice);
+  ChppSpecificHumanoidRobot<HDR>* ptr =
+    new ChppSpecificHumanoidRobot<HDR>(*inDevice);
   ChppSpecificHumanoidRobotShPtr deviceShPtr(ptr);
 
   if(KD_OK != ptr->init(deviceShPtr, inDevice))	{
@@ -132,7 +142,7 @@ ChppSpecificHumanoidRobot<HDR>::createCopy(const ChppSpecificHumanoidRobotShPtr&
 
 // ==========================================================================
 
-template <class HDR> CkwsDeviceShPtr 
+template <class HDR> CkwsDeviceShPtr
 ChppSpecificHumanoidRobot<HDR>::clone() const
 {
   return ChppSpecificHumanoidRobot<HDR>::createCopy(attWeakPtr.lock());
@@ -140,7 +150,7 @@ ChppSpecificHumanoidRobot<HDR>::clone() const
 
 // ==========================================================================
 
-template <class HDR> CkppComponentShPtr 
+template <class HDR> CkppComponentShPtr
 ChppSpecificHumanoidRobot<HDR>::cloneComponent() const
 {
   return ChppSpecificHumanoidRobot<HDR>::createCopy(attWeakPtr.lock());
@@ -148,7 +158,7 @@ ChppSpecificHumanoidRobot<HDR>::cloneComponent() const
 
 // ==========================================================================
 
-template <class HDR> bool 
+template <class HDR> bool
 ChppSpecificHumanoidRobot<HDR>::isComponentClonable() const
 {
   return true;
@@ -156,12 +166,13 @@ ChppSpecificHumanoidRobot<HDR>::isComponentClonable() const
 
 // ==========================================================================
 
-template <class HDR> ktStatus 
-ChppSpecificHumanoidRobot<HDR>::init(const ChppSpecificHumanoidRobotWkPtr& inDevWkPtr, const std::string &inName)
+template <class HDR> ktStatus
+ChppSpecificHumanoidRobot<HDR>::init
+(const ChppSpecificHumanoidRobotWkPtr& inDevWkPtr, const std::string &inName)
 {
   ktStatus success = ChppDevice::init(inDevWkPtr, inName);
 
-  if(KD_OK == success) {  
+  if(KD_OK == success) {
     attWeakPtr = inDevWkPtr;
   }
   return success;
@@ -169,8 +180,10 @@ ChppSpecificHumanoidRobot<HDR>::init(const ChppSpecificHumanoidRobotWkPtr& inDev
 
 // ==========================================================================
 
-template <class HDR> ktStatus 
-ChppSpecificHumanoidRobot<HDR>::init(const ChppSpecificHumanoidRobotWkPtr& inWeakPtr, const ChppSpecificHumanoidRobotShPtr& inDevice)
+template <class HDR> ktStatus
+ChppSpecificHumanoidRobot<HDR>::init
+(const ChppSpecificHumanoidRobotWkPtr& inWeakPtr,
+ const ChppSpecificHumanoidRobotShPtr& inDevice)
 {
   ktStatus  success = ChppDevice::init(inWeakPtr, inDevice);
 
@@ -182,5 +195,3 @@ ChppSpecificHumanoidRobot<HDR>::init(const ChppSpecificHumanoidRobotWkPtr& inWea
 }
 
 #endif
-
-

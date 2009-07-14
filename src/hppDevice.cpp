@@ -13,8 +13,8 @@
 #include "KineoModel/kppTranslationJointComponent.h"
 
 #include "MatrixAbstractLayer/MatrixAbstractLayer.h"
-#include "hppModel/hppJoint.h" 
-#include "hppModel/hppDevice.h" 
+#include "hppModel/hppJoint.h"
+#include "hppModel/hppDevice.h"
 #include "hppModel/hppBody.h"
 #include "kwsioConfig.h"
 
@@ -93,11 +93,12 @@ bool ChppDevice::isComponentClonable() const
 
 // ==========================================================================
 
-ktStatus ChppDevice::init(const ChppDeviceWkPtr& inDevWkPtr, const std::string &inName)
+ktStatus ChppDevice::init(const ChppDeviceWkPtr& inDevWkPtr,
+			  const std::string &inName)
 {
   ktStatus success = CkppDeviceComponent::init(inDevWkPtr, inName);
 
-  if(KD_OK == success) {  
+  if(KD_OK == success) {
     attWeakPtr = inDevWkPtr;
   }
   return success;
@@ -105,7 +106,8 @@ ktStatus ChppDevice::init(const ChppDeviceWkPtr& inDevWkPtr, const std::string &
 
 // ==========================================================================
 
-ktStatus ChppDevice::init(const ChppDeviceWkPtr& inWeakPtr, const ChppDeviceShPtr& inDevice)
+ktStatus ChppDevice::init(const ChppDeviceWkPtr& inWeakPtr,
+			  const ChppDeviceShPtr& inDevice)
 {
   ktStatus  success = CkppDeviceComponent::init(inWeakPtr, inDevice);
 
@@ -118,14 +120,16 @@ ktStatus ChppDevice::init(const ChppDeviceWkPtr& inWeakPtr, const ChppDeviceShPt
 
 // ==========================================================================
 
-ktStatus ChppDevice::axisAlignedBoundingBox (double& xMin, double& yMin, double& zMin,
-					     double& xMax, double& yMax, double& zMax) const
+ktStatus
+ChppDevice::axisAlignedBoundingBox (double& xMin, double& yMin, double& zMin,
+				    double& xMax, double& yMax, double& zMax)
+  const
 {
 
   TBodyVector bodyVector;
   this->getBodyVector(bodyVector);
   unsigned int j=bodyVector.size();
- 
+
   xMin=9999999;
   yMin=9999999;
   zMin=9999999;
@@ -150,8 +154,9 @@ ktStatus ChppDevice::axisAlignedBoundingBox (double& xMin, double& yMin, double&
 
 // ==========================================================================
 
-ktStatus ChppDevice::ignoreDeviceForCollision (ChppDeviceShPtr inDevice ) {
-   ktStatus status = KD_OK ;
+ktStatus ChppDevice::ignoreDeviceForCollision (ChppDeviceShPtr inDevice )
+{
+  ktStatus status = KD_OK ;
 
   std::vector<CkcdObjectShPtr> inDeviceInnerObjectList;
 
@@ -160,35 +165,39 @@ ktStatus ChppDevice::ignoreDeviceForCollision (ChppDeviceShPtr inDevice ) {
   //
   CkwsDevice::TBodyVector inDeviceBodyVector;
   inDevice->getBodyVector(inDeviceBodyVector) ;
-   
+
   //
   // For each body of inDevice,
   //
-  for (unsigned int bodyId = 0 ;  bodyId < inDeviceBodyVector.size(); bodyId++)  {
+  for (unsigned int bodyId = 0 ;  bodyId < inDeviceBodyVector.size();
+       bodyId++)  {
     CkwsKCDBodyShPtr kcdBody;
-    if (kcdBody = KIT_DYNAMIC_PTR_CAST(CkwsKCDBody, inDeviceBodyVector[bodyId])) {
+    if (kcdBody = KIT_DYNAMIC_PTR_CAST(CkwsKCDBody,
+				       inDeviceBodyVector[bodyId])) {
       //
       // get the inner object list of the body
       //
-      std::vector< CkcdObjectShPtr > kcdBodyInnerObjects = kcdBody->innerObjects() ;
+      std::vector< CkcdObjectShPtr > kcdBodyInnerObjects =
+	kcdBody->innerObjects() ;
 
       //
       // and put each inner object in inDeviceInnerObjectList
       //
-      for (unsigned int objectId =0 ; objectId < kcdBodyInnerObjects.size() ; objectId ++) {
+      for (unsigned int objectId =0 ; objectId < kcdBodyInnerObjects.size() ;
+	   objectId ++) {
 	CkcdObjectShPtr kcdObject = kcdBodyInnerObjects[objectId] ;
 	inDeviceInnerObjectList.push_back(kcdObject) ;
-        
       }
     }
     else {
       ODEBUG1(":ignoreDeviceForCollision : body is not KCD body.");
       return KD_ERROR ;
-    } 
+    }
   }
 
   //
-  // Set all inner objects of inDevice in the ignoredOuterObject list of each body of this device
+  // Set all inner objects of inDevice in the ignoredOuterObject list
+  // of each body of this device
   //
   CkwsDevice::TBodyVector thisBodyVector;
   getBodyVector(thisBodyVector);
@@ -198,16 +207,19 @@ ktStatus ChppDevice::ignoreDeviceForCollision (ChppDeviceShPtr inDevice ) {
   //
   for (unsigned int bodyId = 0 ;  bodyId < thisBodyVector.size(); bodyId++)  {
     CkwsKCDBodyShPtr thisKcdBody;
-    if (thisKcdBody = KIT_DYNAMIC_PTR_CAST(CkwsKCDBody,thisBodyVector[bodyId])) {
+    if (thisKcdBody = KIT_DYNAMIC_PTR_CAST(CkwsKCDBody,
+					   thisBodyVector[bodyId])) {
       //
       // Get the list of ignored outer objects
       //
-      std::vector<CkcdObjectShPtr> thisIgnoredObjectList = thisKcdBody->ignoredOuterObjects() ;
+      std::vector<CkcdObjectShPtr> thisIgnoredObjectList =
+	thisKcdBody->ignoredOuterObjects() ;
 
       //
       // Add to this list all the inner objects of inDevice
       //
-      for( unsigned int objectId = 0 ; objectId < inDeviceInnerObjectList.size() ; objectId++) {
+      for( unsigned int objectId = 0 ;
+	   objectId < inDeviceInnerObjectList.size() ; objectId++) {
 	thisIgnoredObjectList.push_back(inDeviceInnerObjectList[objectId]) ;
       }
 
@@ -219,16 +231,18 @@ ktStatus ChppDevice::ignoreDeviceForCollision (ChppDeviceShPtr inDevice ) {
     else {
       ODEBUG1(":ignoreDeviceForCollision : body is not KCD body.");
       return KD_ERROR ;
-    } 
+    }
   }
-  
+
   return status ;
 }
 
 // ==========================================================================
 
-void ChppDevice::computeBodyBoundingBox(const CkwsKCDBodyShPtr& body, double& xMin, double& yMin, 
-					double& zMin, double& xMax, double& yMax, double& zMax) const
+void ChppDevice::computeBodyBoundingBox(const CkwsKCDBodyShPtr& body,
+					double& xMin, double& yMin,
+					double& zMin, double& xMax,
+					double& yMax, double& zMax) const
 {
   std::vector<CkcdObjectShPtr> listObject = body->innerObjects();
   unsigned int j= listObject.size();
@@ -240,8 +254,10 @@ void ChppDevice::computeBodyBoundingBox(const CkwsKCDBodyShPtr& body, double& xM
 
 // ==========================================================================
 
-void ChppDevice::ckcdObjectBoundingBox(const CkcdObjectShPtr& object, double& xMin, double& yMin, 
-				       double& zMin, double& xMax, double& yMax, double& zMax) const
+void ChppDevice::ckcdObjectBoundingBox(const CkcdObjectShPtr& object,
+				       double& xMin, double& yMin,
+				       double& zMin, double& xMax,
+				       double& yMax, double& zMax) const
 {
   double x,y,z;
 
@@ -254,7 +270,8 @@ void ChppDevice::ckcdObjectBoundingBox(const CkcdObjectShPtr& object, double& xM
   object->boundingBox()->getRelativePosition(matrixRelativePosition);
 
   /*Creer les points et change position points*/
-  CkitMat4 matrixChangePosition = matrixAbsolutePosition*matrixRelativePosition;
+  CkitMat4 matrixChangePosition =
+    matrixAbsolutePosition*matrixRelativePosition;
 
   CkitPoint3 position[8];
 
@@ -291,7 +308,7 @@ void ChppDevice::ckcdObjectBoundingBox(const CkcdObjectShPtr& object, double& xM
 	}
 	if((position[i])[2]>zMax)
 	{
-  	  zMax=(position[i])[2];
+	  zMax=(position[i])[2];
 	}
   }
 
@@ -299,15 +316,16 @@ void ChppDevice::ckcdObjectBoundingBox(const CkcdObjectShPtr& object, double& xM
 
 // ==========================================================================
 
-ktStatus ChppDevice::addObstacle(const CkcdObjectShPtr& inObject, 
+ktStatus ChppDevice::addObstacle(const CkcdObjectShPtr& inObject,
 				 bool inDistanceComputation)
 {
   // Get robot vector of bodies.
   CkwsDevice::TBodyVector bodyVector;
   getBodyVector(bodyVector);
-    
+
   // Loop over bodies of robot.
-  for (CkwsDevice::TBodyIterator bodyIter = bodyVector.begin(); bodyIter < bodyVector.end(); bodyIter++) {
+  for (CkwsDevice::TBodyIterator bodyIter = bodyVector.begin();
+       bodyIter < bodyVector.end(); bodyIter++) {
     // Try to cast body into CkwsKCDBody
     CkwsKCDBodyShPtr kcdBody;
     ChppBodyShPtr hppBody;
@@ -316,7 +334,7 @@ ktStatus ChppDevice::addObstacle(const CkcdObjectShPtr& inObject,
 	hppBody->addOuterObject(inObject, inDistanceComputation);
       }
       else {
-	std::vector< CkcdObjectShPtr > collisionList = 
+	std::vector< CkcdObjectShPtr > collisionList =
 	  kcdBody->outerObjects();
 	collisionList.push_back(inObject);
 	kcdBody->outerObjects(collisionList);
@@ -347,13 +365,13 @@ void ChppDevice::setRootJoint(ChppJoint* inJoint)
 
 // ==========================================================================
 
-ChppJoint* ChppDevice::getRootJoint() 
+ChppJoint* ChppDevice::getRootJoint()
 {
   /*
-    Get CkppJointComponent root joint 
+    Get CkppJointComponent root joint
   */
   CkppJointComponentShPtr kppJointComponent = rootJointComponent();
-    
+
   ChppJoint* joint = kppToHppJoint(kppJointComponent);
   return joint;
 }
@@ -394,10 +412,11 @@ ChppJoint* ChppDevice::jrlToHppJoint(CjrlJoint* inJrlJoint)
 // ==========================================================================
 
 
-bool ChppDevice::kwsToJrlDynamicsDofValues(const std::vector<double>& inKwsDofVector, 
+bool ChppDevice::kwsToJrlDynamicsDofValues(const std::vector<double>&
+					   inKwsDofVector,
 					   vectorN& outJrlDynamicsDofVector)
 {
-  /* 
+  /*
      Count the number of extra dofs of the CkppDeviceComponent
      since the first degrees of freedom of inKwsDofVector correspond to these extra-dofs.
   */
@@ -413,10 +432,11 @@ bool ChppDevice::kwsToJrlDynamicsDofValues(const std::vector<double>& inKwsDofVe
   /*
     Loop over CkppDeviceComponent joints
   */
-  for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size(); iKppJoint++) {
+  for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size();
+       iKppJoint++) {
     CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
 
-    /* 
+    /*
        Check if the joint is found in the associated map
     */
     if(attKppToHppJointMap[kppJoint] == NULL){
@@ -430,28 +450,35 @@ bool ChppDevice::kwsToJrlDynamicsDofValues(const std::vector<double>& inKwsDofVe
     CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint]->jrlJoint();
     unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
 
-    ODEBUG2(":kwsToJrlDynamicsDofValues: iKppJoint=" << kppJoint->name() << " jrlRankInConfig=" << jrlRankInConfig);
+    ODEBUG2(":kwsToJrlDynamicsDofValues: iKppJoint=" << kppJoint->name()
+	    << " jrlRankInConfig=" << jrlRankInConfig);
 
     /*
       Check rank in configuration wrt  dimension.
     */
     unsigned int jointDim = kppJoint->countDofComponents();
     if (jrlRankInConfig+jointDim > inKwsDofVector.size()) {
-      ODEBUG1(":kwsToJrlDynamicsDofValues: rank in configuration is more than configuration dimension(rank = " 
-	      << jrlRankInConfig << ", dof = " << jointDim << ").");
-      ODEBUG1(":kwsToJrlDynamicsDofValues:   vectorN: " << outJrlDynamicsDofVector);
+      ODEBUG1
+	(":kwsToJrlDynamicsDofValues: rank in configuration is more than configuration dimension(rank = "
+	 << jrlRankInConfig << ", dof = " << jointDim << ").");
+      ODEBUG1(":kwsToJrlDynamicsDofValues:   vectorN: "
+	      << outJrlDynamicsDofVector);
       return false;
     }
 
     /*
       Cast joint into one of the possible types
     */
-    if (CkppFreeFlyerJointComponentShPtr jointFF = KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
-									kppJoint)) {
+    if (CkppFreeFlyerJointComponentShPtr jointFF =
+	KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
+			     kppJoint)) {
       // Translations along x, y, z
-      outJrlDynamicsDofVector[jrlRankInConfig] = inKwsDofVector[rankInCkwsConfig];
-      outJrlDynamicsDofVector[jrlRankInConfig+1] = inKwsDofVector[rankInCkwsConfig+1];
-      outJrlDynamicsDofVector[jrlRankInConfig+2] = inKwsDofVector[rankInCkwsConfig+2];
+      outJrlDynamicsDofVector[jrlRankInConfig] =
+	inKwsDofVector[rankInCkwsConfig];
+      outJrlDynamicsDofVector[jrlRankInConfig+1] =
+	inKwsDofVector[rankInCkwsConfig+1];
+      outJrlDynamicsDofVector[jrlRankInConfig+2] =
+	inKwsDofVector[rankInCkwsConfig+2];
       double rx = inKwsDofVector[rankInCkwsConfig+3];
       double ry = inKwsDofVector[rankInCkwsConfig+4];
       double rz = inKwsDofVector[rankInCkwsConfig+5];
@@ -461,7 +488,8 @@ bool ChppDevice::kwsToJrlDynamicsDofValues(const std::vector<double>& inKwsDofVe
       outJrlDynamicsDofVector[jrlRankInConfig+3] = roll;
       outJrlDynamicsDofVector[jrlRankInConfig+4] = pitch;
       outJrlDynamicsDofVector[jrlRankInConfig+5] = yaw;
-      ODEBUG2("Joint value: " << outJrlDynamicsDofVector[jrlRankInConfig] << ", "
+      ODEBUG2("Joint value: " << outJrlDynamicsDofVector[jrlRankInConfig]
+	      << ", "
 	      << outJrlDynamicsDofVector[jrlRankInConfig+1] << ", "
 	      << outJrlDynamicsDofVector[jrlRankInConfig+2] << ", "
 	      << outJrlDynamicsDofVector[jrlRankInConfig+3] << ", "
@@ -469,36 +497,43 @@ bool ChppDevice::kwsToJrlDynamicsDofValues(const std::vector<double>& inKwsDofVe
 	      << outJrlDynamicsDofVector[jrlRankInConfig+5]);
       rankInCkwsConfig += 6;
     }
-    else if(CkppRotationJointComponentShPtr jointRot = KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
-									    kppJoint)) {
-      outJrlDynamicsDofVector[jrlRankInConfig] = inKwsDofVector[rankInCkwsConfig];
+    else if(CkppRotationJointComponentShPtr jointRot =
+	    KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
+				 kppJoint)) {
+      outJrlDynamicsDofVector[jrlRankInConfig] =
+	inKwsDofVector[rankInCkwsConfig];
       ODEBUG2("Joint value: " << outJrlDynamicsDofVector[jrlRankInConfig]);
       rankInCkwsConfig ++;
     }
-    else if(CkppTranslationJointComponentShPtr jointTrans = KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
-										 kppJoint)) {
-      outJrlDynamicsDofVector[jrlRankInConfig] = inKwsDofVector[rankInCkwsConfig];
+    else if(CkppTranslationJointComponentShPtr jointTrans =
+	    KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
+				 kppJoint)) {
+      outJrlDynamicsDofVector[jrlRankInConfig] =
+	inKwsDofVector[rankInCkwsConfig];
       ODEBUG2("Joint value: " << outJrlDynamicsDofVector[jrlRankInConfig]);
       rankInCkwsConfig ++;
     }
     else {
       ODEBUG1(":kwsToJrlDynamicsDofValues: unknown type of joint.");
-      ODEBUG1(":kwsToJrlDynamicsDofValues:    vectorN: " << outJrlDynamicsDofVector);
+      ODEBUG1(":kwsToJrlDynamicsDofValues:    vectorN: " <<
+	      outJrlDynamicsDofVector);
       return false;
     }
   }
 
-  ODEBUG2("hppSetCurrentConfig: outJrlDynamicsDofVector = " << outJrlDynamicsDofVector);
+  ODEBUG2("hppSetCurrentConfig: outJrlDynamicsDofVector = "
+	  << outJrlDynamicsDofVector);
   return true;
 }
 
 
 // ==========================================================================
 
-bool ChppDevice::jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector,
-					   std::vector<double>& outKwsDofVector)
+bool
+ChppDevice::jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector,
+				      std::vector<double>& outKwsDofVector)
 {
-  /* 
+  /*
      Count the number of extra dofs of the CkppDeviceComponent.
   */
   unsigned int rankInDofValues = countExtraDofs();
@@ -514,7 +549,8 @@ bool ChppDevice::jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector
   /*
     Loop over CkppDeviceComponent joints
   */
-  for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size(); iKppJoint++) {
+  for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size();
+       iKppJoint++) {
     CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
     unsigned int jointDim = kppJoint->countDofComponents();
     /*
@@ -523,25 +559,31 @@ bool ChppDevice::jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector
     CjrlJoint* jrlJoint = attKppToHppJointMap[kppJoint]->jrlJoint();
     unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
 
-    ODEBUG2(":jrlDynamicsToKwsDofValues: iKppJoint=" << kppJoint->name() << " jrlRankInConfig=" << jrlRankInConfig);
+    ODEBUG2(":jrlDynamicsToKwsDofValues: iKppJoint=" << kppJoint->name()
+	    << " jrlRankInConfig=" << jrlRankInConfig);
 
     /*
       Check rank in configuration wrt  dimension.
     */
     if (jrlRankInConfig+jointDim > inJrlDynamicsDofVector.size()) {
-      ODEBUG1(":jrlDynamicsToKwsDofValues: rank in configuration is more than configuration dimension(rank = " 
-	      << jrlRankInConfig << ", dof = " << jointDim << ").");
+      ODEBUG1
+	(":jrlDynamicsToKwsDofValues: rank in configuration is more than configuration dimension(rank = "
+	 << jrlRankInConfig << ", dof = " << jointDim << ").");
       return false;
     }
     /*
       Cast joint into one of the possible types
     */
-    if (CkppFreeFlyerJointComponentShPtr jointFF = KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
-									kppJoint)) {
+    if (CkppFreeFlyerJointComponentShPtr jointFF =
+	KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
+			     kppJoint)) {
       // Translations along x, y, z
-      outKwsDofVector[rankInDofValues  ] = inJrlDynamicsDofVector[jrlRankInConfig  ];
-      outKwsDofVector[rankInDofValues+1] = inJrlDynamicsDofVector[jrlRankInConfig+1];
-      outKwsDofVector[rankInDofValues+2] = inJrlDynamicsDofVector[jrlRankInConfig+2];
+      outKwsDofVector[rankInDofValues  ] =
+	inJrlDynamicsDofVector[jrlRankInConfig  ];
+      outKwsDofVector[rankInDofValues+1] =
+	inJrlDynamicsDofVector[jrlRankInConfig+1];
+      outKwsDofVector[rankInDofValues+2] =
+	inJrlDynamicsDofVector[jrlRankInConfig+2];
 
       double roll = inJrlDynamicsDofVector[jrlRankInConfig+3];
       double pitch = inJrlDynamicsDofVector[jrlRankInConfig+4];
@@ -554,25 +596,31 @@ bool ChppDevice::jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector
       outKwsDofVector[rankInDofValues+3] = rx;
       outKwsDofVector[rankInDofValues+4] = ry;
       outKwsDofVector[rankInDofValues+5] = rz;
-	
+
       rankInDofValues+= 6;
     }
-    else if(CkppRotationJointComponentShPtr jointRot = KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
-									    kppJoint)) {
-      outKwsDofVector[rankInDofValues] = inJrlDynamicsDofVector[jrlRankInConfig];
+    else if(CkppRotationJointComponentShPtr jointRot =
+	    KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
+				 kppJoint)) {
+      outKwsDofVector[rankInDofValues] =
+	inJrlDynamicsDofVector[jrlRankInConfig];
       rankInDofValues++;
     }
-    else if(CkppTranslationJointComponentShPtr jointTrans = KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
-										 kppJoint)) {
-      outKwsDofVector[rankInDofValues] = inJrlDynamicsDofVector[jrlRankInConfig];
+    else if(CkppTranslationJointComponentShPtr jointTrans =
+	    KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
+				 kppJoint)) {
+      outKwsDofVector[rankInDofValues] =
+	inJrlDynamicsDofVector[jrlRankInConfig];
       rankInDofValues++;
     }
-    else if(CkppAnchorJointComponentShPtr jointAnchor = KIT_DYNAMIC_PTR_CAST(CkppAnchorJointComponent, kppJoint)){
+    else if(CkppAnchorJointComponentShPtr jointAnchor =
+	    KIT_DYNAMIC_PTR_CAST(CkppAnchorJointComponent, kppJoint)){
       // do nothing
     }
     else {
       ODEBUG1(":jrlDynamicsToKwsDofValues: unknown type of joint.");
-      ODEBUG1(":jrlDynamicsToKwsDofValues:   vectorN: " << inJrlDynamicsDofVector);
+      ODEBUG1(":jrlDynamicsToKwsDofValues:   vectorN: " <<
+	      inJrlDynamicsDofVector);
       return false;
     }
   }
@@ -581,7 +629,8 @@ bool ChppDevice::jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector
 
 // ==========================================================================
 
-bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUpdateWhat)
+bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig,
+				     EwhichPart inUpdateWhat)
 {
   bool updateGeom = (inUpdateWhat == GEOMETRIC || inUpdateWhat == BOTH);
   bool updateDynamic = (inUpdateWhat == DYNAMIC || inUpdateWhat == BOTH);
@@ -619,8 +668,9 @@ bool ChppDevice::hppSetCurrentConfig(const CkwsConfig& inConfig, EwhichPart inUp
 
 // ==========================================================================
 
-bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdateWhat)
-{  
+bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig,
+				     EwhichPart inUpdateWhat)
+{
   bool updateGeom = (inUpdateWhat == GEOMETRIC || inUpdateWhat == BOTH);
   bool updateDynamic = (inUpdateWhat == DYNAMIC || inUpdateWhat == BOTH);
 
@@ -646,10 +696,13 @@ bool ChppDevice::hppSetCurrentConfig(const vectorN& inConfig, EwhichPart inUpdat
   return true;
 }
 
-void ChppDevice::RollPitchYawToYawPitchRoll(const double& inRx, const double& inRy, const double& inRz,
-					    double& outRx, double& outRy, double& outRz)
+void
+ChppDevice::RollPitchYawToYawPitchRoll(const double& inRx, const double& inRy,
+				       const double& inRz, double& outRx,
+				       double& outRy, double& outRz)
 {
-  const double cRx=cos(inRx),sRx=sin(inRx),cRy=cos(inRy),sRy=sin(inRy),cRz=cos(inRz),sRz=sin(inRz);
+  const double cRx=cos(inRx),sRx=sin(inRx),cRy=cos(inRy),sRy=sin(inRy),
+    cRz=cos(inRz),sRz=sin(inRz);
   double R[3][3];
   R[0][0] = cRy*cRz;
   R[0][1] = sRx*sRy*cRz - cRx*sRz;
@@ -660,7 +713,7 @@ void ChppDevice::RollPitchYawToYawPitchRoll(const double& inRx, const double& in
   //R[2][0] = -sRy;
   //R[2][1] = sRx*cRy;
   R[2][2] = cRx*cRy;
-  
+
   // make sure all values are in [-1,1]
   // as trigonometric functions would
   // fail when given values such as 1.00000001
@@ -674,31 +727,33 @@ void ChppDevice::RollPitchYawToYawPitchRoll(const double& inRx, const double& in
       }
     }
   }
-  
+
   outRy = asin(R[0][2]);
   double cosOutRy = cos(outRy);
 
   if(fabs(cosOutRy) > 1e-6) {
     double cosOutRx =  R[2][2] / cosOutRy;
     double sinOutRx = -R[1][2] / cosOutRy;
-    
+
     outRx = atan2(sinOutRx, cosOutRx);
-    
+
     double cosOutRz =  R[0][0] / cosOutRy;
     double sinOutRz = -R[0][1] / cosOutRy;
     outRz = atan2(sinOutRz, cosOutRz);
   }
   else {
     outRx = 0.;
-    
+
     double cosOutRz = R[1][1];
     double sinOutRz = R[1][0];
     outRz = atan2(sinOutRz, cosOutRz);
   }
 }
 
-void ChppDevice::YawPitchRollToRollPitchYaw(const double& inRx, const double& inRy, const double& inRz,
-					    double& outRx, double& outRy, double& outRz)
+void
+ChppDevice::YawPitchRollToRollPitchYaw(const double& inRx, const double& inRy,
+				       const double& inRz, double& outRx,
+				       double& outRy, double& outRz)
 {
   const double cRx = cos(inRx);
   const double sRx = sin(inRx);
@@ -747,8 +802,8 @@ void ChppDevice::YawPitchRollToRollPitchYaw(const double& inRx, const double& in
 
 // ==========================================================================
 
-template <class CkppJnt, class CjrlJnt> ChppJoint* ChppDevice::createJoint(std::string inName, 
-									   const CkitMat4& inInitialPosition)
+template <class CkppJnt, class CjrlJnt> ChppJoint*
+ChppDevice::createJoint(std::string inName, const CkitMat4& inInitialPosition)
 {
   /*
     Create kppJointComponent
@@ -763,7 +818,8 @@ template <class CkppJnt, class CjrlJnt> ChppJoint* ChppDevice::createJoint(std::
   /*
     Convert homogeneous matrix to abstract matrix type matrix4d
   */
-  matrix4d initialPos = ChppJoint::abstractMatrixFromCkitMat4(inInitialPosition);
+  matrix4d initialPos =
+    ChppJoint::abstractMatrixFromCkitMat4(inInitialPosition);
   CjrlJoint* jrlJoint = new CjrlJnt(initialPos);
   if (!jrlJoint) {
     delete jrlJoint;
@@ -781,32 +837,40 @@ template <class CkppJnt, class CjrlJnt> ChppJoint* ChppDevice::createJoint(std::
 
 // ==========================================================================
 
-ChppJoint* ChppDevice::createFreeFlyer(std::string inName, const CkitMat4& inInitialPosition)
+ChppJoint* ChppDevice::createFreeFlyer(std::string inName,
+				       const CkitMat4& inInitialPosition)
 {
-  ChppJoint* hppJoint = createJoint<CkppFreeFlyerJointComponent, CimplJointFreeFlyer>(inName, inInitialPosition);
+  ChppJoint* hppJoint = createJoint<CkppFreeFlyerJointComponent,
+    CimplJointFreeFlyer>(inName, inInitialPosition);
 
   return hppJoint;
 }
 
-ChppJoint* ChppDevice::createAnchor(std::string inName, const CkitMat4& inInitialPosition)
+ChppJoint* ChppDevice::createAnchor(std::string inName,
+				    const CkitMat4& inInitialPosition)
 {
-  ChppJoint* hppJoint = createJoint<CkppAnchorJointComponent, CimplJointAnchor>(inName, inInitialPosition);
+  ChppJoint* hppJoint = createJoint<CkppAnchorJointComponent,
+    CimplJointAnchor>(inName, inInitialPosition);
 
   return hppJoint;
 }
 
 // ==========================================================================
 
-ChppJoint* ChppDevice::createRotation(std::string inName, const CkitMat4& inInitialPosition)
+ChppJoint* ChppDevice::createRotation(std::string inName,
+				      const CkitMat4& inInitialPosition)
 {
-  return createJoint<CkppRotationJointComponent, CimplJointRotation>(inName, inInitialPosition);
+  return createJoint<CkppRotationJointComponent,
+    CimplJointRotation>(inName, inInitialPosition);
 }
 
 // ==========================================================================
 
-ChppJoint* ChppDevice::createTranslation(std::string inName, const CkitMat4& inInitialPosition)
+ChppJoint* ChppDevice::createTranslation(std::string inName,
+					 const CkitMat4& inInitialPosition)
 {
-  return createJoint<CkppTranslationJointComponent, CimplJointTranslation>(inName, inInitialPosition);
+  return createJoint<CkppTranslationJointComponent,
+    CimplJointTranslation>(inName, inInitialPosition);
 }
 
 /**
@@ -816,7 +880,8 @@ std::ostream& operator<<(std::ostream& os, ChppDevice& inHppDevice)
 {
   os << "Device: " << inHppDevice.name() << std::endl;
   os << std::endl;
-  os << "  Current configuration: " << inHppDevice.currentConfiguration() << std::endl;
+  os << "  Current configuration: " << inHppDevice.currentConfiguration()
+     << std::endl;
   os << std::endl;
   os << std::endl;
   os << "  Writing kinematic chain" << std::endl;
@@ -832,13 +897,12 @@ std::ostream& operator<<(std::ostream& os, ChppDevice& inHppDevice)
   // Get position of center of mass
   MAL_S3_VECTOR(com, double);
   com = inHppDevice.positionCenterOfMass();
-  
+
   //debug
-  cout<<"total mass "<<inHppDevice.mass() <<", COM: "<< MAL_S3_VECTOR_ACCESS(com, 0) 
-      <<", "<< MAL_S3_VECTOR_ACCESS(com, 1) 
+  cout<<"total mass "<<inHppDevice.mass() <<", COM: "
+      << MAL_S3_VECTOR_ACCESS(com, 0)
+      <<", "<< MAL_S3_VECTOR_ACCESS(com, 1)
       <<", "<< MAL_S3_VECTOR_ACCESS(com, 2)
       <<endl;
-
-
   return os;
 }

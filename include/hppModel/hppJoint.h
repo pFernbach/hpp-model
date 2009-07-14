@@ -26,7 +26,8 @@ public:
   */
   ChppJoint(const CkppJointComponentShPtr& inKppJoint, CjrlJoint* inJrlJoint,
 	    const ChppDeviceWkPtr& inDeviceWeakPtr) :
-    attJrlJoint(inJrlJoint), attKppJoint(inKppJoint), attDevice(inDeviceWeakPtr) {};
+    attJrlJoint(inJrlJoint), attKppJoint(inKppJoint),
+    attDevice(inDeviceWeakPtr) {};
 
   virtual ~ChppJoint() {};
 
@@ -43,7 +44,7 @@ public:
      \brief Access to dynamic part of the joint.
   */
   CjrlJoint* jrlJoint() { return attJrlJoint; };
-  
+
   /**
      @}
   */
@@ -57,7 +58,7 @@ public:
      \brief Get the parent joint
   */
   ChppJoint* parentJoint();
-  
+
   /**
      \brief Get the child joint at a given rank.
   */
@@ -72,7 +73,7 @@ public:
      \brief Get number of child joints
   */
   unsigned int countChildJoints();
-  
+
   /**
      @}
   */
@@ -103,31 +104,31 @@ public:
 
   /**
      \brief Get the lower bound of a given degree of freedom of the joint.
-     
+
      \param inDofRank Id of the dof in the joint
   */
   inline double lowerBound(unsigned int inDofRank) const
   {
     return attKppJoint->kwsJoint()->dof(inDofRank)->vmin();
   };
-  
+
   /**
      \brief Get the upper bound of a given degree of freedom of the joint.
-     
+
      \param inDofRank Id of the dof in the joint
   */
   inline double upperBound(unsigned int inDofRank) const
   {
     return attKppJoint->kwsJoint()->dof(inDofRank)->vmax();
   };
-  
+
   /**
      \brief Set the lower bound of a given degree of freedom of the joint.
-     
+
      \param inDofRank Id of the dof in the joint
      \param inLowerBound lower bound
   */
-  inline bool lowerBound(unsigned int inDofRank, double inLowerBound) 
+  inline bool lowerBound(unsigned int inDofRank, double inLowerBound)
   {
     // KPP side
     if (attKppJoint->kwsJoint()->dof(inDofRank)->vmin(inLowerBound)==false) {
@@ -137,10 +138,10 @@ public:
     attJrlJoint->lowerBound(inDofRank, inLowerBound);
     return true;
   };
-  
+
   /**
      \brief Set the upper bound of a given degree of freedom of the joint.
-     
+
      \param inDofRank Id of the dof in the joint
      \param inUpperBound Upper bound.
   */
@@ -154,7 +155,7 @@ public:
     attJrlJoint->upperBound(inDofRank, inUpperBound);
     return true;
   };
-  
+
   /**
      \brief Set the bounds of the degrees of freedom of the joint
 
@@ -162,10 +163,12 @@ public:
      \param inLowerBound lower bound of this degree of freedom
      \param inUpperBound upper bound of this degree of freedom
   */
-  inline bool bounds(unsigned int inDofRank, const double& inLowerBound, const double& inUpperBound) 
+  inline bool bounds(unsigned int inDofRank, const double& inLowerBound,
+		     const double& inUpperBound)
   {
     // KPP side
-    if (attKppJoint->kwsJoint()->dof(inDofRank)->bounds(inLowerBound, inUpperBound)==KD_ERROR) {
+    if (attKppJoint->kwsJoint()->dof(inDofRank)->
+	bounds(inLowerBound, inUpperBound)==KD_ERROR) {
       return false;
     }
     // CjrlJoint side
@@ -181,7 +184,9 @@ public:
      \param inLowerVelocityBound lower velocity bound of this degree of freedom
      \param inUpperVelocityBound upper velocity bound of this degree of freedom
   */
-  inline bool velocityBounds(unsigned int inDofRank, const double& inLowerVelocityBound, const double& inUpperVelocityBound) 
+  inline bool velocityBounds(unsigned int inDofRank,
+			     const double& inLowerVelocityBound,
+			     const double& inUpperVelocityBound)
   {
     // KPP side
     // CjrlJoint side
@@ -189,7 +194,7 @@ public:
     attJrlJoint->upperVelocityBound(inDofRank, inUpperVelocityBound);
     return true;
   };
-  
+
   /**
      @}
   */
@@ -227,7 +232,7 @@ public:
   */
 
   /**
-     \name Conversion between KineoWorks and Matrix Abstraction Layer homogeneous Matrices
+     \name Conversion between KineoWorks and Mal homogeneous Matrices
      @{
   */
   /**
@@ -249,7 +254,7 @@ protected:
      \brief Pointer to dynamic part of the joint
   */
   CjrlJoint* attJrlJoint;
-  
+
   /**
      \brief Shared pointer to geometric part of joint
   */

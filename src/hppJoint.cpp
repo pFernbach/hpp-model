@@ -21,7 +21,8 @@ matrix4d ChppJoint::abstractMatrixFromCkitMat4(const CkitMat4& inMatrix)
   MAL_S4x4_MATRIX(abstractMatrix, double);
   for (unsigned int iRow=0; iRow<4; iRow++) {
     for (unsigned int iCol=0; iCol<4; iCol++) {
-      MAL_S4x4_MATRIX_ACCESS_I_J(abstractMatrix, iRow, iCol) = inMatrix(iRow, iCol);
+      MAL_S4x4_MATRIX_ACCESS_I_J(abstractMatrix, iRow, iCol) =
+	inMatrix(iRow, iCol);
     }
   }
   return abstractMatrix;
@@ -48,7 +49,8 @@ ChppJoint* ChppJoint::parentJoint()
   if (ChppDeviceShPtr device = hppDevice()) {
     CkppComponentShPtr parentComponent = attKppJoint->parent();
     CkppJointComponentShPtr parentJoint;
-    if (parentJoint = KIT_DYNAMIC_PTR_CAST(CkppJointComponent, parentComponent)) {
+    if (parentJoint = KIT_DYNAMIC_PTR_CAST(CkppJointComponent,
+					   parentComponent)) {
       return device->kppToHppJoint(parentJoint);
     }
   }
@@ -64,10 +66,11 @@ ChppJoint* ChppJoint::childJoint(unsigned int inRank)
     Get the device of the joint if any
   */
   if (ChppDeviceShPtr device = hppDevice()) {
-    CkppJointComponentShPtr childComponent = attKppJoint->childJointComponent(inRank);
+    CkppJointComponentShPtr childComponent =
+      attKppJoint->childJointComponent(inRank);
     return device->kppToHppJoint(childComponent);
   }
-  
+
   return NULL;
 }
 
@@ -88,7 +91,9 @@ bool ChppJoint::addChildJoint(ChppJoint* inJoint)
     }
     return true;
   }
-  std::cerr << "ChppJoint::addChildJoint: joints have not been created by the same device" << std::endl;
+  std::cerr <<
+    "ChppJoint::addChildJoint: joints have not been created by the same device"
+	    << std::endl;
   return false;
 }
 
@@ -132,9 +137,10 @@ bool ChppJoint::setAttachedBody(const ChppBodyShPtr& inBody)
 
 // ==========================================================================
 
-ChppBodyShPtr ChppJoint::attachedBody()  
+ChppBodyShPtr ChppJoint::attachedBody()
 {
-  return KIT_DYNAMIC_PTR_CAST(ChppBody, kppJoint()->kwsJoint()->attachedBody());
+  return KIT_DYNAMIC_PTR_CAST
+    (ChppBody, kppJoint()->kwsJoint()->attachedBody());
 }
 
 std::ostream& operator<<(std::ostream& os, ChppJoint& inHppJoint)
@@ -145,7 +151,7 @@ std::ostream& operator<<(std::ostream& os, ChppJoint& inHppJoint)
   os << std::endl;
   os << "Current transformation geometric part:" << std::endl;
   os << inHppJoint.kppJoint()->kwsJoint()->currentPosition() << std:: endl;
-  
+
   ChppBodyShPtr hppBody = inHppJoint.attachedBody();
   if (hppBody) {
     os << "Attached body:" << std::endl;
@@ -157,7 +163,8 @@ std::ostream& operator<<(std::ostream& os, ChppJoint& inHppJoint)
     os << "No attached body" << std::endl;
   }
 
-  for (unsigned int iChild=0; iChild < inHppJoint.countChildJoints(); iChild++) {
+  for (unsigned int iChild=0; iChild < inHppJoint.countChildJoints();
+       iChild++) {
     os << *(inHppJoint.childJoint(iChild)) << std::endl;
     os << endl;
   }

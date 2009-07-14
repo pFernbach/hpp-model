@@ -21,7 +21,8 @@ ChppHumanoidRobotShPtr ChppHumanoidRobot::create(std::string inName)
 
 // ==========================================================================
 
-ChppHumanoidRobotShPtr ChppHumanoidRobot::createCopy(const ChppHumanoidRobotShPtr& inDevice)
+ChppHumanoidRobotShPtr
+ChppHumanoidRobot::createCopy(const ChppHumanoidRobotShPtr& inDevice)
 {
   ChppHumanoidRobot* ptr = new ChppHumanoidRobot(*inDevice);
   ChppHumanoidRobotShPtr deviceShPtr(ptr);
@@ -60,37 +61,37 @@ ChppJoint* ChppHumanoidRobot::hppWaist()
 {
   return jrlToHppJoint(waist());
 }
-  
+
 // ==========================================================================
 
 ChppJoint* ChppHumanoidRobot::hppLeftWrist()
 {
   return jrlToHppJoint(leftWrist());
 }
-  
+
 // ==========================================================================
-  
+
 ChppJoint* ChppHumanoidRobot::hppRightWrist()
 {
   return jrlToHppJoint(rightWrist());
 }
-  
+
 // ==========================================================================
-  
+
 ChppJoint* ChppHumanoidRobot::hppLeftFoot()
 {
   return jrlToHppJoint(leftAnkle());
 }
-  
+
 // ==========================================================================
-  
+
 ChppJoint* ChppHumanoidRobot::hppRightFoot()
 {
   return jrlToHppJoint(rightAnkle());
 }
-  
+
 // ==========================================================================
-  
+
 ChppJoint* ChppHumanoidRobot::hppGazeJoint()
 {
   return jrlToHppJoint(gazeJoint());
@@ -98,11 +99,12 @@ ChppJoint* ChppHumanoidRobot::hppGazeJoint()
 
 // ==========================================================================
 
-ktStatus ChppHumanoidRobot::init(const ChppHumanoidRobotWkPtr& inDevWkPtr, const std::string &inName)
+ktStatus ChppHumanoidRobot::init(const ChppHumanoidRobotWkPtr& inDevWkPtr,
+				 const std::string &inName)
 {
   ktStatus success = ChppDevice::init(inDevWkPtr, inName);
 
-  if(KD_OK == success) {  
+  if(KD_OK == success) {
     attWeakPtr = inDevWkPtr;
   }
   return success;
@@ -110,7 +112,8 @@ ktStatus ChppHumanoidRobot::init(const ChppHumanoidRobotWkPtr& inDevWkPtr, const
 
 // ==========================================================================
 
-ktStatus ChppHumanoidRobot::init(const ChppHumanoidRobotWkPtr& inWeakPtr, const ChppHumanoidRobotShPtr& inDevice)
+ktStatus ChppHumanoidRobot::init(const ChppHumanoidRobotWkPtr& inWeakPtr,
+				 const ChppHumanoidRobotShPtr& inDevice)
 {
   ktStatus  success = ChppDevice::init(inWeakPtr, inDevice);
 
