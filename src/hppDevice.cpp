@@ -565,7 +565,7 @@ ChppDevice::jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector,
     /*
       Check rank in configuration wrt  dimension.
     */
-    if (jrlRankInConfig+jointDim > inJrlDynamicsDofVector.size()) {
+    if (jointDim > 0 && jrlRankInConfig+jointDim > inJrlDynamicsDofVector.size()) {
       ODEBUG1
 	(":jrlDynamicsToKwsDofValues: rank in configuration is more than configuration dimension(rank = "
 	 << jrlRankInConfig << ", dof = " << jointDim << ").");
