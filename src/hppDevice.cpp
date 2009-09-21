@@ -701,51 +701,47 @@ ChppDevice::RollPitchYawToYawPitchRoll(const double& inRx, const double& inRy,
 				       const double& inRz, double& outRx,
 				       double& outRy, double& outRz)
 {
-  const double cRx=cos(inRx),sRx=sin(inRx),cRy=cos(inRy),sRy=sin(inRy),
-    cRz=cos(inRz),sRz=sin(inRz);
-  double R[3][3];
-  R[0][0] = cRy*cRz;
-  R[0][1] = sRx*sRy*cRz - cRx*sRz;
-  R[0][2] = cRx*sRy*cRz + sRx*sRz;
-  R[1][0] = cRy*sRz;
-  R[1][1] = sRx*sRy*sRz + cRx*cRz;
-  R[1][2] = cRx*sRy*sRz - sRx*cRz;
-  //R[2][0] = -sRy;
-  //R[2][1] = sRx*cRy;
-  R[2][2] = cRx*cRy;
+  const double cRx=cos(inRx);
+  const double sRx=sin(inRx);
+  const double cRy=cos(inRy);
+  const double sRy=sin(inRy);
+  const double cRz=cos(inRz);
+  const double sRz=sin(inRz);
+  const double r00 = cRy*cRz;
+  const double r01 = sRx*sRy*cRz - cRx*sRz;
+  double r02 = cRx*sRy*cRz + sRx*sRz;
+  const double r10 = cRy*sRz;
+  const double r11 = sRx*sRy*sRz + cRx*cRz;
+  const double r12 = cRx*sRy*sRz - sRx*cRz;
+  const double r22 = cRx*cRy;
 
-  // make sure all values are in [-1,1]
-  // as trigonometric functions would
-  // fail when given values such as 1.00000001
-  for(unsigned int i=0; i<3; i++) {
-    for(unsigned int j=0; j<3; j++) {
-      if(R[i][j] < -1.) {
-	R[i][j] = -1;
-      }
-      else if(R[i][j] > 1.) {
-	R[i][j] = 1;
-      }
-    }
-  }
+  // make sure that r02 is in [-1,1]
+  if (r02 < -1.)
+    r02 = -1.;
+  else if (r02 > 1.)
+    r02 = 1.;
 
-  outRy = asin(R[0][2]);
+  outRy = asin(r02);
+  // Check that asin call was successful.
+  assert(errno == 0);
+
   double cosOutRy = cos(outRy);
 
   if(fabs(cosOutRy) > 1e-6) {
-    double cosOutRx =  R[2][2] / cosOutRy;
-    double sinOutRx = -R[1][2] / cosOutRy;
+    double cosOutRx =  r22 / cosOutRy;
+    double sinOutRx = -r12 / cosOutRy;
 
     outRx = atan2(sinOutRx, cosOutRx);
 
-    double cosOutRz =  R[0][0] / cosOutRy;
-    double sinOutRz = -R[0][1] / cosOutRy;
+    double cosOutRz =  r00 / cosOutRy;
+    double sinOutRz = -r01 / cosOutRy;
     outRz = atan2(sinOutRz, cosOutRz);
   }
   else {
     outRx = 0.;
 
-    double cosOutRz = R[1][1];
-    double sinOutRz = R[1][0];
+    double cosOutRz = r11;
+    double sinOutRz = r10;
     outRz = atan2(sinOutRz, cosOutRz);
   }
 }
