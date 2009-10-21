@@ -166,7 +166,7 @@ std::ostream& operator<<(std::ostream& os, ChppJoint& inHppJoint)
   for (unsigned int iChild=0; iChild < inHppJoint.countChildJoints();
        iChild++) {
     os << *(inHppJoint.childJoint(iChild)) << std::endl;
-    os << endl;
+    os <<std::endl;
   }
 
   return os;

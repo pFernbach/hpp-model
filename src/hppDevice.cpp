@@ -895,10 +895,10 @@ std::ostream& operator<<(std::ostream& os, ChppDevice& inHppDevice)
   com = inHppDevice.positionCenterOfMass();
 
   //debug
-  cout<<"total mass "<<inHppDevice.mass() <<", COM: "
+  std::cout<<"total mass "<<inHppDevice.mass() <<", COM: "
       << MAL_S3_VECTOR_ACCESS(com, 0)
       <<", "<< MAL_S3_VECTOR_ACCESS(com, 1)
       <<", "<< MAL_S3_VECTOR_ACCESS(com, 2)
-      <<endl;
+      <<std::endl;
   return os;
 }
