@@ -8,9 +8,18 @@
 
 // ==========================================================================
 
+ChppHumanoidRobot::ChppHumanoidRobot
+(CjrlRobotDynamicsObjectFactory *inObjFactory) :
+  CimplHumanoidDynamicRobot(inObjFactory), ChppDevice()
+{
+}
+
+// ==========================================================================
+
 ChppHumanoidRobotShPtr ChppHumanoidRobot::create(std::string inName)
 {
-  ChppHumanoidRobot *hppDevice = new ChppHumanoidRobot;
+  CimplObjectFactory* objFactory = new CimplObjectFactory();
+  ChppHumanoidRobot *hppDevice = new ChppHumanoidRobot(objFactory);
   ChppHumanoidRobotShPtr hppDeviceShPtr(hppDevice);
 
   if (hppDevice->init(hppDeviceShPtr, inName) != KD_OK) {

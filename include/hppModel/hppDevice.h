@@ -39,8 +39,8 @@ KIT_PREDEF_CLASS(ChppDevice);
    ChppDevice::hppGetCurrentConfig are are implemented.
 */
 
-class ChppDevice : public CkppDeviceComponent,
-  public virtual CimplDynamicRobot {
+class ChppDevice : public virtual CimplDynamicRobot,
+  public CkppDeviceComponent {
 public:
   /**
      \brief Specify which part of the device is concerned
@@ -323,6 +323,12 @@ public:
   static ChppDeviceShPtr createCopy(const ChppDeviceShPtr& inDevice);
 
 protected:
+  /**
+     \brief Constructor
+     \param inObjFactory factory necessary to build a CjrlDynamicRobot.
+  */
+  ChppDevice(CjrlRobotDynamicsObjectFactory *inObjFactory);
+
   /**
      \brief Constructor
   */

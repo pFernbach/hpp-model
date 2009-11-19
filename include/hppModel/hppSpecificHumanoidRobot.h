@@ -85,6 +85,13 @@ public:
 
 protected:
   /**
+     \brief Constructor
+
+     \param inObjFactory factory necessary to build a CjrlDynamicHumanoidRobot.
+  */
+  ChppSpecificHumanoidRobot(CjrlRobotDynamicsObjectFactory *inObjFactory);
+
+  /**
      \brief Initialization.
   */
 
@@ -108,13 +115,22 @@ private:
 };
 
 
+template <class HDR> 
+ChppSpecificHumanoidRobot<HDR>::ChppSpecificHumanoidRobot
+(CjrlRobotDynamicsObjectFactory *inObjFactory) :
+ChppHumanoidRobot(inObjFactory)
+{
+}
+
 // ==========================================================================
 
 template <class HDR> ChppSpecificHumanoidRobotShPtr
 ChppSpecificHumanoidRobot<HDR>::create(std::string inName)
 {
+  CimplObjectFactory* objFactory = new CimplObjectFactory();
+
   ChppSpecificHumanoidRobot<HDR> *hppDevice =
-    new ChppSpecificHumanoidRobot<HDR>;
+    new ChppSpecificHumanoidRobot<HDR>(objFactory);
   ChppSpecificHumanoidRobotShPtr hppDeviceShPtr(hppDevice);
 
   if (hppDevice->init(hppDeviceShPtr, inName) != KD_OK) {

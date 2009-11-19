@@ -33,7 +33,15 @@
 
 // ==========================================================================
 
-ChppDevice::ChppDevice()
+ChppDevice::ChppDevice(CjrlRobotDynamicsObjectFactory *inObjFactory) :
+  CimplDynamicRobot(inObjFactory), CkppDeviceComponent()
+{
+}
+
+// ==========================================================================
+
+ChppDevice::ChppDevice() :
+  CimplDynamicRobot(), CkppDeviceComponent()
 {
 }
 
@@ -47,7 +55,8 @@ ChppDevice::~ChppDevice()
 
 ChppDeviceShPtr ChppDevice::create(std::string inName)
 {
-  ChppDevice *hppDevice = new ChppDevice;
+  CimplObjectFactory* objFactory = new CimplObjectFactory();
+  ChppDevice *hppDevice = new ChppDevice(objFactory);
   ChppDeviceShPtr hppDeviceShPtr(hppDevice);
 
   if (hppDevice->init(hppDeviceShPtr, inName) != KD_OK) {

@@ -30,8 +30,8 @@ KIT_PREDEF_CLASS(ChppHumanoidRobot);
 
 */
 
-class ChppHumanoidRobot : public ChppDevice,
-  public virtual CimplHumanoidDynamicRobot
+class ChppHumanoidRobot : public virtual CimplHumanoidDynamicRobot,
+  public ChppDevice
 {
 public:
   /**
@@ -115,7 +115,14 @@ public:
 
 protected:
   /**
+     \brief Constructor
+     \param inObjFactory factory that builds implementation of the Pimple in CimplHumanoidDynamicRobot
+  */
+  ChppHumanoidRobot(CjrlRobotDynamicsObjectFactory *inObjFactory);
+
+  /**
      \brief Initialization.
+     \param inObjFactory factory necessary to build a CjrlDynamicHumanoidRobot.
   */
 
   ktStatus
