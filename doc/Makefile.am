@@ -16,6 +16,8 @@ EXTRA_DIST = \
 	figures/classDiagramRobot.png \
 	figures/classDiagramJoint.dot \
 	figures/classDiagramJoint.png \
+	figures/classDiagramHumanoid.dot \
+	figures/classDiagramHumanoid.png \
 	figures/classDiagramBody.dot \
 	figures/classDiagramBody.png \
 	additionalDoc/package.h 
