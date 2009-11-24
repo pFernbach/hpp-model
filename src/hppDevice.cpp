@@ -807,13 +807,13 @@ ChppDevice::YawPitchRollToRollPitchYaw(const double& inRx, const double& inRy,
 
 // ==========================================================================
 
-template <class CkppJnt, class CjrlJnt> ChppJoint*
-ChppDevice::createJoint(std::string inName, const CkitMat4& inInitialPosition)
+ChppJoint* ChppDevice::createFreeFlyer(std::string inName,
+				       const CkitMat4& inInitialPosition)
 {
   /*
     Create kppJointComponent
   */
-  CkppJointComponentShPtr kppJoint = CkppJnt::create(inName);
+  CkppJointComponentShPtr kppJoint = CkppFreeFlyerJointComponent::create(inName);
   if (kppJoint) {
     kppJoint->kwsJoint()->setCurrentPosition(inInitialPosition);
   } else {
@@ -825,7 +825,8 @@ ChppDevice::createJoint(std::string inName, const CkitMat4& inInitialPosition)
   */
   matrix4d initialPos =
     ChppJoint::abstractMatrixFromCkitMat4(inInitialPosition);
-  CjrlJoint* jrlJoint = new CjrlJnt(initialPos);
+  CimplObjectFactory objFactory;
+  CjrlJoint* jrlJoint = objFactory.createJointFreeflyer(initialPos);
   if (!jrlJoint) {
     delete jrlJoint;
     return NULL;
@@ -842,21 +843,37 @@ ChppDevice::createJoint(std::string inName, const CkitMat4& inInitialPosition)
 
 // ==========================================================================
 
-ChppJoint* ChppDevice::createFreeFlyer(std::string inName,
-				       const CkitMat4& inInitialPosition)
-{
-  ChppJoint* hppJoint = createJoint<CkppFreeFlyerJointComponent,
-    CimplJointFreeFlyer>(inName, inInitialPosition);
-
-  return hppJoint;
-}
-
 ChppJoint* ChppDevice::createAnchor(std::string inName,
 				    const CkitMat4& inInitialPosition)
 {
-  ChppJoint* hppJoint = createJoint<CkppAnchorJointComponent,
-    CimplJointAnchor>(inName, inInitialPosition);
+  /*
+    Create kppJointComponent
+  */
+  CkppJointComponentShPtr kppJoint = CkppAnchorJointComponent::create(inName);
+  if (kppJoint) {
+    kppJoint->kwsJoint()->setCurrentPosition(inInitialPosition);
+  } else {
+    return NULL;
+  }
 
+  /*
+    Convert homogeneous matrix to abstract matrix type matrix4d
+  */
+  matrix4d initialPos =
+    ChppJoint::abstractMatrixFromCkitMat4(inInitialPosition);
+  CimplObjectFactory objFactory;
+  CjrlJoint* jrlJoint = objFactory.createJointAnchor(initialPos);
+  if (!jrlJoint) {
+    delete jrlJoint;
+    return NULL;
+  }
+
+  /*
+    Create ChppJoint
+  */
+  ChppJoint* hppJoint = new ChppJoint(kppJoint, jrlJoint, attWeakPtr);
+
+  registerJoint(hppJoint);
   return hppJoint;
 }
 
@@ -865,8 +882,35 @@ ChppJoint* ChppDevice::createAnchor(std::string inName,
 ChppJoint* ChppDevice::createRotation(std::string inName,
 				      const CkitMat4& inInitialPosition)
 {
-  return createJoint<CkppRotationJointComponent,
-    CimplJointRotation>(inName, inInitialPosition);
+  /*
+    Create kppJointComponent
+  */
+  CkppJointComponentShPtr kppJoint = CkppRotationJointComponent::create(inName);
+  if (kppJoint) {
+    kppJoint->kwsJoint()->setCurrentPosition(inInitialPosition);
+  } else {
+    return NULL;
+  }
+
+  /*
+    Convert homogeneous matrix to abstract matrix type matrix4d
+  */
+  matrix4d initialPos =
+    ChppJoint::abstractMatrixFromCkitMat4(inInitialPosition);
+  CimplObjectFactory objFactory;
+  CjrlJoint* jrlJoint = objFactory.createJointRotation(initialPos);
+  if (!jrlJoint) {
+    delete jrlJoint;
+    return NULL;
+  }
+
+  /*
+    Create ChppJoint
+  */
+  ChppJoint* hppJoint = new ChppJoint(kppJoint, jrlJoint, attWeakPtr);
+
+  registerJoint(hppJoint);
+  return hppJoint;
 }
 
 // ==========================================================================
@@ -874,9 +918,39 @@ ChppJoint* ChppDevice::createRotation(std::string inName,
 ChppJoint* ChppDevice::createTranslation(std::string inName,
 					 const CkitMat4& inInitialPosition)
 {
-  return createJoint<CkppTranslationJointComponent,
-    CimplJointTranslation>(inName, inInitialPosition);
+  /*
+    Create kppJointComponent
+  */
+  CkppJointComponentShPtr kppJoint =
+    CkppTranslationJointComponent::create(inName);
+  if (kppJoint) {
+    kppJoint->kwsJoint()->setCurrentPosition(inInitialPosition);
+  } else {
+    return NULL;
+  }
+
+  /*
+    Convert homogeneous matrix to abstract matrix type matrix4d
+  */
+  matrix4d initialPos =
+    ChppJoint::abstractMatrixFromCkitMat4(inInitialPosition);
+  CimplObjectFactory objFactory;
+  CjrlJoint* jrlJoint = objFactory.createJointTranslation(initialPos);
+  if (!jrlJoint) {
+    delete jrlJoint;
+    return NULL;
+  }
+
+  /*
+    Create ChppJoint
+  */
+  ChppJoint* hppJoint = new ChppJoint(kppJoint, jrlJoint, attWeakPtr);
+
+  registerJoint(hppJoint);
+  return hppJoint;
 }
+
+// ==========================================================================
 
 /**
   \brief Write a device in a stream.
