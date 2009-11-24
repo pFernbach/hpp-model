@@ -730,6 +730,7 @@ ChppDevice::RollPitchYawToYawPitchRoll(const double& inRx, const double& inRy,
   else if (r02 > 1.)
     r02 = 1.;
 
+  errno=0;
   outRy = asin(r02);
   // Check that asin call was successful.
   assert(errno == 0);
@@ -782,6 +783,7 @@ ChppDevice::YawPitchRollToRollPitchYaw(const double& inRx, const double& inRy,
   else if (r20 > 1.)
     r20 = 1.;
 
+  errno=0;
   outRy = -asin(r20);
   // Check that asin call was successful.
   assert(errno == 0);
