@@ -40,7 +40,7 @@ template <class HDR = CimplHumanoidDynamicRobot>
 */
 
 template <class HDR> class ChppSpecificHumanoidRobot :
-public ChppHumanoidRobot, public HDR
+public HDR, public ChppHumanoidRobot
 {
 public:
   /**
@@ -115,9 +115,10 @@ private:
 };
 
 
-template <class HDR> 
+template <class HDR>
 ChppSpecificHumanoidRobot<HDR>::ChppSpecificHumanoidRobot
 (CjrlRobotDynamicsObjectFactory *inObjFactory) :
+CimplDynamicRobot(), CimplHumanoidDynamicRobot(inObjFactory), HDR(inObjFactory),
 ChppHumanoidRobot(inObjFactory)
 {
 }

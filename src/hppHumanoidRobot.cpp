@@ -10,8 +10,10 @@
 
 ChppHumanoidRobot::ChppHumanoidRobot
 (CjrlRobotDynamicsObjectFactory *inObjFactory) :
-  CimplHumanoidDynamicRobot(inObjFactory), ChppDevice()
+  CimplDynamicRobot(), CimplHumanoidDynamicRobot(inObjFactory),
+  ChppDevice()
 {
+  std::cout << "Constructor ChppHumanoidRobot with OF" << std::endl;
 }
 
 // ==========================================================================
