@@ -146,6 +146,9 @@ ChppBodyShPtr ChppJoint::attachedBody()
 std::ostream& operator<<(std::ostream& os, ChppJoint& inHppJoint)
 {
   os << "Joint: " << inHppJoint.kppJoint()->name() << std::endl;
+  os << "Rank in configuration dynamic part: " 
+     << inHppJoint.jrlJoint()->rankInConfiguration()
+     << std::endl;
   os << "Current transformation dynamic part:" << std::endl;
   os << inHppJoint.jrlJoint()->currentTransformation() << std:: endl;
   os << std::endl;
