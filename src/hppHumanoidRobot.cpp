@@ -13,7 +13,6 @@ ChppHumanoidRobot::ChppHumanoidRobot
   CimplDynamicRobot(), CimplHumanoidDynamicRobot(inObjFactory),
   ChppDevice()
 {
-  std::cout << "Constructor ChppHumanoidRobot with OF" << std::endl;
 }
 
 // ==========================================================================
