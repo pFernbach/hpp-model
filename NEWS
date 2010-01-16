@@ -1,10 +1,16 @@
+01/16/2010 Release 1.7.4
+
+	   Set errno before calling asin
+	   Output rank in configuration when writing joint
+	   Compatibility with object factories in abstractRobotDynamics
+
 11/23/2009 Release 1.7.4
 
 	   Compatibility with abstractRobotDynamics-1.15.0.
 
 06/23/2009 Release 1.7.0
 
-	For distance computations between ChppBody objects and objects of the 
+	For distance computations between ChppBody objects and objects of the
 	environment, tolerance is now ignored.
 
 	Deprecated functions in ChppBody have been removed
