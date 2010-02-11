@@ -38,6 +38,7 @@ Device::Device() :
 	 &Device::componentWillInsertChild);
 }
 
+
 // ========================================================================
 
 Device::~Device()
