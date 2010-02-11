@@ -256,26 +256,21 @@ Body::distAndPairsOfPoints(unsigned int inPairId,
 	  //rank of Distance reports.
 	  outDistance = distanceReport->distance();
 
-	  if(distanceReport->countPairs()>0) {
-	CkitMat4 firstPos, secondPos;
-	// get points in the frame of the object
-	distanceReport->getPoints(0,leftPoint,rightPoint) ;
-	// get geometry
-	outObjectBody = distanceReport->pair(0).first->geometry();
-	outObjectEnv = distanceReport->pair(0).second->geometry();
-	outObjectBody->getAbsolutePosition(firstPos);
-	outObjectEnv->getAbsolutePosition(secondPos);
-	//from these geometry points we can get points in absolute
-	//frame(world) or relative frame(geometry).
-	//here we want points in the absolute frame.
-	outPointBody= firstPos * leftPoint;
-	outPointEnv = secondPos * rightPoint;
-	  }
-
-	  // get object
-	  outObjectBody = distanceReport->leftCollisionEntity();
-	  outObjectEnv = distanceReport->rightCollisionEntity();
-
+	  assert(distanceReport->countPairs()>0);
+	  CkcdMat4 firstPos, secondPos;
+	  // get points in the frame of the object
+	  distanceReport->getPoints(0,leftPoint,rightPoint) ;
+	  // get geometry
+	  outObjectBody = distanceReport->pair(0).first->geometry();
+	  outObjectEnv = distanceReport->pair(0).second->geometry();
+	  outObjectBody->getAbsolutePosition(firstPos);
+	  outObjectEnv->getAbsolutePosition(secondPos);
+	  //from these geometry points we can get points in absolute
+	  //frame(world) or relative frame(geometry).
+	  //here we want points in the absolute frame.
+	  outPointBody= firstPos * leftPoint;
+	  outPointEnv = secondPos * rightPoint;
+	  
 	  return KD_OK;
 	}
 
