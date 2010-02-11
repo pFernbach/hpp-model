@@ -218,18 +218,17 @@ void Body::resetOuterObjects()
 //=========================================================================
 
 ktStatus
-Body::distAndPairsOfPoints(unsigned int pairId,
+Body::distAndPairsOfPoints(unsigned int inPairId,
 			   double& outDistance,
 			   CkitPoint3& outPointBody,
 			   CkitPoint3& outPointEnv,
-			   CkcdObjectShPtr &outObjectBody,
-			   CkcdObjectShPtr &outObjectEnv,
-			   CkcdAnalysisType::Type type)
+			   CkcdGeometryShPtr &outObjectBody,
+			   CkcdGeometryShPtr &outObjectEnv)
 {
   KWS_PRECONDITION(pairId < nbDistPairs());
 
-  CkcdAnalysisShPtr analysis = distCompPairs_[pairId];
-  analysis->analysisType(type);
+  CkcdAnalysisShPtr analysis = attDistCompPairs[inPairId];
+  analysis->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
 
   ktStatus status = analysis->compute();
   if (KD_SUCCEEDED(status)) {

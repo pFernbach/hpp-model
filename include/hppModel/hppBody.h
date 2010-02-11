@@ -118,9 +118,6 @@ public:
   /// \brief Compute exact distance and closest points between body and set of outer objects.
 
   /// \param pairId id of the pair of objects
-  /// \param type Type of distance computation
-  /// (either CkcdAnalysisType::EXACT_DISTANCE or
-  /// CkcdAnalysisType::ESTIMATED_DISTANCE)
 
   /// \retval outDistance Distance between body and outer objects
   /// \retval outPointBody Closest point on body (in global reference frame)
@@ -131,10 +128,8 @@ public:
 				double& outDistance,
 				CkitPoint3& outPointBody,
 				CkitPoint3& outPointEnv,
-				CkcdObjectShPtr &outObjectBody,
-				CkcdObjectShPtr &outObjectEnv,
-				CkcdAnalysisType::Type type=
-				CkcdAnalysisType::EXACT_DISTANCE);
+				CkcdGeometryShPtr &outObjectBody,
+				CkcdGeometryShPtr &outObjectEnv);
 
   ///
   /// @}
