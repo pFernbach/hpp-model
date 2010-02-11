@@ -116,8 +116,7 @@ Body::addInnerObject(const CkppSolidComponentRefShPtr& solidCompRef,
 	CkcdAnalysisShPtr analysis = CkcdAnalysis::create();
 	analysis->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
 	// Ignore tolerance for distance computations
-	analysis->ignoreTolerance(true);
-
+	analysis->doesIgnoreTolerance(true);
 	// retrieve the test trees associated with the objects
 	CkcdTestTreeShPtr leftTree = innerObject->collectTestTrees();
 	CkcdTestTreeShPtr rightTree = outerObject->collectTestTrees();
@@ -179,7 +178,7 @@ void Body::addOuterObject(const CkcdObjectShPtr& outerObject,
 	  CkcdAnalysisShPtr analysis = CkcdAnalysis::create();
 	  analysis->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
 	  // Ignore tolerance for distance computations
-	  analysis->ignoreTolerance(true);
+	  analysis->doesIgnoreTolerance(true);
 
 	  // retrieve the test trees associated with the objects
 	  CkcdTestTreeShPtr leftTree = innerObject->collectTestTrees();
