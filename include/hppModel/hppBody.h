@@ -128,8 +128,8 @@ public:
 				double& outDistance,
 				CkitPoint3& outPointBody,
 				CkitPoint3& outPointEnv,
-				CkcdGeometryShPtr &outObjectBody,
-				CkcdGeometryShPtr &outObjectEnv);
+				CkcdGeometryConstShPtr &outObjectBody,
+				CkcdGeometryConstShPtr &outObjectEnv);
 
   ///
   /// @}
