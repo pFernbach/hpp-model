@@ -33,6 +33,7 @@ INCLUDE
 
 KIT_PREDEF_CLASS(CkppSolidComponentRef);
 class CkitMat4;
+class CkcdPoint;
 
 namespace hpp {
   namespace model {
@@ -126,8 +127,8 @@ public:
   /// \retval outObjectEnv Closest object in outer object list
   ktStatus distAndPairsOfPoints(unsigned int pairId,
 				double& outDistance,
-				CkitPoint3& outPointBody,
-				CkitPoint3& outPointEnv,
+				CkcdPoint& outPointBody,
+				CkcdPoint& outPointEnv,
 				CkcdGeometryConstShPtr &outObjectBody,
 				CkcdGeometryConstShPtr &outObjectEnv);
 

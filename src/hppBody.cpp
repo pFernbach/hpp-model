@@ -27,6 +27,7 @@
 #include <kcd2/kcdAnalysis.h>
 #include <kcd2/kcdExactDistanceReport.h>
 #include <kcd2/kcdGeometrySubElement.h>
+#include <kcd2/kcdPoint.h>
 
 #include <jrl/mal/matrixabstractlayer.hh>
 #include <hpp/util/debug.hh>
@@ -219,10 +220,10 @@ void Body::resetOuterObjects()
 ktStatus
 Body::distAndPairsOfPoints(unsigned int inPairId,
 			   double& outDistance,
-			   CkitPoint3& outPointBody,
-			   CkitPoint3& outPointEnv,
-			       CkcdGeometryConstShPtr& outObjectBody,
-			       CkcdGeometryConstShPtr& outObjectEnv)
+			   CkcdPoint3& outPointBody,
+			   CkcdPoint3& outPointEnv,
+			   CkcdGeometryConstShPtr& outObjectBody,
+			   CkcdGeometryConstShPtr& outObjectEnv)
 {
   KWS_PRECONDITION(pairId < nbDistPairs());
 
@@ -231,48 +232,48 @@ Body::distAndPairsOfPoints(unsigned int inPairId,
 
   ktStatus status = analysis->compute();
   if (KD_SUCCEEDED(status)) {
-	hppDout(info,"compute succeeded.");
-	unsigned int nbDistances = analysis->countExactDistanceReports();
-
-	if(nbDistances == 0) {
-	  //no distance information available, return 0 for instance;
-	  hppDout(info,"no distance report.");
-	  outDistance = 0;
-
-	  outObjectBody.reset();
-	  outObjectEnv.reset();
-
-	  return KD_OK;
-	}
-	else{
-
-	  CkcdExactDistanceReportShPtr distanceReport;
-	  CkitPoint3 leftPoint, rightPoint;
-
-	  //distances are ordered from lowest value, to highest value.
-	  distanceReport = analysis->exactDistanceReport(0);
-
-	  //exact distance between two lists is always stored at the first
-	  //rank of Distance reports.
-	  outDistance = distanceReport->distance();
-
-	  assert(distanceReport->countPairs()>0);
-	  CkcdMat4 firstPos, secondPos;
-	  // get points in the frame of the object
-	  distanceReport->getPoints(0,leftPoint,rightPoint) ;
-	  // get geometry
-	  outObjectBody = distanceReport->pair(0).first->geometry();
-	  outObjectEnv = distanceReport->pair(0).second->geometry();
-	  outObjectBody->getAbsolutePosition(firstPos);
-	  outObjectEnv->getAbsolutePosition(secondPos);
-	  //from these geometry points we can get points in absolute
-	  //frame(world) or relative frame(geometry).
-	  //here we want points in the absolute frame.
-	  outPointBody= firstPos * leftPoint;
-	  outPointEnv = secondPos * rightPoint;
-	  
-	  return KD_OK;
-	}
+    hppDout(info,"compute succeeded.");
+    unsigned int nbDistances = analysis->countExactDistanceReports();
+    
+    if(nbDistances == 0) {
+      //no distance information available, return 0 for instance;
+      hppDout(info,"no distance report.");
+      outDistance = 0;
+      
+      outObjectBody.reset();
+      outObjectEnv.reset();
+      
+      return KD_OK;
+    }
+    else{
+      
+      CkcdExactDistanceReportShPtr distanceReport;
+      CkitPoint3 leftPoint, rightPoint;
+      
+      //distances are ordered from lowest value, to highest value.
+      distanceReport = analysis->exactDistanceReport(0);
+      
+      //exact distance between two lists is always stored at the first
+      //rank of Distance reports.
+      outDistance = distanceReport->distance();
+      
+      assert(distanceReport->countPairs()>0);
+      CkcdMat4 firstPos, secondPos;
+      // get points in the frame of the object
+      distanceReport->getPoints(0,leftPoint,rightPoint) ;
+      // get geometry
+      outObjectBody = distanceReport->pair(0).first->geometry();
+      outObjectEnv = distanceReport->pair(0).second->geometry();
+      outObjectBody->getAbsolutePosition(firstPos);
+      outObjectEnv->getAbsolutePosition(secondPos);
+      //from these geometry points we can get points in absolute
+      //frame(world) or relative frame(geometry).
+      //here we want points in the absolute frame.
+      outPointBody= firstPos * leftPoint;
+      outPointEnv = secondPos * rightPoint;
+      
+      return KD_OK;
+    }
 
   } else {
 	hppDout(error,":distAndPairsOfPoints: compute failed.");
