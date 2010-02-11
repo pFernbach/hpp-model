@@ -31,6 +31,7 @@ INCLUDE
 #include "hpp/model/robot-dynamics-impl.hh"
 #include "hpp/model/fwd.hh"
 
+
 KIT_PREDEF_CLASS(CkppSolidComponentRef);
 class CkitMat4;
 class CkcdPoint;
