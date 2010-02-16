@@ -31,7 +31,6 @@ INCLUDE
 #include "hpp/model/robot-dynamics-impl.hh"
 #include "hpp/model/fwd.hh"
 
-
 KIT_PREDEF_CLASS(CkppSolidComponentRef);
 class CkitMat4;
 class CkcdPoint;
@@ -143,7 +142,7 @@ protected:
   Joint* joint_;
 
   /// \brief Constructor by name.
-  Body(std::string name) : joint_(NULL), name_(name) {};
+  Body(std::string name);
 
   /// \brief Initialization of body
   /// \param weakPtr weak pointer to itself

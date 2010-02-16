@@ -19,6 +19,7 @@
 
 #include <iostream>
 
+<<<<<<< HEAD
 #include <KineoWorks2/kwsJoint.h>
 #include <KineoModel/kppSolidComponentRef.h>
 #include <KineoModel/kppJointComponent.h>
@@ -36,8 +37,19 @@
 #include "hpp/model/joint.hh"
 #include "hpp/model/exception.hh"
 
+#define KITELAB_205004
+
 namespace hpp {
   namespace model {
+
+Body::Body(std::string name) : joint_(NULL), name_(name) {
+#ifdef KITELAB_205004
+  std::vector<CkcdObjectShPtr> vect;
+  vect.push_back(CkcdAssembly::create());
+  innerObjects(vect);
+#endif
+}
+
 BodyShPtr Body::create(const std::string& name)
 {
   Body* hppBody = new Body(name);
