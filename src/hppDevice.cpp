@@ -847,6 +847,7 @@ void Device::insertDynamicPart(JointShPtr parent, JointShPtr child)
   }
 }
 
+
   } // namespace model
 } // namespace hpp
 
