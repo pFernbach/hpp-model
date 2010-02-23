@@ -298,6 +298,10 @@ void Device::ckcdObjectBoundingBox(const CkcdObjectShPtr& object,
 {
   double x,y,z;
 
+  // If the object has no bounding box, ignore it
+  if (!object->boundingBox()) {
+    return;
+  }
   object->boundingBox()->getHalfLengths(x, y, z) ;
 
   /*Matrices absolute et relative*/
