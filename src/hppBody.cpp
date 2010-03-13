@@ -55,8 +55,7 @@ ktStatus ChppBody::init(const ChppBodyWkPtr inBodyWkPtr)
 //=============================================================================
 
 bool
-ChppBody::addInnerObject(const CkppSolidComponentRefShPtr&
-			 inSolidComponentRef,
+ChppBody::addInnerObject(const CkppSolidComponentRefShPtr& inSolidComponentRef,
 			 const CkitMat4& inPosition,
 			 bool inDistanceComputation)
 {
