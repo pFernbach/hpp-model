@@ -63,7 +63,7 @@ public:
      \param inName Name of the new body.
      \return A shared pointer to a new body.
   */
-  static ChppBodyShPtr create(std::string inName);
+  static ChppBodyShPtr create(const std::string& inName);
 
   /**
      \brief Get name of object.
