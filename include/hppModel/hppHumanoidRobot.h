@@ -162,4 +162,5 @@ private:
 
 };
 
+std::ostream& operator<<(std::ostream& os, ChppHumanoidRobot& inRobot);
 #endif

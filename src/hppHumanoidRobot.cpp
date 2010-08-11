@@ -5,6 +5,7 @@
  */
 
 #include "hppModel/hppHumanoidRobot.h"
+#include "hppModel/hppJoint.h"
 
 // ==========================================================================
 
@@ -153,4 +154,94 @@ ktStatus ChppHumanoidRobot::init(const ChppHumanoidRobotWkPtr& inWeakPtr,
   }
 
   return success;
+}
+
+// Write humanoid robot in a stream
+std::ostream& operator<<(std::ostream& os, ChppHumanoidRobot& inRobot)
+{
+  os << (ChppDevice&)inRobot << std::endl;
+  if (inRobot.hppGazeJoint())
+    os << "gaze joint: " << inRobot.hppGazeJoint()->kppJoint()->name()
+       << std::endl;
+  if (inRobot.hppWaist())
+    os << "waist joint: " << inRobot.hppWaist()->kppJoint()->name()
+       << std::endl;
+  if (inRobot.hppChest())
+    os << "chest joint: " << inRobot.hppChest()->kppJoint()->name()
+       << std::endl;
+  if (inRobot.hppLeftWrist())
+    os << "left wrist joint: " << inRobot.hppLeftWrist()->kppJoint()->name()
+       << std::endl;
+  if (inRobot.hppRightWrist())
+    os << "right wrist joint: " << inRobot.hppRightWrist()->kppJoint()->name()
+       << std::endl;
+  if (inRobot.hppLeftAnkle())
+    os << "left ankle joint: " << inRobot.hppLeftAnkle()->kppJoint()->name()
+       << std::endl;
+  if (inRobot.hppRightAnkle())
+    os << "right ankle joint: " << inRobot.hppRightAnkle()->kppJoint()->name()
+       << std::endl;
+
+  os << "gaze origin: " << inRobot.gazeOrigin() << std::endl;
+  os << "gaze direction: " << inRobot.gazeDirection() << std::endl;
+
+  CjrlHand* hand;
+  const CjrlJoint* jrlJoint = NULL;
+  vector3d v;
+  // right hand
+  hand = inRobot.rightHand();
+  if (hand) {
+    os << "right hand" << std::endl;
+    hand->getCenter(v);
+    os << "  center: " << v << std::endl;
+    hand->getThumbAxis(v);
+    os << "  thumb axis: " << v << std::endl;
+    hand->getForeFingerAxis(v);
+    os << "  forefinger axis: " << v << std::endl;
+    hand->getPalmNormal(v);
+    os << "  palm normal: " << v << std::endl;
+  }
+  hand = inRobot.leftHand();
+  if (hand) {
+    os << "left hand" << std::endl;
+    hand->getCenter(v);
+    os << "  center: " << v << std::endl;
+    hand->getThumbAxis(v);
+    os << "  thumb axis: " << v << std::endl;
+    hand->getForeFingerAxis(v);
+    os << "  forefinger axis: " << v << std::endl;
+    hand->getPalmNormal(v);
+    os << "  palm normal: " << v << std::endl;
+  }
+  CjrlFoot* foot;
+  double soleLength, soleWidth;
+  // right foot
+  foot = inRobot.rightFoot();
+  if (foot) {
+    os << "left foot" << std::endl;
+    foot->getSoleSize(soleLength, soleWidth);
+    os << "  sole length: " << soleLength << std::endl;
+    os << "  sole width: " << soleWidth << std::endl;
+    foot->getAnklePositionInLocalFrame(v);
+    os << "  ankle position in local frame: " << v << std::endl;
+    foot->getProjectionCenterLocalFrameInSole(v);
+    os << "  projection center local frame in sole: " << v << std::endl;
+    foot->getSoleCenterInLocalFrame(v);
+    os << "  sole center in local frame: " << v << std::endl;
+  }
+  // left foot
+  foot = inRobot.leftFoot();
+  if (foot) {
+    os << "left foot" << std::endl;
+    foot->getSoleSize(soleLength, soleWidth);
+    os << "  sole length: " << soleLength << std::endl;
+    os << "  sole width: " << soleWidth << std::endl;
+    foot->getAnklePositionInLocalFrame(v);
+    os << "  ankle position in local frame: " << v << std::endl;
+    foot->getProjectionCenterLocalFrameInSole(v);
+    os << "  projection center local frame in sole: " << v << std::endl;
+    foot->getSoleCenterInLocalFrame(v);
+    os << "  sole center in local frame: " << v << std::endl;
+  }
+  return os;
 }
