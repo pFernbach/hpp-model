@@ -200,6 +200,8 @@ std::ostream& operator<<(std::ostream& os, ChppHumanoidRobot& inRobot)
     os << "  forefinger axis: " << v << std::endl;
     hand->getPalmNormal(v);
     os << "  palm normal: " << v << std::endl;
+  } else {
+    os << "no right hand" << std::endl;
   }
   hand = inRobot.leftHand();
   if (hand) {
@@ -212,13 +214,16 @@ std::ostream& operator<<(std::ostream& os, ChppHumanoidRobot& inRobot)
     os << "  forefinger axis: " << v << std::endl;
     hand->getPalmNormal(v);
     os << "  palm normal: " << v << std::endl;
+  } else {
+    os << "no left hand" << std::endl;
   }
+
   CjrlFoot* foot;
   double soleLength, soleWidth;
   // right foot
   foot = inRobot.rightFoot();
   if (foot) {
-    os << "left foot" << std::endl;
+    os << "right foot" << std::endl;
     foot->getSoleSize(soleLength, soleWidth);
     os << "  sole length: " << soleLength << std::endl;
     os << "  sole width: " << soleWidth << std::endl;
@@ -228,7 +233,10 @@ std::ostream& operator<<(std::ostream& os, ChppHumanoidRobot& inRobot)
     os << "  projection center local frame in sole: " << v << std::endl;
     foot->getSoleCenterInLocalFrame(v);
     os << "  sole center in local frame: " << v << std::endl;
+  } else {
+    os << "no right foot" << std::endl;
   }
+
   // left foot
   foot = inRobot.leftFoot();
   if (foot) {
@@ -242,6 +250,8 @@ std::ostream& operator<<(std::ostream& os, ChppHumanoidRobot& inRobot)
     os << "  projection center local frame in sole: " << v << std::endl;
     foot->getSoleCenterInLocalFrame(v);
     os << "  sole center in local frame: " << v << std::endl;
+  } else {
+    os << "no left foot" << std::endl;
   }
   return os;
 }
