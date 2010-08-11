@@ -74,6 +74,13 @@ ChppJoint* ChppHumanoidRobot::hppWaist()
 
 // ==========================================================================
 
+ChppJoint* ChppHumanoidRobot::hppChest()
+{
+  return jrlToHppJoint(chest());
+}
+
+// ==========================================================================
+
 ChppJoint* ChppHumanoidRobot::hppLeftWrist()
 {
   return jrlToHppJoint(leftWrist());
@@ -90,12 +97,26 @@ ChppJoint* ChppHumanoidRobot::hppRightWrist()
 
 ChppJoint* ChppHumanoidRobot::hppLeftFoot()
 {
-  return jrlToHppJoint(leftAnkle());
+  return hppLeftAnkle();
 }
 
 // ==========================================================================
 
 ChppJoint* ChppHumanoidRobot::hppRightFoot()
+{
+  return hppRightAnkle();
+}
+
+// ==========================================================================
+
+ChppJoint* ChppHumanoidRobot::hppLeftAnkle()
+{
+  return jrlToHppJoint(leftAnkle());
+}
+
+// ==========================================================================
+
+ChppJoint* ChppHumanoidRobot::hppRightAnkle()
 {
   return jrlToHppJoint(rightAnkle());
 }

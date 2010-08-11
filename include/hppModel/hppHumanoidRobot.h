@@ -16,6 +16,7 @@
 
 #include "MatrixAbstractLayer/MatrixAbstractLayer.h"
 #include "robotDynamics/jrlHumanoidDynamicRobot.h"
+#include <robotDynamics/deprecated.h>
 #include "hppModel/hppDevice.h"
 
 /**
@@ -70,6 +71,11 @@ public:
   ChppJoint* hppWaist();
 
   /**
+     \brief Get ChppJoint corresponding to the chest.
+  */
+  ChppJoint* hppChest();
+
+  /**
      \brief Get ChppJoint corresponding to the left wrist.
   */
   ChppJoint* hppLeftWrist();
@@ -81,13 +87,25 @@ public:
 
   /**
      \brief Get ChppJoint corresponding to the left foot.
+     \deprecated Use ChppHumanoidRobot::hppLeftAnkle() instead.
   */
-  ChppJoint* hppLeftFoot();
+  JRLDEPRECATED(ChppJoint* hppLeftFoot());
 
   /**
      \brief Get ChppJoint corresponding to the right foot.
+     \deprecated Use ChppHumanoidRobot::hppRightAnkle() instead.
   */
-  ChppJoint* hppRightFoot();
+  JRLDEPRECATED(ChppJoint* hppRightFoot());
+
+  /**
+     \brief Get ChppJoint corresponding to the left ankle.
+  */
+  ChppJoint* hppLeftAnkle();
+
+  /**
+     \brief Get ChppJoint corresponding to the right ankle.
+  */
+  ChppJoint* hppRightAnkle();
 
   /**
      \brief Get gaze joint
