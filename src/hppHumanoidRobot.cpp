@@ -172,7 +172,6 @@ std::ostream& operator<<(std::ostream& os, ChppHumanoidRobot& inRobot)
   os << "gaze direction: " << inRobot.gazeDirection() << std::endl;
 
   CjrlHand* hand;
-  const CjrlJoint* jrlJoint = NULL;
   vector3d v;
   // right hand
   hand = inRobot.rightHand();
