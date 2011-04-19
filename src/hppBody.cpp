@@ -12,7 +12,7 @@
 #include "KineoKCDModel/kppKCDAssembly.h"
 #include "kcd2/kcdAnalysis.h"
 
-#include "MatrixAbstractLayer/MatrixAbstractLayer.h"
+#include "jrl/mal/matrixabstractlayer.hh"
 #include "hppModel/hppBody.h"
 #include "hppModel/hppJoint.h"
 

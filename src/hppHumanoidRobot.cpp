@@ -96,20 +96,6 @@ ChppJoint* ChppHumanoidRobot::hppRightWrist()
 
 // ==========================================================================
 
-ChppJoint* ChppHumanoidRobot::hppLeftFoot()
-{
-  return hppLeftAnkle();
-}
-
-// ==========================================================================
-
-ChppJoint* ChppHumanoidRobot::hppRightFoot()
-{
-  return hppRightAnkle();
-}
-
-// ==========================================================================
-
 ChppJoint* ChppHumanoidRobot::hppLeftAnkle()
 {
   return jrlToHppJoint(leftAnkle());
@@ -229,10 +215,6 @@ std::ostream& operator<<(std::ostream& os, ChppHumanoidRobot& inRobot)
     os << "  sole width: " << soleWidth << std::endl;
     foot->getAnklePositionInLocalFrame(v);
     os << "  ankle position in local frame: " << v << std::endl;
-    foot->getProjectionCenterLocalFrameInSole(v);
-    os << "  projection center local frame in sole: " << v << std::endl;
-    foot->getSoleCenterInLocalFrame(v);
-    os << "  sole center in local frame: " << v << std::endl;
   } else {
     os << "no right foot" << std::endl;
   }
@@ -246,10 +228,6 @@ std::ostream& operator<<(std::ostream& os, ChppHumanoidRobot& inRobot)
     os << "  sole width: " << soleWidth << std::endl;
     foot->getAnklePositionInLocalFrame(v);
     os << "  ankle position in local frame: " << v << std::endl;
-    foot->getProjectionCenterLocalFrameInSole(v);
-    os << "  projection center local frame in sole: " << v << std::endl;
-    foot->getSoleCenterInLocalFrame(v);
-    os << "  sole center in local frame: " << v << std::endl;
   } else {
     os << "no left foot" << std::endl;
   }

@@ -14,8 +14,8 @@
 #include "kcd2/kcdInterface.h"
 #include "kwsKcd2/kwsKCDBody.h"
 
-#include "MatrixAbstractLayer/MatrixAbstractLayer.h"
-#include "robotDynamics/jrlHumanoidDynamicRobot.h"
+#include "jrl/mal/matrixabstractlayer.hh"
+#include "abstract-robot-dynamics/humanoid-dynamic-robot.hh"
 #include "hppModel/hppHumanoidRobot.h"
 
 template <class HDR = CimplHumanoidDynamicRobot>

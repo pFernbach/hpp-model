@@ -31,10 +31,10 @@ if test "$setdefaultflags" = "yes"; then
   fi
 fi
 
-define(abtractiface_reqd, [abstractRobotDynamics >= 1.14.0])
+define(abtractiface_reqd, [abstract-robot-dynamics >= 1.14.0])
 AC_SUBST(ABTRACTIFACE_REQD, "abtractiface_reqd")
 PKG_CHECK_MODULES(ABSTRACTROBOTDYNAMICS, abtractiface_reqd)
-ABSTRACTROBOTDYNAMICS_DOCDIR=`$PKG_CONFIG abstractRobotDynamics --variable=docdir`
+ABSTRACTROBOTDYNAMICS_DOCDIR=`$PKG_CONFIG abstract-robot-dynamics --variable=docdir`
 AC_SUBST(ABSTRACTROBOTDYNAMICS_DOCDIR)
 
 PKG_CHECK_MODULES(KINEOCONTROLLER, KineoController)
@@ -45,44 +45,14 @@ AC_SUBST(KINEOCONTROLLER_PREFIX)
 
 AC_SUBST(ROBOTDYNAMICSIMPL_REQUIRE, [])
 
-dnl --- Implementation of jrlAbstractRobotDynamics --------------------
-
-AC_ARG_WITH(robotDynamics, AC_HELP_STRING([--with-robotDynamics],
-	[which implementation of abstractRobotDynamics to use]),,with_robotDynamics=no)
-
-case "${with_robotDynamics}" in
-   dynamicsJRLJapan) ;;
-   yes|no|*)
-	AC_MSG_WARN([You must choose an implementation of abstract interfaces])
-	AC_MSG_WARN([for robot dynamic model. Available implementations are:])
-	AC_MSG_WARN([	dynamicsJRLJapan])
-	AC_MSG_ERROR([--with-robotDynamics option missing])
-	;;
-esac
-
-PKG_CHECK_MODULES(ROBOTDYNAMICSIMPL, $with_robotDynamics)
-AC_SUBST(ROBOTDYNAMICSIMPL, $with_robotDynamics)
-AC_SUBST(ROBOTDYNAMICSIMPL_CFLAGS)
-AC_SUBST(ROBOTDYNAMICSIMPL_LIBS)
-ROBOTDYNAMICSIMPL_DOCDIR=`$PKG_CONFIG $with_robotDynamics --variable=docdir`
-AC_SUBST(ROBOTDYNAMICSIMPL_DOCDIR)
-
-dnl --- Get name of classes ---------------------------------
-
-dnl CIMPLDYNAMICROBOT=`$PKG_CONFIG $with_robotDynamics --variable=CimplDynamicRobot`
-dnl AC_SUBST(CIMPLDYNAMICROBOT)
-
-dnl CIMPLHUMANOIDDYNAMICROBOT=`$PKG_CONFIG $with_robotDynamics --variable=CimplHumanoidDynamicRobot`
-dnl AC_SUBST(CIMPLHUMANOIDDYNAMICROBOT)
-
-dnl CIMPLJOINTFREEFLYER=`$PKG_CONFIG $with_robotDynamics --variable=CimplJointFreeFlyer`
-dnl AC_SUBST(CIMPLJOINTFREEFLYER)
-
-dnl CIMPLJOINTROTATION=`$PKG_CONFIG $with_robotDynamics --variable=CimplJointRotation`
-dnl AC_SUBST(CIMPLJOINTROTATION)
-
-dnl CIMPLJOINTTRANSLATION=`$PKG_CONFIG $with_robotDynamics --variable=CimplJointTranslation`
-dnl AC_SUBST(CIMPLJOINTTRANSLATION)
+define(jrldynamics_reqd, [jrl-dynamics >= 1.19])
+AC_SUBST([JRL_DYNAMICS_REQD], ["jrldynamics_reqd"])
+PKG_CHECK_MODULES([JRL_DYNAMICS], [jrldynamics_reqd])
+AC_SUBST([JRL_DYNAMICS_PREFIX])
+AC_SUBST([JRL_DYNAMICS_CFLAGS])
+AC_SUBST([JRL_DYNAMICS_LIBS])
+JRL_DYNAMICS_DOCDIR=`$PKG_CONFIG jrl-dynamics --variable=docdir`
+AC_SUBST([JRL_DYNAMICS_DOCDIR])
 
 dnl --- kwsIO ------------------------------------------------
 
@@ -94,7 +64,6 @@ AC_OUTPUT(
 	hppModel.pc
 	Makefile
 	include/Makefile
-	include/hppModel/hppImplRobotDynamics.h
 	src/Makefile
 	doc/Makefile
 	doc/package.dox

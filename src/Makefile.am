@@ -11,7 +11,7 @@ libhppModel_la_SOURCES = \
 	hppJoint.cpp 
 
 libhppModel_la_LDFLAGS = \
-	$(ROBOTDYNAMICSIMPL_LIBS)$ 	\
+	$(JRL_DYNAMICS_LIBS)$ 	\
 	$(KINEOCONTROLLER_LIBS)$ 	\
 	$(KWSIO_LIBS)			\
 	-release ${PACKAGE_VERSION}
@@ -19,6 +19,6 @@ libhppModel_la_LDFLAGS = \
 libhppModel_la_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_builddir)/include \
-	$(ROBOTDYNAMICSIMPL_CFLAGS)$ \
+	$(JRL_DYNAMICS_CFLAGS)$ \
 	$(KINEOCONTROLLER_CFLAGS)$ \
 	$(KWSIO_CFLAGS)

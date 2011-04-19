@@ -4,7 +4,7 @@
  *  Author: Florent Lamiraux
  */
 
-#include "MatrixAbstractLayer/MatrixAbstractLayer.h"
+#include "jrl/mal/matrixabstractlayer.hh"
 #include "hppModel/hppDevice.h" 
 
 /**

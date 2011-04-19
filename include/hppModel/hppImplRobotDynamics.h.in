@@ -1,6 +1,0 @@
-#ifndef HPPIMPLROBOTDYNAMICS_H 
-#define HPPIMPLROBOTDYNAMICS_H
-
-#include "@ROBOTDYNAMICSIMPL@/robotDynamicsImpl.h"
-
-#endif

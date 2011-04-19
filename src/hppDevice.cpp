@@ -12,7 +12,7 @@
 #include "KineoModel/kppRotationJointComponent.h"
 #include "KineoModel/kppTranslationJointComponent.h"
 
-#include "MatrixAbstractLayer/MatrixAbstractLayer.h"
+#include "jrl/mal/matrixabstractlayer.hh"
 #include "hppModel/hppJoint.h"
 #include "hppModel/hppDevice.h"
 #include "hppModel/hppBody.h"

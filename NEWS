@@ -1,3 +1,10 @@
+04/19/2011 Release 1.8
+
+    Implementation of abstract-robot-dynamics not configurable anymore,
+    jrl-dynamics is used.
+    Comply with modification in abstract-robot-dynamics and jrl-dynamics package
+    modifications.
+
 01/16/2010 Release 1.7.4
 
 	   Set errno before calling asin

@@ -8,7 +8,7 @@ docdir=@datadir@/doc/@PACKAGE_NAME@
 Name: @PACKAGE@
 Description: 
 Version: @VERSION@
-Requires: @ABTRACTIFACE_REQD@, @ROBOTDYNAMICSIMPL@, KineoController, kwsIO
+Requires: @ABTRACTIFACE_REQD@, @JRL_DYNAMICS_REQD@, KineoController, kwsIO
 Libs: -L${libdir} -lhppModel
 Cflags: -I${includedir}
 

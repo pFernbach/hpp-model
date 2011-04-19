@@ -14,9 +14,9 @@
 #include "kcd2/kcdInterface.h"
 #include "kwsKcd2/kwsKCDBody.h"
 
-#include "MatrixAbstractLayer/MatrixAbstractLayer.h"
-#include "robotDynamics/jrlHumanoidDynamicRobot.h"
-#include <robotDynamics/deprecated.h>
+#include "jrl/mal/matrixabstractlayer.hh"
+#include "abstract-robot-dynamics/humanoid-dynamic-robot.hh"
+#include <abstract-robot-dynamics/deprecated.hh>
 #include "hppModel/hppDevice.h"
 
 /**
@@ -84,18 +84,6 @@ public:
      \brief Get ChppJoint corresponding to the right wrist.
   */
   ChppJoint* hppRightWrist();
-
-  /**
-     \brief Get ChppJoint corresponding to the left foot.
-     \deprecated Use ChppHumanoidRobot::hppLeftAnkle() instead.
-  */
-  JRLDEPRECATED(ChppJoint* hppLeftFoot());
-
-  /**
-     \brief Get ChppJoint corresponding to the right foot.
-     \deprecated Use ChppHumanoidRobot::hppRightAnkle() instead.
-  */
-  JRLDEPRECATED(ChppJoint* hppRightFoot());
 
   /**
      \brief Get ChppJoint corresponding to the left ankle.
