@@ -75,14 +75,6 @@ public:
   */
   static ChppSpecificHumanoidRobotShPtr create(std::string inName);
 
-  /**
-     \brief Copy of a device
-     \return A shared pointer to new device.
-     \param inDevice Device to be copied.
-  */
-  static ChppSpecificHumanoidRobotShPtr
-    createCopy(const ChppSpecificHumanoidRobotShPtr& inDevice);
-
 protected:
   /**
      \brief Constructor
@@ -142,27 +134,10 @@ ChppSpecificHumanoidRobot<HDR>::create(std::string inName)
 
 // ==========================================================================
 
-template <class HDR> ChppSpecificHumanoidRobotShPtr
-ChppSpecificHumanoidRobot<HDR>::createCopy
-(const ChppSpecificHumanoidRobotShPtr& inDevice)
-{
-  ChppSpecificHumanoidRobot<HDR>* ptr =
-    new ChppSpecificHumanoidRobot<HDR>(*inDevice);
-  ChppSpecificHumanoidRobotShPtr deviceShPtr(ptr);
-
-  if(KD_OK != ptr->init(deviceShPtr, inDevice))	{
-    deviceShPtr.reset();
-  }
-
-  return deviceShPtr;
-}
-
-// ==========================================================================
-
 template <class HDR> CkwsDeviceShPtr
 ChppSpecificHumanoidRobot<HDR>::clone() const
 {
-  return ChppSpecificHumanoidRobot<HDR>::createCopy(attWeakPtr.lock());
+  return CkwsDeviceShPtr();
 }
 
 // ==========================================================================
@@ -170,7 +145,7 @@ ChppSpecificHumanoidRobot<HDR>::clone() const
 template <class HDR> CkppComponentShPtr
 ChppSpecificHumanoidRobot<HDR>::cloneComponent() const
 {
-  return ChppSpecificHumanoidRobot<HDR>::createCopy(attWeakPtr.lock());
+  return CkppComponentShPtr();
 }
 
 // ==========================================================================
@@ -178,7 +153,7 @@ ChppSpecificHumanoidRobot<HDR>::cloneComponent() const
 template <class HDR> bool
 ChppSpecificHumanoidRobot<HDR>::isComponentClonable() const
 {
-  return true;
+  return false;
 }
 
 // ==========================================================================
