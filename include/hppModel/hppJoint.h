@@ -10,8 +10,8 @@
 #include "KineoModel/kppJointComponent.h"
 #include "hppModel/hppDevice.h"
 
-KIT_PREDEF_CLASS(ChppJoint)
-KIT_PREDEF_CLASS(ChppBody)
+KIT_PREDEF_CLASS(ChppJoint);
+KIT_PREDEF_CLASS(ChppBody);
 /**
    \brief Joint of a ChppDevice
 */
