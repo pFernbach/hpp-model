@@ -44,6 +44,7 @@ SET(${PROJECT_NAME}_HEADERS
 # Declare dependencies
 ADD_REQUIRED_DEPENDENCY("jrl-dynamics >= 1.19")
 ADD_REQUIRED_DEPENDENCY("kwsIO >= 1.0")
+ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.4")
 
 # Add dependency toward hpp-model library in pkg-config file.
 PKG_CONFIG_APPEND_LIBS("hpp-model")

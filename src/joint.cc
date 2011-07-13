@@ -35,6 +35,8 @@
 #include "hpp/model/body.hh"
 #include "hpp/model/exception.hh"
 
+using hpp::model::Body;
+using hpp::model::BodyShPtr;
 using hpp::model::Joint;
 using hpp::model::JointShPtr;
 using hpp::model::JointWkPtr;
@@ -231,7 +233,7 @@ void Joint::velocityBounds(unsigned int dofRank,
   jrlJoint()->upperVelocityBound(dofRank, upperVelocityBound);
 }
 
-void Joint::setAttachedBody(const ChppBodyShPtr& body)
+void Joint::setAttachedBody(const BodyShPtr& body)
 {
   ///
   /// Attach the body to the geometric part of the joint
@@ -248,9 +250,9 @@ void Joint::setAttachedBody(const ChppBodyShPtr& body)
   body->hppJoint(this);
 }
 
-ChppBodyShPtr Joint::attachedBody() const
+BodyShPtr Joint::attachedBody() const
 {
-  return KIT_DYNAMIC_PTR_CAST(ChppBody, kppJoint()->kwsJoint()->attachedBody());
+  return KIT_DYNAMIC_PTR_CAST(Body, kppJoint()->kwsJoint()->attachedBody());
 }
 
 ktStatus Joint::init(const JointWkPtr& weakPtr)
@@ -362,7 +364,7 @@ std::ostream& operator<<(std::ostream& os, const Joint& joint)
   os << "Current transformation geometric part:" << std::endl;
   os << joint.kppJoint()->kwsJoint()->currentPosition() << std:: endl;
 
-  ChppBodyShPtr hppBody = joint.attachedBody();
+  BodyShPtr hppBody = joint.attachedBody();
   if (hppBody) {
     os << "Attached body:" << std::endl;
     os << "Mass of the attached body: " << hppBody->mass() << std::endl;

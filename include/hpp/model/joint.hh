@@ -25,15 +25,14 @@
 #include <KineoModel/kppProperty.h>
 #include <KineoModel/kppJointComponent.h>
 
+#include "hpp/model/fwd.hh"
+
 KIT_PREDEF_CLASS(CkppDoubleProperty);
 KIT_PREDEF_CLASS(CkwsJoint);
 KIT_PREDEF_CLASS(CjrlJoint);
-KIT_PREDEF_CLASS(ChppBody);
 
 namespace hpp {
   namespace model {
-    KIT_PREDEF_CLASS(Body);
-    KIT_PREDEF_CLASS(Joint);
     class Joint
     {
     public:
@@ -180,12 +179,12 @@ namespace hpp {
       ///
       /// \brief Attach a body to the joint
       ///
-      void setAttachedBody(const ChppBodyShPtr& inBody);
+      void setAttachedBody(const BodyShPtr& inBody);
 
       ///
       /// \brief Get the body attached to the joint
       ///
-      ChppBodyShPtr attachedBody() const;
+      BodyShPtr attachedBody() const;
 
       ///
       /// @}
