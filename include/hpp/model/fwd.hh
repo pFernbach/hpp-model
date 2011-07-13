@@ -20,11 +20,13 @@
 #ifndef HPP_MODEL_FWD_HH
 # define HPP_MODEL_FWD_HH
 
+#include <KineoUtility/kitDefine.h>
 namespace hpp {
   namespace model {
-    class Exception;
-    class FreeflyerJoint;
-    class Joint;
+    KIT_PREDEF_CLASS(Exception);
+    KIT_PREDEF_CLASS(FreeflyerJoint);
+    KIT_PREDEF_CLASS(Joint);
+    KIT_PREDEF_CLASS(Body);
   } // namespace model
 } // namespace hpp
 #endif //HPP_MODEL_FWD_HH
