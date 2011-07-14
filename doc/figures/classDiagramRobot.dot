@@ -2,23 +2,22 @@ digraph CD  {
 	size = "8,15"
 	rankdir = BT
 	compound=true
-	CjrlDynamicRobot [shape = box] 
-	CjrlHumanoidDynamicRobot [shape = box] 
-	CjrlHumanoidDynamicRobot -> CjrlDynamicRobot;
-	CkppDeviceComponent [shape = box]
-	"ChppDevice" [shape = box]
-	"ChppHumanoidRobot" [shape = box]
-	"ChppDevice" -> CkppDeviceComponent [style = bold]
-	"ChppDevice" -> CimplDynamicRobot
-	"ChppHumanoidRobot" -> "ChppDevice" [style = bold]
-	"ChppHumanoidRobot" -> CimplHumanoidDynamicRobot 
+	"CjrlDynamicRobot" [shape = box]
+	"CjrlHumanoidDynamicRobot" [shape = box]
+	"CjrlHumanoidDynamicRobot" -> "CjrlDynamicRobot";
+	"CkppDeviceComponent" [shape = box]
+	"hpp::model::Device" [shape = box]
+	"hpp::model::HumanoidRobot" [shape = box]
+	"hpp::model::Device" -> "CkppDeviceComponent" [style = bold]
+	"hpp::model::Device" -> "hpp::model::impl::DynamicRobot"
+	"hpp::model::HumanoidRobot" -> "hpp::model::Device" [style = bold]
+	"hpp::model::HumanoidRobot" -> "hpp::model::impl::HumanoidDynamicRobot"
 
 	subgraph cluster0 {
-		CimplDynamicRobot [shape = box] 
-		CimplHumanoidDynamicRobot [shape = box]
+		"hpp::model::impl::DynamicRobot" [shape = box]
+		"hpp::model::impl::HumanoidDynamicRobot" [shape = box]
 	}
-	CimplDynamicRobot -> CjrlDynamicRobot
-	CimplHumanoidDynamicRobot -> CjrlHumanoidDynamicRobot [style = bold]
-	CimplHumanoidDynamicRobot -> CimplDynamicRobot
+	"hpp::model::impl::DynamicRobot" -> "CjrlDynamicRobot"
+	"hpp::model::impl::HumanoidDynamicRobot" -> "CjrlHumanoidDynamicRobot" [style = bold]
+	"hpp::model::impl::HumanoidDynamicRobot" -> "hpp::model::impl::DynamicRobot"
 }
-

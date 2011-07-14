@@ -6,25 +6,25 @@ digraph CD  {
 	CjrlHumanoidDynamicRobot [shape = box] 
 	CjrlHumanoidDynamicRobot -> CjrlDynamicRobot;
 	CkppDeviceComponent [shape = box]
-	"ChppDevice" [shape = box]
-	"ChppSpecificHumanoidRobot<CoptHumanoidDynamicRobot>" [shape = box]
-	"ChppDevice" -> CkppDeviceComponent [style = bold]
-	"ChppDevice" -> CimplDynamicRobot
-	"ChppSpecificHumanoidRobot<CoptHumanoidDynamicRobot>" -> "ChppHumanoidRobot" [style = bold]
-	"ChppSpecificHumanoidRobot<CoptHumanoidDynamicRobot>" -> CoptHumanoidDynamicRobot [style = bold]
+	"hpp::model::Device" [shape = box]
+	"hpp::model::SpecificHumanoidRobot<CoptHumanoidDynamicRobot>" [shape = box]
+	"hpp::model::Device" -> CkppDeviceComponent [style = bold]
+	"hpp::model::Device" -> "hpp::model::impl::DynamicRobot"
+	"hpp::model::SpecificHumanoidRobot<CoptHumanoidDynamicRobot>" -> "hpp::model::HumanoidRobot" [style = bold]
+	"hpp::model::SpecificHumanoidRobot<CoptHumanoidDynamicRobot>" -> "CoptHumanoidDynamicRobot" [style = bold]
 	"CoptHumanoidDynamicRobot" [shape = box]
-	"CoptHumanoidDynamicRobot" -> CimplHumanoidDynamicRobot 
+	"CoptHumanoidDynamicRobot" -> "hpp::model::impl::HumanoidDynamicRobot"
 
-	"ChppHumanoidRobot" [shape = box]
-	"ChppHumanoidRobot" -> "ChppDevice" [style = bold]
-	"ChppHumanoidRobot" -> CimplHumanoidDynamicRobot 
+	"hpp::model::HumanoidRobot" [shape = box]
+	"hpp::model::HumanoidRobot" -> "hpp::model::Device" [style = bold]
+	"hpp::model::HumanoidRobot" -> "hpp::model::impl::HumanoidDynamicRobot" 
 
 	subgraph cluster0 {
-		CimplDynamicRobot [shape = box] 
-		CimplHumanoidDynamicRobot [shape = box]
+		"hpp::model::impl::DynamicRobot" [shape = box] 
+		"hpp::model::impl::HumanoidDynamicRobot" [shape = box]
 	}
-	CimplDynamicRobot -> CjrlDynamicRobot
-	CimplHumanoidDynamicRobot -> CjrlHumanoidDynamicRobot [style = bold]
-	CimplHumanoidDynamicRobot -> CimplDynamicRobot
+	"hpp::model::impl::DynamicRobot" -> "CjrlDynamicRobot"
+	"hpp::model::impl::HumanoidDynamicRobot" -> "CjrlHumanoidDynamicRobot" [style = bold]
+	"hpp::model::impl::HumanoidDynamicRobot" -> "hpp::model::impl::DynamicRobot"
 }
 

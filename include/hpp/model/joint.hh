@@ -93,7 +93,7 @@ namespace hpp {
       ///
       /// \brief Add a child to the joint
       ///
-      virtual void addChildJoint(JointShPtr inJoint);
+      virtual void addChildJoint(JointShPtr joint);
 
       ///
       /// \brief Get number of child joints

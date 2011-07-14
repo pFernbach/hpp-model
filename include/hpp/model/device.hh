@@ -31,7 +31,7 @@
 #include "kcd2/kcdInterface.h"
 #include "kwsKcd2/kwsKCDBody.h"
 
-#include "hppModel/hppImplRobotDynamics.h"
+#include "hpp/model/robot-dynamics-impl.hh"
 #include "hpp/model/fwd.hh"
 
 namespace hpp {
@@ -40,7 +40,7 @@ namespace hpp {
     /// \brief Robot with geometric and dynamic model
 
     /// The dynamic model is implemented through robot dynamics
-    /// abstract interface, by CimplDynamicRobot which is an
+    /// abstract interface, by impl::DynamicRobot which is an
     /// implementation of CjrlDynamicRobot, while the geometric model
     /// is implemented by CkppDeviceComponent (See KPP-SDK
     /// documentation).
@@ -57,7 +57,7 @@ namespace hpp {
     /// Device::hppSetCurrentConfig and two functions
     /// Device::hppGetCurrentConfig are are implemented.
 
-    class Device : public virtual CimplDynamicRobot,
+    class Device : public virtual impl::DynamicRobot,
 		   public CkppDeviceComponent
     {
     public:
@@ -204,7 +204,7 @@ namespace hpp {
 
       /// \note In CkwsConfig, the order of the joint
       /// degrees-of-freedom follow KineoWorks convention.  The
-      /// configuration of the dynamic part (CimplDynamicRobot) is
+      /// configuration of the dynamic part (impl::DynamicRobot) is
       /// thus computed accordingly.
       bool hppSetCurrentConfig(const CkwsConfig& config,
 			       EwhichPart updateWhat=BOTH);
@@ -219,7 +219,7 @@ namespace hpp {
       /// CkppDeviceComponent extra-dofs are set to 0.
       
       /// \note In vectorN, the order of the joint degrees-of-freedom
-      /// follow CimplDynamicRobot convention. The configuration of
+      /// follow impl::DynamicRobot convention. The configuration of
       /// the geometric part (CkppDeviceComponent) is thus computed
       /// accordingly.
       bool hppSetCurrentConfig(const vectorN& config,
@@ -283,12 +283,12 @@ namespace hpp {
       ///
       /// \brief Initialization.
       ///
-      ktStatus init(const DeviceWkPtr& inWeakPtr, const std::string& name);
+      ktStatus init(const DeviceWkPtr& weakPtr, const std::string& name);
 
       ///
       /// \brief Initialization with shared pointer.
       ///
-      ktStatus init(const DeviceWkPtr& inWeakPtr, const DeviceShPtr& device);
+      ktStatus init(const DeviceWkPtr& weakPtr, const DeviceShPtr& device);
 
     private:
 

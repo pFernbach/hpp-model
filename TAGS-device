@@ -1,0 +1,57 @@
+
+src/device.cc,1590
+#undef NDEBUG22,500
+#define ODEBUG2(23,514
+#define ODEBUG1(24,578
+#undef NDEBUG26,657
+#define ODEBUG2(27,671
+#define ODEBUG1(28,690
+#define ODEBUG2(30,760
+#define ODEBUG1(31,779
+ChppDevice::ChppDevice(36,885
+ChppDevice::ChppDevice(43,1097
+ChppDevice::~ChppDevice(50,1253
+ChppDeviceShPtr ChppDevice::create(56,1363
+ChppDeviceShPtr ChppDevice::createCopy(70,1778
+CkwsDeviceShPtr ChppDevice::clone(84,2120
+CkppComponentShPtr ChppDevice::cloneComponent(91,2298
+bool ChppDevice::isComponentClonable(98,2488
+ktStatus ChppDevice::init(105,2632
+ktStatus ChppDevice::init(118,2954
+ChppDevice::axisAlignedBoundingBox 133,3292
+ktStatus ChppDevice::ignoreDeviceForCollision 166,4064
+void ChppDevice::computeBodyBoundingBox(251,6422
+void ChppDevice::ckcdObjectBoundingBox(266,6898
+ktStatus ChppDevice::addObstacle(328,8483
+void ChppDevice::setRootJoint(362,9502
+ChppJoint* ChppDevice::getRootJoint(377,9853
+void ChppDevice::registerJoint(390,10163
+ChppJoint* ChppDevice::kppToHppJoint(401,10458
+ChppJoint* ChppDevice::jrlToHppJoint(412,10804
+bool ChppDevice::kwsToJrlDynamicsDofValues(424,11129
+ChppDevice::jrlDynamicsToKwsDofValues(542,15353
+bool ChppDevice::hppSetCurrentConfig(641,18673
+bool ChppDevice::hppSetCurrentConfig(680,19772
+ChppDevice::RollPitchYawToYawPitchRoll(709,20592
+ChppDevice::YawPitchRollToRollPitchYaw(760,21837
+ChppJoint* ChppDevice::createFreeFlyer(812,23283
+ChppJoint* ChppDevice::createAnchor(848,24182
+ChppJoint* ChppDevice::createRotation(884,25069
+ChppJoint* ChppDevice::createTranslation(920,25964
+std::ostream& operator<<(960,26912
+
+include/hpp/model/device.hh,855
+#define HPP_MODEL_DEVICE_HH21,791
+namespace hpp 39,1151
+  namespace model hpp::model40,1167
+    class Device hpp::model::Device62,2081
+      typedef enum EwhichPart hpp::model::Device::EwhichPart67,2247
+	GEOMETRIC,hpp::model::Device::EwhichPart::GEOMETRIC68,2279
+	DYNAMIC,hpp::model::Device::EwhichPart::DYNAMIC69,2291
+	BOTHhpp::model::Device::EwhichPart::BOTH70,2301
+      } EwhichPart;hpp::model::Device::EwhichPart71,2307
+      DeviceWkPtr attWeakPtr;hpp::model::Device::attWeakPtr305,12291
+      std::map<hpp::model::Device::std::map317,12736
+      std::map<CjrlJoint*, ChppJoint*> attJrlToHppJointMap;hpp::model::Device::attJrlToHppJointMap317,12736
+      std::map<hpp::model::Device::std::map320,12886
+      std::map<CkppJointComponentShPtr, ChppJoint*> attKppToHppJointMap;hpp::model::Device::attKppToHppJointMap320,12886

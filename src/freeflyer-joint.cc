@@ -53,7 +53,7 @@ namespace hpp {
     FreeflyerJoint::FreeflyerJoint(const CkitMat4& initialPosition) :
       hpp::model::Joint(),
       CkppFreeFlyerJointComponent(),
-      dynamicsJRLJapan::JointFreeflyer
+      impl::JointFreeflyer
       (Joint::abstractMatrixFromCkitMat4(initialPosition))
     {
     }
@@ -62,15 +62,15 @@ namespace hpp {
     {
     }
 
-    ktStatus FreeflyerJoint::init (const FreeflyerJointWkPtr &inWeakPtr,
+    ktStatus FreeflyerJoint::init (const FreeflyerJointWkPtr &weakPtr,
 				   const std::string &name,
 				   const CkitMat4& initialPosition)
     {
       ktStatus status = KD_OK;
-      weakPtr_ = inWeakPtr;
-      status = CkppFreeFlyerJointComponent::init(inWeakPtr, name);
+      weakPtr_ = weakPtr;
+      status = CkppFreeFlyerJointComponent::init(weakPtr, name);
       if (status == KD_ERROR) return KD_ERROR;
-      status = Joint::init(inWeakPtr);
+      status = Joint::init(weakPtr);
       if (status == KD_ERROR) return KD_ERROR;
       kwsJoint()->setCurrentPosition(initialPosition);
       return KD_OK;

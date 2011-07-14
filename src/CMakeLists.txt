@@ -24,6 +24,7 @@ ADD_LIBRARY(${LIBRARY_NAME}
   body.cc
   device.cc
   freeflyer-joint.cc
+  humanoid-robot.cc
   joint.cc
   )
 

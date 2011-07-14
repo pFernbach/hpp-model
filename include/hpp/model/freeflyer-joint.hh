@@ -21,7 +21,7 @@
 #define HPP_MODEL_FREEFLYER_JOINT_HH
 
 #include <KineoModel/kppFreeFlyerJointComponent.h>
-#include <jrl/dynamics/joint.hh>
+#include "hpp/model/robot-dynamics-impl.hh"
 #include "hpp/model/joint.hh"
 
 namespace hpp {
@@ -38,7 +38,7 @@ namespace hpp {
     ///
     class FreeflyerJoint : public Joint,
 			   public CkppFreeFlyerJointComponent,
-			   public dynamicsJRLJapan::JointFreeflyer
+			   public impl::JointFreeflyer
 
     {
     public:
@@ -59,8 +59,8 @@ namespace hpp {
       
     protected:
       FreeflyerJoint(const CkitMat4& initialPosition);
-      ktStatus init (const FreeflyerJointWkPtr &inWeakPtr,
-		     const std::string &inName,
+      ktStatus init (const FreeflyerJointWkPtr &weakPtr,
+		     const std::string &name,
 		     const CkitMat4& initialPosition);
       
     private:

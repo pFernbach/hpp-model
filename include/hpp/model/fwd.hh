@@ -26,6 +26,7 @@ namespace hpp {
     KIT_PREDEF_CLASS(Device);
     KIT_PREDEF_CLASS(Exception);
     KIT_PREDEF_CLASS(FreeflyerJoint);
+    KIT_PREDEF_CLASS(HumanoidRobot);
     KIT_PREDEF_CLASS(Joint);
     KIT_PREDEF_CLASS(Body);
   } // namespace model

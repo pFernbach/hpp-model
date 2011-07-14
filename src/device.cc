@@ -25,14 +25,14 @@ namespace hpp {
   namespace model {
 
     Device::Device(CjrlRobotDynamicsObjectFactory *objFactory) :
-      CimplDynamicRobot(objFactory), CkppDeviceComponent()
+      impl::DynamicRobot(objFactory), CkppDeviceComponent()
     {
     }
 
     // ========================================================================
 
     Device::Device() :
-      CimplDynamicRobot(), CkppDeviceComponent()
+      impl::DynamicRobot(), CkppDeviceComponent()
     {
     }
 
@@ -46,7 +46,7 @@ namespace hpp {
 
     DeviceShPtr Device::create(std::string name)
     {
-      CimplObjectFactory* objFactory = new CimplObjectFactory();
+      impl::ObjectFactory* objFactory = new impl::ObjectFactory();
       Device *hppDevice = new Device(objFactory);
       DeviceShPtr hppDeviceShPtr(hppDevice);
 
@@ -362,7 +362,7 @@ namespace hpp {
       /*
 	Set joint as robotDynamics root joint
       */
-      CimplDynamicRobot::rootJoint(*(joint->jrlJoint()));
+      impl::DynamicRobot::rootJoint(*(joint->jrlJoint()));
     }
 
     // ========================================================================

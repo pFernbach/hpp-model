@@ -40,18 +40,27 @@ IF (HPP_DEBUG)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
 ENDIF()
 
+# Declare headers
 SET(${PROJECT_NAME}_HEADERS
+  include/hpp/model/body.hh
   include/hpp/model/device.hh
   include/hpp/model/exception.hh
   include/hpp/model/freeflyer-joint.hh
   include/hpp/model/fwd.hh
+  include/hpp/model/humanoid-robot.hh
   include/hpp/model/joint.hh
+  include/hpp/model/robot-dynamics-impl.hh
+  include/hpp/model/specific-humanoid-robot.hh
   )
 
 # Declare dependencies
+ADD_REQUIRED_DEPENDENCY("abstract-robot-dynamics >= 1.16")
 ADD_REQUIRED_DEPENDENCY("jrl-dynamics >= 1.19")
 ADD_REQUIRED_DEPENDENCY("kwsIO >= 1.0")
 ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.4")
+
+# Compile documentation
+CONFIGURE_FILE(doc/main.hh.in doc/main.hh)
 
 # Add dependency toward hpp-model library in pkg-config file.
 PKG_CONFIG_APPEND_LIBS("hpp-model")

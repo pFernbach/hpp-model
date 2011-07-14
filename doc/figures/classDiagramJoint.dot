@@ -1,32 +1,45 @@
 digraph CD  {
-	size = "12,15"
+	size = "24,30"
 	rankdir = BT
 	compound=true
 
-	ChppJoint [shape = box]
+	"hpp::model::Joint" [shape = box]
+	"hpp::model::JointFreeflyer" [shape = box]
+	"hpp::model::JointTranslation" [shape = box]
+	"hpp::model::JointRotation" [shape = box]
 
 	CjrlJoint [shape = box] 
 	subgraph cluster0 {
-		CimplJoint [shape = box] 
-		CimplJointFreeFlyer [shape = box] 
-		CimplJointRotation [shape = box]
-		CimplJointTranslation [shape = box]
+		"hpp::model::impl::Joint" [shape = box] 
+		"hpp::model::impl::JointFreeflyer" [shape = box] 
+		"hpp::model::impl::JointRotation" [shape = box]
+		"hpp::model::impl::JointTranslation" [shape = box]
 	}
 	subgraph cluster1 {
-		CkppFreeFlyerJointComponent [shape = box]
-		CkppRotationJointComponent [shape = box]
-		CkppTranslationJointComponent [shape = box]
-		CkppJointComponent [shape = box]
+		"CkppFreeflyerJointComponent" [shape = box]
+		"CkppRotationJointComponent" [shape = box]
+		"CkppTranslationJointComponent" [shape = box]
+		"CkppJointComponent" [shape = box]
 	}
 
-	ChppJoint -> CjrlJoint [style=dashed]
-	CimplJoint -> CjrlJoint
-	ChppJoint -> CkppJointComponent [style = dashed]
-	CimplJointFreeFlyer -> CimplJoint
-	CimplJointRotation -> CimplJoint
-	CimplJointTranslation -> CimplJoint
-	CkppFreeFlyerJointComponent -> CkppJointComponent
-	CkppRotationJointComponent -> CkppJointComponent
-	CkppTranslationJointComponent -> CkppJointComponent
+	"hpp::model::impl::Joint" -> CjrlJoint
+	"hpp::model::impl::JointFreeflyer" -> "hpp::model::impl::Joint"
+	"hpp::model::impl::JointRotation" -> "hpp::model::impl::Joint"
+	"hpp::model::impl::JointTranslation" -> "hpp::model::impl::Joint"
+	"CkppFreeflyerJointComponent" -> "CkppJointComponent"
+	"CkppRotationJointComponent" -> "CkppJointComponent"
+	"CkppTranslationJointComponent" -> "CkppJointComponent"
+
+	"hpp::model::JointFreeflyer" -> "hpp::model::Joint"
+	"hpp::model::JointRotation" -> "hpp::model::Joint"
+	"hpp::model::JointTranslation" -> "hpp::model::Joint"
+
+	"hpp::model::JointFreeflyer" -> "hpp::model::impl::JointFreeflyer"
+	"hpp::model::JointRotation" -> "hpp::model::impl::JointRotation"
+	"hpp::model::JointTranslation" -> "hpp::model::impl::JointTranslation"
+
+	"hpp::model::JointFreeflyer" -> "CkppFreeflyerJointComponent"
+	"hpp::model::JointRotation" -> "CkppRotationJointComponent"
+	"hpp::model::JointTranslation" -> "CkppTranslationJointComponent"
 }
 
