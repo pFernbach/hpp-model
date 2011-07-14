@@ -34,7 +34,14 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 SETUP_PROJECT()
 
+# Activate hpp-util logging if requested
+IF (HPP_DEBUG)
+  MESSAGE(STATUS "Activate hpp-util logging.")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
+ENDIF()
+
 SET(${PROJECT_NAME}_HEADERS
+  include/hpp/model/device.hh
   include/hpp/model/exception.hh
   include/hpp/model/freeflyer-joint.hh
   include/hpp/model/fwd.hh
