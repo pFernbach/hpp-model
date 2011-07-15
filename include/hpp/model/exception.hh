@@ -24,6 +24,7 @@
 
 namespace hpp {
   namespace model {
+    /// \brief Exceptions thrown by this package.
     class Exception : public std::exception
     {
     public:

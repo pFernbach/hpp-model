@@ -33,6 +33,10 @@ KIT_PREDEF_CLASS(CjrlJoint);
 
 namespace hpp {
   namespace model {
+    /// \brief Abstract class describing a joint with dynamic and geometric properties
+    /// Implementation of this class should derive from
+    /// \li a CkppDeviceComponent implementation and,
+    /// \li an implementation of CjrlJoint.
     class Joint
     {
     public:
