@@ -21,12 +21,15 @@ SET(LIBRARY_NAME ${PROJECT_NAME})
 
 ADD_LIBRARY(${LIBRARY_NAME}
   SHARED
+  anchor-joint.cc
   body.cc
   device.cc
   freeflyer-joint.cc
   humanoid-robot.cc
   joint.cc
   parser.cc
+  rotation-joint.cc
+  translation-joint.cc
   )
 
 SET_TARGET_PROPERTIES(${LIBRARY_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION})

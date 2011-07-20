@@ -42,6 +42,7 @@ ENDIF()
 
 # Declare headers
 SET(${PROJECT_NAME}_HEADERS
+  include/hpp/model/anchor-joint.hh
   include/hpp/model/body.hh
   include/hpp/model/device.hh
   include/hpp/model/exception.hh
@@ -51,7 +52,9 @@ SET(${PROJECT_NAME}_HEADERS
   include/hpp/model/joint.hh
   include/hpp/model/parser.hh
   include/hpp/model/robot-dynamics-impl.hh
+  include/hpp/model/rotation-joint.hh
   include/hpp/model/specific-humanoid-robot.hh
+  include/hpp/model/translation-joint.hh
   )
 
 # Declare dependencies
