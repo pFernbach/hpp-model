@@ -51,7 +51,8 @@ namespace hpp {
       }
 
       static TranslationJointShPtr create(const std::string& name,
-					  const CkitMat4& initialPosition);
+					  const CkitMat4& initialPosition=
+					  CkitMat4());
 
       virtual void 
       fillPropertyVector(std::vector<CkppPropertyShPtr> &outPropertyVector)
