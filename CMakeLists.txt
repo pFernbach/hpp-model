@@ -49,6 +49,7 @@ SET(${PROJECT_NAME}_HEADERS
   include/hpp/model/fwd.hh
   include/hpp/model/humanoid-robot.hh
   include/hpp/model/joint.hh
+  include/hpp/model/parser.hh
   include/hpp/model/robot-dynamics-impl.hh
   include/hpp/model/specific-humanoid-robot.hh
   )

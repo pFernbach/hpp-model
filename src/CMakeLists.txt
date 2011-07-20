@@ -26,6 +26,7 @@ ADD_LIBRARY(${LIBRARY_NAME}
   freeflyer-joint.cc
   humanoid-robot.cc
   joint.cc
+  parser.cc
   )
 
 SET_TARGET_PROPERTIES(${LIBRARY_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION})
