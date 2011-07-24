@@ -21,6 +21,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 SET(CXX_DISABLE_WERROR TRUE)
 INCLUDE(cmake/base.cmake)
+INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/cpack.cmake)
 
 SET(PROJECT_NAME hpp-model)
@@ -58,6 +59,7 @@ SET(${PROJECT_NAME}_HEADERS
   )
 
 # Declare dependencies
+SEARCH_FOR_BOOST()
 ADD_REQUIRED_DEPENDENCY("abstract-robot-dynamics >= 1.16")
 ADD_REQUIRED_DEPENDENCY("jrl-dynamics >= 1.19")
 ADD_REQUIRED_DEPENDENCY("kwsIO >= 1.0")
@@ -70,6 +72,7 @@ CONFIGURE_FILE(doc/main.hh.in doc/main.hh)
 PKG_CONFIG_APPEND_LIBS("hpp-model")
 
 ADD_SUBDIRECTORY(src)
+ADD_SUBDIRECTORY(tests)
 
 SETUP_PROJECT_FINALIZE()
 SETUP_PROJECT_CPACK()
