@@ -4,6 +4,8 @@
  *  Author: Florent Lamiraux
  */
 
+#include <hpp/util/debug.hh>
+
 #include "hpp/model/exception.hh"
 #include "hpp/model/humanoid-robot.hh"
 #include "hpp/model/joint.hh"
@@ -125,6 +127,17 @@ namespace hpp {
       impl::DynamicRobot(), impl::HumanoidDynamicRobot(objFactory),
       Device()
     {
+      waist(0);
+      chest(0);
+      leftWrist(0);
+      rightWrist(0);
+      leftHand(0);
+      rightHand(0);
+      leftAnkle(0);
+      rightAnkle(0);
+      leftFoot(0);
+      rightFoot(0);
+      gazeJoint(0);
     }
 
     // ======================================================================
@@ -231,12 +244,6 @@ namespace hpp {
     ktStatus HumanoidRobot::init(const HumanoidRobotWkPtr& weakPtr,
 				 const std::string &name)
     {
-      ktStatus success = Device::init(weakPtr, name);
-
-      if(KD_OK == success) {
-	weakPtr_ = weakPtr;
-      }
-
       // Initialize properties
       CkppComponentShPtr component = weakPtr.lock();
       gaze_ = CkppStringProperty::create("GAZE", component,
@@ -470,6 +477,14 @@ namespace hpp {
 	throw Exception("Failed to initialize LEFTPALMNORMALZ property");
       }
 
+      ktStatus success = Device::init(weakPtr, name);
+
+      if(KD_OK == success) {
+	weakPtr_ = weakPtr;
+      }
+      else {
+	hppDout(error, "failed to init Device");
+      }
       return success;
     }
 
@@ -510,6 +525,24 @@ namespace hpp {
       inOutPropertyVector.push_back(leftPalmNormalX_);
       inOutPropertyVector.push_back(leftPalmNormalY_);
       inOutPropertyVector.push_back(leftPalmNormalZ_);
+    }
+
+    // ======================================================================
+
+    void HumanoidRobot::updateProperty(const CkppPropertyShPtr& property)
+    {
+      std::cout << "HumanoidRobot::updateProperty: "
+		<< *property << std::endl;
+    }
+
+    // ======================================================================
+
+    bool HumanoidRobot::modifiedProperty(const CkppPropertyShPtr &property)
+    {
+      if (!CkppDeviceComponent::modifiedProperty(property)) return false;
+      std::cout << "HumanoidRobot::modifiedProperty: "
+		<< *property << std::endl;
+      return true;
     }
 
     // ======================================================================
@@ -848,5 +881,21 @@ std::ostream& operator<<(std::ostream& os, hpp::model::HumanoidRobot& robot)
   } else {
     os << "no left foot" << std::endl;
   }
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const CkppProperty& property)
+{
+  os << property.name();
+  try {
+    const CkppStringProperty& sp =
+      dynamic_cast<const CkppStringProperty&> (property);
+    os << " = " << sp.value();
+  } catch (...) {}
+  try {
+    const CkppDoubleProperty& dp =
+      dynamic_cast<const CkppDoubleProperty&> (property);
+    os << " = " << dp.value();
+  } catch (...) {}
   return os;
 }

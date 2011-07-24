@@ -19,6 +19,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <kprParserXML/kprParserManager.h>
+#include <hpp/util/debug.hh>
 #include "hpp/model/humanoid-robot.hh"
 #include "hpp/model/freeflyer-joint.hh"
 #include "hpp/model/rotation-joint.hh"
@@ -34,19 +35,20 @@ namespace hpp {
       CkprParserManager::defaultManager()->addXMLWriterMethod < Parser >
 	(this, &Parser::writeHumanoidRobot);
       // Read humanoid robot
-      status =
-	CkprParserManager::defaultManager()->addXMLInheritedBuilderMethod < Parser >
-	("HPP_HUMANOID_ROBOT", "DEVICE", this, &Parser::buildHumanoidRobot, NULL);
+      status =CkprParserManager::defaultManager()->addXMLInheritedBuilderMethod
+	<Parser>("HPP_HUMANOID_ROBOT", "DEVICE", this,
+		 &Parser::buildHumanoidRobot, NULL);
       assert(status == KD_OK);
+      hppDout(info, "register HPP_HUMANOID_ROBOT tag");
       // Write freeflyer joint
       CkprParserManager::defaultManager()->addXMLWriterMethod < Parser >
 	(this, &Parser::writeFreeflyerJoint);
       // Read freeflyer joint
-      status =
-	CkprParserManager::defaultManager()->addXMLInheritedBuilderMethod < Parser >
-	("HPP_FREEFLYER_JOINT", "FREEFLYER_JOINT", this,
-	 &Parser::buildFreeflyerJoint, NULL);
+      status =CkprParserManager::defaultManager()->addXMLInheritedBuilderMethod
+	<Parser>("HPP_FREEFLYER_JOINT", "FREEFLYER_JOINT", this,
+		 &Parser::buildFreeflyerJoint, NULL);
       assert(status == KD_OK);
+      hppDout(info, "register HPP_FREEFLYER_JOINT tag");
       // Write rotation joint
       CkprParserManager::defaultManager()->addXMLWriterMethod < Parser >
 	(this, &Parser::writeRotationJoint);
@@ -56,6 +58,7 @@ namespace hpp {
 	("HPP_ROTATION_JOINT", "ROTATION_JOINT", this,
 	 &Parser::buildRotationJoint, NULL);
       assert(status == KD_OK);
+      hppDout(info, "register HPP_ROTATION_JOINT tag");
       // Write translation joint
       CkprParserManager::defaultManager()->addXMLWriterMethod < Parser >
 	(this, &Parser::writeTranslationJoint);
@@ -65,6 +68,7 @@ namespace hpp {
 	("HPP_TRANSLATION_JOINT", "TRANSLATION_JOINT", this,
 	 &Parser::buildTranslationJoint, NULL);
       assert(status == KD_OK);
+      hppDout(info, "register HPP_TRANSLATION_JOINT tag");
     }
 
     Parser::~Parser()
@@ -90,7 +94,11 @@ namespace hpp {
      CkprXMLBuildingContextShPtr& inOutContext,
      CkppComponentShPtr& outComponent)
     {
+      hppDout(info, "building HumanoidRobot.");
       outComponent = HumanoidRobot::create("Humanoid Robot");
+      if (!outComponent) {
+	hppDout(error, "failed to create HumanoidRobot");
+      }
       return KD_OK;
     }
 

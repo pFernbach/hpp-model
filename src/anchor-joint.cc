@@ -21,9 +21,12 @@
 #include <sstream>
 #include <string>
 
+#include <hpp/util/debug.hh>
+
 #include "hpp/model/joint.hh"
 #include "hpp/model/anchor-joint.hh"
 #include "hpp/model/exception.hh"
+#include "hpp/model/humanoid-robot.hh"
 
 namespace hpp {
   namespace model {
@@ -39,6 +42,7 @@ namespace hpp {
 	shPtr.reset();
 	return shPtr;
       }
+      hppDout(info, "Created anchor joint " + name);
       return shPtr;
     }
 
@@ -48,6 +52,15 @@ namespace hpp {
     {
       CkppAnchorJointComponent::fillPropertyVector(outPropertyVector);
       Joint::fillPropertyVector(outPropertyVector);
+    }
+
+    bool AnchorJoint::modifiedProperty(const CkppPropertyShPtr &property)
+    {
+      if (!CkppAnchorJointComponent::modifiedProperty(property))
+	return false;
+      std::cout << "AnchorJoint::modifiedProperty: "
+		<< *property << std::endl;
+      return true;
     }
 
     AnchorJoint::AnchorJoint(const CkitMat4& initialPosition) :

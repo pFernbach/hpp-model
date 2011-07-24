@@ -21,9 +21,12 @@
 #include <sstream>
 #include <string>
 
+#include <hpp/util/debug.hh>
+
 #include "hpp/model/joint.hh"
 #include "hpp/model/rotation-joint.hh"
 #include "hpp/model/exception.hh"
+#include "hpp/model/humanoid-robot.hh"
 
 namespace hpp {
   namespace model {
@@ -39,6 +42,7 @@ namespace hpp {
 	shPtr.reset();
 	return shPtr;
       }
+      hppDout(info, "Created rotation joint " + name);
       return shPtr;
     }
 
@@ -48,6 +52,15 @@ namespace hpp {
     {
       CkppRotationJointComponent::fillPropertyVector(outPropertyVector);
       Joint::fillPropertyVector(outPropertyVector);
+    }
+
+    bool RotationJoint::modifiedProperty(const CkppPropertyShPtr &property)
+    {
+      if (!CkppRotationJointComponent::modifiedProperty(property))
+	return false;
+      std::cout << "RotationJoint::modifiedProperty: "
+		<< *property << std::endl;
+      return true;
     }
 
     RotationJoint::RotationJoint(const CkitMat4& initialPosition) :

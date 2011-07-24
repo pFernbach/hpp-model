@@ -21,9 +21,12 @@
 #include <sstream>
 #include <string>
 
+#include <hpp/util/debug.hh>
+
 #include "hpp/model/joint.hh"
 #include "hpp/model/translation-joint.hh"
 #include "hpp/model/exception.hh"
+#include "hpp/model/humanoid-robot.hh"
 
 namespace hpp {
   namespace model {
@@ -39,6 +42,7 @@ namespace hpp {
 	shPtr.reset();
 	return shPtr;
       }
+      hppDout(info, "Created translation joint " + name);
       return shPtr;
     }
 
@@ -48,6 +52,15 @@ namespace hpp {
     {
       CkppTranslationJointComponent::fillPropertyVector(outPropertyVector);
       Joint::fillPropertyVector(outPropertyVector);
+    }
+
+    bool TranslationJoint::modifiedProperty(const CkppPropertyShPtr &property)
+    {
+      if (!CkppTranslationJointComponent::modifiedProperty(property))
+	return false;
+      std::cout << "TranslationJoint::modifiedProperty: "
+		<< *property << std::endl;
+      return true;
     }
 
     TranslationJoint::TranslationJoint(const CkitMat4& initialPosition) :

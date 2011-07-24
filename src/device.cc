@@ -100,6 +100,8 @@ namespace hpp {
 
       if(KD_OK == success) {
 	weakPtr_ = weakPtr;
+      } else {
+	hppDout(error, "failed to initialize CkppDeviceComponent.");
       }
       return success;
     }

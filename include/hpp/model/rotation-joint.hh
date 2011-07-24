@@ -58,6 +58,10 @@ namespace hpp {
       fillPropertyVector(std::vector<CkppPropertyShPtr> &outPropertyVector)
 	const;
       
+      /// \brief Called when a property is set
+      /// Update dynamic part.
+      virtual bool modifiedProperty(const CkppPropertyShPtr &property);
+
     protected:
       RotationJoint(const CkitMat4& initialPosition);
       ktStatus init (const RotationJointWkPtr &weakPtr,

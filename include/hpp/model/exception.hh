@@ -28,7 +28,7 @@ namespace hpp {
     class Exception : public std::exception
     {
     public:
-      virtual ~Exception() throw ();
+      virtual ~Exception() throw () {};
       Exception (const std::string& message) : message_(message) {}
       virtual const char* what () const throw ()
       {

@@ -1,25 +1,0 @@
-
-include/hpp/model/humanoid-robot.hh,263
-#define HPP_MODEL_HUMANOID_ROBOT_HH21,799
-namespace hpp 35,1157
-  namespace model hpp::model36,1173
-    class ChppHumanoidRobot hpp::model::ChppHumanoidRobot38,1276
-      ChppHumanoidRobotWkPtr attWeakPtr;hpp::model::ChppHumanoidRobot::attWeakPtr153,3750
-
-src/humanoid-robot.cc,785
-ChppHumanoidRobot::ChppHumanoidRobot12,223
-ChppHumanoidRobotShPtr ChppHumanoidRobot::create(21,472
-ChppHumanoidRobot::createCopy(36,945
-CkwsDeviceShPtr ChppHumanoidRobot::clone(50,1306
-CkppComponentShPtr ChppHumanoidRobot::cloneComponent(57,1498
-bool ChppHumanoidRobot::isComponentClonable(64,1702
-ChppJoint* ChppHumanoidRobot::hppWaist(71,1853
-ChppJoint* ChppHumanoidRobot::hppChest(78,2011
-ChppJoint* ChppHumanoidRobot::hppLeftWrist(85,2169
-ChppJoint* ChppHumanoidRobot::hppRightWrist(92,2335
-ChppJoint* ChppHumanoidRobot::hppLeftAnkle(99,2503
-ChppJoint* ChppHumanoidRobot::hppRightAnkle(106,2669
-ChppJoint* ChppHumanoidRobot::hppGazeJoint(113,2837
-ktStatus ChppHumanoidRobot::init(120,3003
-ktStatus ChppHumanoidRobot::init(133,3330
-std::ostream& operator<<(146,3628

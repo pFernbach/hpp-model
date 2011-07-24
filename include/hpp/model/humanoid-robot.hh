@@ -169,12 +169,22 @@ namespace hpp {
       /// \brief Whether component is clonable.
       /// \return true
       bool isComponentClonable() const;
+
+      ///
+      /// @}
+      /// \name Properties
+      /// @{
+
       /// \brief Define the properties of the device.
       virtual void
       fillPropertyVector(std::vector<CkppPropertyShPtr>& inOutPropertyVector)
 	const;
+      /// \brief Called when a property is read
+      virtual void updateProperty(const CkppPropertyShPtr& property);
 
-
+      /// \brief Called when a property is set
+      /// Update dynamic part.
+      virtual bool modifiedProperty(const CkppPropertyShPtr &property);
       ///
       /// @}
       ///
@@ -244,4 +254,6 @@ namespace hpp {
   } // namespace model
 } // namespace hpp
 std::ostream& operator<<(std::ostream& os, hpp::model::HumanoidRobot& robot);
+std::ostream& operator<<(std::ostream& os, const CkppProperty& property);
+
 #endif // HPP_MODEL_HUMANOID_ROBOT_HH

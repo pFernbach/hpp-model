@@ -21,9 +21,12 @@
 #include <sstream>
 #include <string>
 
+#include <hpp/util/debug.hh>
+
 #include "hpp/model/joint.hh"
 #include "hpp/model/freeflyer-joint.hh"
 #include "hpp/model/exception.hh"
+#include "hpp/model/humanoid-robot.hh"
 
 namespace hpp {
   namespace model {
@@ -39,6 +42,7 @@ namespace hpp {
 	shPtr.reset();
 	return shPtr;
       }
+      hppDout(info, "Created freeflyer joint " + name);
       return shPtr;
     }
 
@@ -48,6 +52,15 @@ namespace hpp {
     {
       CkppFreeFlyerJointComponent::fillPropertyVector(outPropertyVector);
       Joint::fillPropertyVector(outPropertyVector);
+    }
+
+    bool FreeflyerJoint::modifiedProperty(const CkppPropertyShPtr &property)
+    {
+      if (!CkppFreeFlyerJointComponent::modifiedProperty(property))
+	return false;
+      std::cout << "FreeflyerJoint::modifiedProperty: "
+		<< *property << std::endl;
+      return true;
     }
 
     FreeflyerJoint::FreeflyerJoint(const CkitMat4& initialPosition) :
