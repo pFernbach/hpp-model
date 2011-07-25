@@ -190,6 +190,13 @@ namespace hpp {
       ///
       BodyShPtr attachedBody() const;
 
+      /// \brief Insert a body of type hpp::model::Body before adding geometry
+      /// When the first solid component is added to a joint component,
+      /// an object of class CkwsKCDBody is inserted to the underlying
+      /// CkwsJoint. To replace the CkwsKCDBody by an hpp::model::Body, we
+      /// insert it beforehand.
+      void insertBody();
+
       ///
       /// @}
       ///
@@ -227,16 +234,18 @@ namespace hpp {
       static const CkppProperty::TPropertyID INERTIA_MATRIX_YZ_ID;
       static const std::string INERTIA_MATRIX_YZ_STRING_ID;
       
-      CkppDoublePropertyShPtr mass;
-      CkppDoublePropertyShPtr comX;
-      CkppDoublePropertyShPtr comY;
-      CkppDoublePropertyShPtr comZ;
-      CkppDoublePropertyShPtr inertiaMatrixXX;
-      CkppDoublePropertyShPtr inertiaMatrixYY;
-      CkppDoublePropertyShPtr inertiaMatrixZZ;
-      CkppDoublePropertyShPtr inertiaMatrixXY;
-      CkppDoublePropertyShPtr inertiaMatrixXZ;
-      CkppDoublePropertyShPtr inertiaMatrixYZ;
+    private:
+      
+      CkppDoublePropertyShPtr mass_;
+      CkppDoublePropertyShPtr comX_;
+      CkppDoublePropertyShPtr comY_;
+      CkppDoublePropertyShPtr comZ_;
+      CkppDoublePropertyShPtr inertiaMatrixXX_;
+      CkppDoublePropertyShPtr inertiaMatrixYY_;
+      CkppDoublePropertyShPtr inertiaMatrixZZ_;
+      CkppDoublePropertyShPtr inertiaMatrixXY_;
+      CkppDoublePropertyShPtr inertiaMatrixXZ_;
+      CkppDoublePropertyShPtr inertiaMatrixYZ_;
 
       ///
       /// @}
@@ -246,6 +255,7 @@ namespace hpp {
       Joint();
       /// \brief Create properties and store weak pointer
       ktStatus init(const JointWkPtr& weakPtr);
+
     private:
       JointWkPtr weakPtr_;
     }; // class Joint

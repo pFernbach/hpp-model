@@ -58,8 +58,8 @@ namespace hpp {
     {
       if (!CkppFreeFlyerJointComponent::modifiedProperty(property))
 	return false;
-      std::cout << "FreeflyerJoint::modifiedProperty: "
-		<< *property << std::endl;
+      hppDout(info,"FreeflyerJoint::modifiedProperty: "
+		<< *property);
       return true;
     }
 

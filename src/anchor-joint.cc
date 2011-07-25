@@ -58,8 +58,8 @@ namespace hpp {
     {
       if (!CkppAnchorJointComponent::modifiedProperty(property))
 	return false;
-      std::cout << "AnchorJoint::modifiedProperty: "
-		<< *property << std::endl;
+      hppDout(info,"AnchorJoint::modifiedProperty: "
+		<< *property);
       return true;
     }
 

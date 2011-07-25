@@ -58,8 +58,8 @@ namespace hpp {
     {
       if (!CkppTranslationJointComponent::modifiedProperty(property))
 	return false;
-      std::cout << "TranslationJoint::modifiedProperty: "
-		<< *property << std::endl;
+      hppDout(info,"TranslationJoint::modifiedProperty: "
+		<< *property);
       return true;
     }
 

@@ -58,8 +58,8 @@ namespace hpp {
     {
       if (!CkppRotationJointComponent::modifiedProperty(property))
 	return false;
-      std::cout << "RotationJoint::modifiedProperty: "
-		<< *property << std::endl;
+      hppDout(info,"RotationJoint::modifiedProperty: "
+		<< *property);
       return true;
     }
 

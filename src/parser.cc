@@ -174,15 +174,5 @@ namespace hpp {
       return KD_OK;
     }
 
-    CkppDeviceComponentShPtr Parser::buildDummyDevice()
-    {
-      // Create a humanoid robot with one freeflyer joint
-      HumanoidRobotShPtr robot = HumanoidRobot::create("TEST");
-      FreeflyerJointShPtr joint = FreeflyerJoint::create("FF");
-      joint->mass->value(1.55);
-      robot->setRootJoint(joint);
-      return robot;
-    }
-
   } // namespace model
 } // namespace hpp

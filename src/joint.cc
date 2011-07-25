@@ -30,6 +30,7 @@
 
 #include <jrl/mal/matrixabstractlayer.hh>
 #include <abstract-robot-dynamics/joint.hh>
+#include <hpp/util/debug.hh>
 
 #include "hpp/model/joint.hh"
 #include "hpp/model/body.hh"
@@ -254,57 +255,57 @@ namespace hpp {
     {
       weakPtr_ = weakPtr;
       CkppJointComponentShPtr component = kppJoint();
-      mass = CkppDoubleProperty::create("MASS", component,
-					MASS_ID , MASS_STRING_ID);
-      if (!mass) return KD_ERROR;
+      mass_ = CkppDoubleProperty::create("MASS", component,
+					 MASS_ID , MASS_STRING_ID);
+      if (!mass_) return KD_ERROR;
 
-      comX = CkppDoubleProperty::create("COM_X", component,
-					COM_X_ID, COM_X_STRING_ID);
-      if (!comX) return KD_ERROR;
+      comX_ = CkppDoubleProperty::create("COM_X", component,
+					 COM_X_ID, COM_X_STRING_ID);
+      if (!comX_) return KD_ERROR;
 
-      comY = CkppDoubleProperty::create("COM_Y", component,
-					COM_Y_ID, COM_Y_STRING_ID);
-      if (!comY) return KD_ERROR;
+      comY_ = CkppDoubleProperty::create("COM_Y", component,
+					 COM_Y_ID, COM_Y_STRING_ID);
+      if (!comY_) return KD_ERROR;
 
-      comZ = CkppDoubleProperty::create("COM_Z", component,
-					COM_Z_ID, COM_Z_STRING_ID);
-      if (!comZ) return KD_ERROR;
+      comZ_ = CkppDoubleProperty::create("COM_Z", component,
+					 COM_Z_ID, COM_Z_STRING_ID);
+      if (!comZ_) return KD_ERROR;
 
-      inertiaMatrixXX =
+      inertiaMatrixXX_ =
 	CkppDoubleProperty::create("INERTIA_MATRIX_XX", component,
 				   INERTIA_MATRIX_XX_ID,
 				   INERTIA_MATRIX_XX_STRING_ID);
-      if (!inertiaMatrixXX) return KD_ERROR;
+      if (!inertiaMatrixXX_) return KD_ERROR;
 
-      inertiaMatrixYY =
+      inertiaMatrixYY_ =
 	CkppDoubleProperty::create("INERTIA_MATRIX_YY", component,
 				   INERTIA_MATRIX_YY_ID,
 				   INERTIA_MATRIX_YY_STRING_ID);
-      if (!inertiaMatrixYY) return KD_ERROR;
+      if (!inertiaMatrixYY_) return KD_ERROR;
 
-      inertiaMatrixZZ =
+      inertiaMatrixZZ_ =
 	CkppDoubleProperty::create("INERTIA_MATRIX_ZZ", component,
 				   INERTIA_MATRIX_ZZ_ID,
 				   INERTIA_MATRIX_ZZ_STRING_ID);
-      if (!inertiaMatrixZZ) return KD_ERROR;
+      if (!inertiaMatrixZZ_) return KD_ERROR;
 
-      inertiaMatrixXY =
+      inertiaMatrixXY_ =
 	CkppDoubleProperty::create("INERTIA_MATRIX_XY", component,
 				   INERTIA_MATRIX_XY_ID,
 				   INERTIA_MATRIX_XY_STRING_ID);
-      if (!inertiaMatrixXY) return KD_ERROR;
+      if (!inertiaMatrixXY_) return KD_ERROR;
 
-      inertiaMatrixXZ =
+      inertiaMatrixXZ_ =
 	CkppDoubleProperty::create("INERTIA_MATRIX_XZ", component,
 				   INERTIA_MATRIX_XZ_ID,
 				   INERTIA_MATRIX_XZ_STRING_ID);
-      if (!inertiaMatrixXZ) return KD_ERROR;
+      if (!inertiaMatrixXZ_) return KD_ERROR;
 
-      inertiaMatrixYZ =
+      inertiaMatrixYZ_ =
 	CkppDoubleProperty::create("INERTIA_MATRIX_YZ", component,
 				   INERTIA_MATRIX_YZ_ID,
 				   INERTIA_MATRIX_YZ_STRING_ID);
-      if (!inertiaMatrixYZ) return KD_ERROR;
+      if (!inertiaMatrixYZ_) return KD_ERROR;
 
       return KD_OK;
     }
@@ -312,16 +313,16 @@ namespace hpp {
     void Joint::
     fillPropertyVector(std::vector<CkppPropertyShPtr>& outPropertyVector) const
     {
-      outPropertyVector.push_back(mass);
-      outPropertyVector.push_back(comX);
-      outPropertyVector.push_back(comY);
-      outPropertyVector.push_back(comZ);
-      outPropertyVector.push_back(inertiaMatrixXX);
-      outPropertyVector.push_back(inertiaMatrixYY);
-      outPropertyVector.push_back(inertiaMatrixZZ);
-      outPropertyVector.push_back(inertiaMatrixXY);
-      outPropertyVector.push_back(inertiaMatrixXZ);
-      outPropertyVector.push_back(inertiaMatrixYZ);
+      outPropertyVector.push_back(mass_);
+      outPropertyVector.push_back(comX_);
+      outPropertyVector.push_back(comY_);
+      outPropertyVector.push_back(comZ_);
+      outPropertyVector.push_back(inertiaMatrixXX_);
+      outPropertyVector.push_back(inertiaMatrixYY_);
+      outPropertyVector.push_back(inertiaMatrixZZ_);
+      outPropertyVector.push_back(inertiaMatrixXY_);
+      outPropertyVector.push_back(inertiaMatrixXZ_);
+      outPropertyVector.push_back(inertiaMatrixYZ_);
     }
 
     matrix4d Joint::abstractMatrixFromCkitMat4(const CkitMat4& matrix)
@@ -346,6 +347,43 @@ namespace hpp {
       }
       return kitMat4;
     }
+
+    // ======================================================================
+
+    void Joint::insertBody()
+    {
+      JointShPtr joint = weakPtr_.lock();
+      const std::string name = KIT_DYNAMIC_PTR_CAST(CkppComponent, joint)
+	->name();
+      CkwsBodyShPtr kwsBody = kppJoint()->kwsJoint()->attachedBody();
+      if (!kwsBody) {
+	hppDout(info, "creating " + name + "-body");
+	BodyShPtr body = Body::create(name + "-body");
+	// Set mass
+	body->mass(mass_->value());
+	// Set local center of mass
+	vector3d com;
+	com[0] = comX_->value();
+	com[1] = comY_->value();
+	com[2] = comZ_->value();
+	body->localCenterOfMass(com);
+	// Set inertia matrix
+	matrix3d inertia;
+	inertia(0,0) = inertiaMatrixXX_->value();
+	inertia(1,1) = inertiaMatrixYY_->value();
+	inertia(2,2) = inertiaMatrixZZ_->value();
+	inertia(0,1) = inertia(1,0) = inertiaMatrixXY_->value();
+	inertia(0,2) = inertia(2,0) = inertiaMatrixXZ_->value();
+	inertia(1,2) = inertia(2,1) = inertiaMatrixYZ_->value();
+	body->inertiaMatrix(inertia);
+
+	setAttachedBody(body);
+      } else if (!KIT_DYNAMIC_PTR_CAST(Body, kwsBody)) {
+	hppDout(info, "Joint " << name << 
+		" already has a body, but not of type hpp::model::Body.");
+      }
+    }
+
   } // namespace model
 } // namespace hpp
 

@@ -262,6 +262,18 @@ namespace hpp {
       /// @}
       ///
 
+      /// \brief Called whenever a child component is inserted
+      /// This function enables the object to update information provided
+      /// through properties when joints are inserted to the robot.
+      void componentDidInsertChild
+      (const CkitNotificationConstShPtr& notification);
+
+      /// \brief Called before a child component is inserted
+      /// This function enables the object to update information provided
+      /// through properties when joints are inserted to the robot.
+      void componentWillInsertChild
+      (const CkitNotificationConstShPtr& notification);
+
       /// \brief Creation of a new device
       /// \return a shared pointer to the new device
       /// \param name Name of the device (is passed to CkkpDeviceComponent)
@@ -289,6 +301,13 @@ namespace hpp {
       /// \brief Initialization with shared pointer.
       ///
       ktStatus init(const DeviceWkPtr& weakPtr, const DeviceShPtr& device);
+
+      /// \brief Insert child dynamic part in parent dynamic part.
+      /// \input parent Parent joint,
+      /// \input child Child joint.
+      /// This method is called whenever a Joint object is inserted as child
+      /// component of another Joint object.
+      void insertDynamicPart(JointShPtr parent, JointShPtr child);
 
     private:
 

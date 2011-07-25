@@ -1,8 +1,24 @@
-/*
- *  Copyright (c) 2007 LAAS-CNRS
- *
- *  Author: Florent Lamiraux
- */
+///
+/// Copyright (c) 2007, 2008, 2009, 2010, 2011 CNRS
+/// Authors: Florent Lamiraux
+///
+///
+// This file is part of hpp-model
+// hpp-model is free software: you can redistribute it
+// and/or modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation, either version
+// 3 of the License, or (at your option) any later version.
+//
+// hpp-model is distributed in the hope that it will be
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Lesser Public License for more details.  You should have
+// received a copy of the GNU Lesser General Public License along with
+// hpp-model  If not, see
+// <http://www.gnu.org/licenses/>.
+
+#include <KineoUtility/kitNotificator.h>
+#include <KineoUtility/kitNotification.h>
 
 #include <hpp/util/debug.hh>
 
@@ -138,6 +154,48 @@ namespace hpp {
       leftFoot(0);
       rightFoot(0);
       gazeJoint(0);
+      CkitNotificator::defaultNotificator()->subscribe<HumanoidRobot>
+	(CkppComponent::DID_INSERT_CHILD, this,
+	 &HumanoidRobot::componentDidInsertChild);
+    }
+
+    void HumanoidRobot::
+    componentDidInsertChild(const CkitNotificationConstShPtr& notification)
+    {
+      JointShPtr parentJoint, childJoint;
+      CkppComponentShPtr parent(notification->objectShPtr<CkppComponent>());
+      CkppComponentShPtr child(notification->shPtrValue<CkppComponent>
+			       (CkppComponent::CHILD_KEY));
+      // Detect insertion of a child joint
+      if ((parentJoint = KIT_DYNAMIC_PTR_CAST(Joint, parent)) &&
+	  (childJoint = KIT_DYNAMIC_PTR_CAST(Joint, child))) {
+	insertDynamicPart(parentJoint, childJoint);
+	registerSpecificJoint(childJoint);
+      }
+    }
+
+    // ======================================================================
+
+    void HumanoidRobot::registerSpecificJoint(const JointShPtr& joint)
+    {
+      const std::string name = KIT_DYNAMIC_PTR_CAST(CkppComponent,
+						    joint)->name();
+
+      if (name == gaze_->value()) {
+	impl::HumanoidDynamicRobot::gazeJoint(joint->jrlJoint());
+      } else if (name == leftAnkle_->value()) {
+	impl::HumanoidDynamicRobot::leftAnkle(joint->jrlJoint());
+      } else if (name == rightAnkle_->value()) {
+	impl::HumanoidDynamicRobot::rightAnkle(joint->jrlJoint());
+      } else if (name == leftWrist_->value()) {
+	impl::HumanoidDynamicRobot::leftWrist(joint->jrlJoint());
+      } else if (name == rightWrist_->value()) {
+	impl::HumanoidDynamicRobot::rightWrist(joint->jrlJoint());
+      } else if (name == waist_->value()) {
+	impl::HumanoidDynamicRobot::waist(joint->jrlJoint());
+      } else if (name == chest_->value()) {
+	impl::HumanoidDynamicRobot::chest(joint->jrlJoint());
+      }
     }
 
     // ======================================================================
@@ -531,8 +589,8 @@ namespace hpp {
 
     void HumanoidRobot::updateProperty(const CkppPropertyShPtr& property)
     {
-      std::cout << "HumanoidRobot::updateProperty: "
-		<< *property << std::endl;
+      hppDout(info,"HumanoidRobot::updateProperty: "
+		<< *property);
     }
 
     // ======================================================================
@@ -540,8 +598,8 @@ namespace hpp {
     bool HumanoidRobot::modifiedProperty(const CkppPropertyShPtr &property)
     {
       if (!CkppDeviceComponent::modifiedProperty(property)) return false;
-      std::cout << "HumanoidRobot::modifiedProperty: "
-		<< *property << std::endl;
+      hppDout(info,"HumanoidRobot::modifiedProperty: "
+		<< *property);
       return true;
     }
 

@@ -185,7 +185,13 @@ namespace hpp {
       /// \brief Called when a property is set
       /// Update dynamic part.
       virtual bool modifiedProperty(const CkppPropertyShPtr &property);
-      ///
+
+      /// \brief Called whenever a child component is inserted
+      /// This function enables the object to update information provided
+      /// through properties when joints are inserted to the robot.
+      void componentDidInsertChild
+      (const CkitNotificationConstShPtr& notification);
+
       /// @}
       ///
 
@@ -246,6 +252,9 @@ namespace hpp {
 		    const HumanoidRobotShPtr& device);
 
     private:
+      /// \brief Check whether this joint is a specific joint
+      /// If so, register joint in dynamic part
+      void registerSpecificJoint(const JointShPtr& joint);
       /// \brief Store weak pointer to object.
       HumanoidRobotWkPtr weakPtr_;
       /// Object factory

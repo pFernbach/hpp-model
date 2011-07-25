@@ -92,7 +92,6 @@ namespace hpp {
 			       CkprXMLBuildingContextShPtr& inOutContext,
 			       CkppComponentShPtr& outComponent);
       /// @}
-      static CkppDeviceComponentShPtr buildDummyDevice();
     }; // Parser
   } // namespace model
 } // namespace hpp
