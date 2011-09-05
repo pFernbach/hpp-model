@@ -37,9 +37,7 @@ namespace hpp {
     /// attributes.
     ///
     class RotationJoint : public Joint,
-			  public CkppRotationJointComponent,
-			  public impl::JointRotation
-
+			  public CkppRotationJointComponent
     {
     public:
       virtual ~RotationJoint();

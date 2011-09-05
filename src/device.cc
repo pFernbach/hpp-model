@@ -25,21 +25,10 @@
 namespace hpp {
   namespace model {
 
-    Device::Device(CjrlRobotDynamicsObjectFactory *objFactory) :
-      impl::DynamicRobot(objFactory), CkppDeviceComponent()
-    {
-      CkitNotificator::defaultNotificator()->subscribe<Device>
-	(CkppComponent::DID_INSERT_CHILD, this,
-	 &Device::componentDidInsertChild);
-      CkitNotificator::defaultNotificator()->subscribe<Device>
-	(CkppComponent::WILL_INSERT_CHILD, this,
-	 &Device::componentWillInsertChild);
-    }
-
-    // ========================================================================
+    impl::ObjectFactory Device::objectFactory_;
 
     Device::Device() :
-      impl::DynamicRobot(), CkppDeviceComponent()
+      impl::DynamicRobot(objectFactory()), CkppDeviceComponent()
     {
       CkitNotificator::defaultNotificator()->subscribe<Device>
 	(CkppComponent::DID_INSERT_CHILD, this,
@@ -57,10 +46,16 @@ namespace hpp {
 
     // ========================================================================
 
+    impl::ObjectFactory* Device::objectFactory()
+    {
+      return &Device::objectFactory_;
+    }
+
+    // ========================================================================
+
     DeviceShPtr Device::create(std::string name)
     {
-      impl::ObjectFactory* objFactory = new impl::ObjectFactory();
-      Device *hppDevice = new Device(objFactory);
+      Device *hppDevice = new Device();
       DeviceShPtr hppDeviceShPtr(hppDevice);
 
       if (hppDevice->init(hppDeviceShPtr, name) != KD_OK) {
@@ -369,6 +364,8 @@ namespace hpp {
 
     void Device::setRootJoint(JointShPtr joint)
     {
+      hppDout(info, "Root joint = " << 
+	      KIT_DYNAMIC_PTR_CAST(CkppJointComponent, joint)->name());
       /*
 	Set joint as Kineo root joint
       */
@@ -767,25 +764,43 @@ namespace hpp {
     void Device::
     componentWillInsertChild(const CkitNotificationConstShPtr& notification)
     {
-      JointShPtr parentJoint;
+      JointShPtr parentJoint, childJoint;
       CkppSolidComponentShPtr childSolid;
       CkppSolidComponentRefShPtr childSolidRef;
+      DeviceShPtr device;
+
       CkppComponentShPtr parent(notification->objectShPtr<CkppComponent>());
       CkppComponentShPtr child(notification->shPtrValue<CkppComponent>
 			       (CkppComponent::CHILD_KEY));
-      // Detect insertion of a child joint
+      // Detect insertion of a solid component
       if ((parentJoint = KIT_DYNAMIC_PTR_CAST(Joint, parent)) &&
 	  (childSolid = KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, child))) {
 	parentJoint->insertBody();
 	hppDout(info, "WILL_INSERT_SOLID: parent joint = "
 		<< parent->name() << ", solid component = " << child->name());
-      } else if ((parentJoint = KIT_DYNAMIC_PTR_CAST(Joint, parent)) &&
+      }
+      // Detect insertion of a reference to a solid component
+      else if ((parentJoint = KIT_DYNAMIC_PTR_CAST(Joint, parent)) &&
 	  (childSolidRef = KIT_DYNAMIC_PTR_CAST(CkppSolidComponentRef,
 						child))) {
 	parentJoint->insertBody();
 	hppDout(info, "WILL_INSERT_SOLID_REF: parent joint = "
 		<< parent->name() << ", solid component ref = "
 		<< child->name());
+      } 
+      else if (childJoint = KIT_DYNAMIC_PTR_CAST(Joint, child)) {
+	// detect insertion of root joint
+	if (device = KIT_DYNAMIC_PTR_CAST(Device, parent)) {
+	  device->impl::DynamicRobot::rootJoint(*(childJoint->jrlJoint()));
+	  hppDout(info, "WILL_INSERT_JOINT: parent device = "
+		  << parent->name() << ", joint = " << child->name());
+	} 
+	// Detect insertion of a child joint to a joint
+	else if (parentJoint = KIT_DYNAMIC_PTR_CAST(Joint, parent)) {
+	  hppDout(info, "WILL_INSERT_JOINT: parent joint = "
+		  << parent->name() << ", child joint = " << child->name());
+	  insertDynamicPart(parentJoint, childJoint);
+	}
       }
     }
 
@@ -794,17 +809,6 @@ namespace hpp {
     void Device::
     componentDidInsertChild(const CkitNotificationConstShPtr& notification)
     {
-      JointShPtr parentJoint, childJoint;
-      CkppComponentShPtr parent(notification->objectShPtr<CkppComponent>());
-      CkppComponentShPtr child(notification->shPtrValue<CkppComponent>
-			       (CkppComponent::CHILD_KEY));
-      // Detect insertion of a child joint
-      if ((parentJoint = KIT_DYNAMIC_PTR_CAST(Joint, parent)) &&
-	  (childJoint = KIT_DYNAMIC_PTR_CAST(Joint, child))) {
-	hppDout(info, "DID_INSERT_JOINT: parent joint = "
-		<< parent->name() << ", child joint = " << child->name());
-	insertDynamicPart(parentJoint, childJoint);
-      }
     }
 
     // ======================================================================

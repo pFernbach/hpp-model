@@ -37,9 +37,7 @@ namespace hpp {
     /// attributes.
     ///
     class TranslationJoint : public Joint,
-			     public CkppTranslationJointComponent,
-			     public impl::JointTranslation
-
+			     public CkppTranslationJointComponent
     {
     public:
       virtual ~TranslationJoint();

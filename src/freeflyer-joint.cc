@@ -64,10 +64,10 @@ namespace hpp {
     }
 
     FreeflyerJoint::FreeflyerJoint(const CkitMat4& initialPosition) :
-      hpp::model::Joint(),
-      CkppFreeFlyerJointComponent(),
-      impl::JointFreeflyer
-      (Joint::abstractMatrixFromCkitMat4(initialPosition))
+      hpp::model::Joint
+      (Device::objectFactory()->createJointFreeflyer
+       (Joint::abstractMatrixFromCkitMat4(initialPosition))),
+      CkppFreeFlyerJointComponent()
     {
     }
 

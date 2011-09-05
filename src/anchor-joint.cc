@@ -64,10 +64,10 @@ namespace hpp {
     }
 
     AnchorJoint::AnchorJoint(const CkitMat4& initialPosition) :
-      hpp::model::Joint(),
-      CkppAnchorJointComponent(),
-      impl::JointAnchor
-      (Joint::abstractMatrixFromCkitMat4(initialPosition))
+      hpp::model::Joint
+      (Device::objectFactory()->createJointAnchor
+       (Joint::abstractMatrixFromCkitMat4(initialPosition))),
+      CkppAnchorJointComponent()
     {
     }
 

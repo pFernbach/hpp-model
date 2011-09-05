@@ -21,7 +21,7 @@
 #define HPP_MODEL_FREEFLYER_JOINT_HH
 
 #include <KineoModel/kppFreeFlyerJointComponent.h>
-#include "hpp/model/robot-dynamics-impl.hh"
+#include <abstract-robot-dynamics/joint.hh>
 #include "hpp/model/joint.hh"
 
 namespace hpp {
@@ -37,8 +37,7 @@ namespace hpp {
     /// attributes.
     ///
     class FreeflyerJoint : public Joint,
-			   public CkppFreeFlyerJointComponent,
-			   public impl::JointFreeflyer
+			   public CkppFreeFlyerJointComponent
 
     {
     public:

@@ -64,10 +64,10 @@ namespace hpp {
     }
 
     RotationJoint::RotationJoint(const CkitMat4& initialPosition) :
-      hpp::model::Joint(),
-      CkppRotationJointComponent(),
-      impl::JointRotation
-      (Joint::abstractMatrixFromCkitMat4(initialPosition))
+      hpp::model::Joint
+      (Device::objectFactory()->createJointRotation
+       (Joint::abstractMatrixFromCkitMat4(initialPosition))),
+      CkppRotationJointComponent()
     {
     }
 

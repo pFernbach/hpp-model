@@ -15,11 +15,6 @@ namespace hpp {
     namespace impl {
     typedef jrlDelegate::dynamicRobot DynamicRobot;
     typedef jrlDelegate::humanoidDynamicRobot HumanoidDynamicRobot;
-    typedef dynamicsJRLJapan::JointFreeflyer JointFreeflyer;
-    typedef dynamicsJRLJapan::JointAnchor JointAnchor;
-    typedef dynamicsJRLJapan::JointRotation JointRotation;
-    typedef dynamicsJRLJapan::JointTranslation JointTranslation;
-    typedef dynamicsJRLJapan::Joint Joint;
     typedef dynamicsJRLJapan::DynamicBody DynamicBody;
     typedef dynamicsJRLJapan::Hand Hand;
     typedef dynamicsJRLJapan::ObjectFactory ObjectFactory;

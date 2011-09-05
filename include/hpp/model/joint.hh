@@ -33,13 +33,14 @@ KIT_PREDEF_CLASS(CjrlJoint);
 
 namespace hpp {
   namespace model {
-    /// \brief Abstract class describing a joint with dynamic and geometric properties
+    /// \brief Joint with dynamic and geometric properties
     /// Implementation of this class should derive from
     /// \li a CkppDeviceComponent implementation and,
     /// \li an implementation of CjrlJoint.
     class Joint
     {
     public:
+      virtual ~Joint();
       ///
       /// \name Conversion between KineoWorks and Mal homogeneous Matrices
       /// @{
@@ -252,12 +253,13 @@ namespace hpp {
       ///
       
     protected:
-      Joint();
+      Joint(CjrlJoint* joint);
       /// \brief Create properties and store weak pointer
       ktStatus init(const JointWkPtr& weakPtr);
 
     private:
       JointWkPtr weakPtr_;
+      CjrlJoint* dynamicJoint_;
     }; // class Joint
   } // namespace model
 } // namespace hpp

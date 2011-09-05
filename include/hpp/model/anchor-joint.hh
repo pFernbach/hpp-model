@@ -37,9 +37,7 @@ namespace hpp {
     /// attributes.
     ///
     class AnchorJoint : public Joint,
-			public CkppAnchorJointComponent,
-			public impl::JointAnchor
-
+			public CkppAnchorJointComponent
     {
     public:
       virtual ~AnchorJoint();

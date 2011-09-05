@@ -96,15 +96,19 @@ namespace hpp {
 
     CjrlJoint* Joint::jrlJoint()
     {
-      return dynamic_cast<CjrlJoint*>(this);
+      return dynamicJoint_;
     }
 
     const CjrlJoint* Joint::jrlJoint() const
     {
-      return dynamic_cast<const CjrlJoint*>(this);
+      return dynamicJoint_;
     }
 
-    Joint::Joint()
+    Joint::Joint(CjrlJoint* joint) : dynamicJoint_(joint)
+    {
+    }
+
+    Joint::~Joint() 
     {
     }
 
@@ -327,6 +331,7 @@ namespace hpp {
 
     matrix4d Joint::abstractMatrixFromCkitMat4(const CkitMat4& matrix)
     {
+      hppDout(info, matrix);
       MAL_S4x4_MATRIX(abstractMatrix, double);
       for (unsigned int iRow=0; iRow<4; iRow++) {
 	for (unsigned int iCol=0; iCol<4; iCol++) {
@@ -334,6 +339,7 @@ namespace hpp {
 	    matrix(iRow, iCol);
 	}
       }
+      hppDout(info, abstractMatrix);
       return abstractMatrix;
     }
 

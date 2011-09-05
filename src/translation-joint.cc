@@ -64,10 +64,10 @@ namespace hpp {
     }
 
     TranslationJoint::TranslationJoint(const CkitMat4& initialPosition) :
-      hpp::model::Joint(),
-      CkppTranslationJointComponent(),
-      impl::JointTranslation
-      (Joint::abstractMatrixFromCkitMat4(initialPosition))
+      hpp::model::Joint
+      (Device::objectFactory()->createJointTranslation
+       (Joint::abstractMatrixFromCkitMat4(initialPosition))),
+      CkppTranslationJointComponent()
     {
     }
 

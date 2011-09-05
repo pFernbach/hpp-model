@@ -285,6 +285,9 @@ namespace hpp {
       /// \param device Device to be copied.
       static DeviceShPtr createCopy(const DeviceShPtr& device);
 
+      /// \brief Access to the object factory for the dynamic part.
+      static impl::ObjectFactory* objectFactory();
+
     protected:
       /// \brief Constructor
       /// \param objFactory factory necessary to build a CjrlDynamicRobot.
@@ -322,7 +325,7 @@ namespace hpp {
 				 double& yMin, double& zMin, double& xMax,
 				 double& yMax, double& zMax) const;
 
-
+      static impl::ObjectFactory objectFactory_;
     }; // class Device
   } // namespace model
 } // namespace hpp
