@@ -21,12 +21,8 @@ It is possible to instantiate an optimized implementation of a humanoid robot th
 \subsection subsec_hppDevice_joints Joints
 
 The following figure displays the inheritance diagram between classes representing robot joints.
-\li hpp::model::impl::Joint is an implementation of CjrlJoint,
-\li hpp::model::impl::JointFreeflyer is an implementation of freeflyer joint deriving from hpp::model::impl::Joint,
-\li hpp::model::impl::JointRotation is an implementation of rotation joint deriving from hpp::model::impl::Joint,
-\li hpp::model::impl::JointTranslation is an implementation of translation joint deriving from hpp::model::impl::Joint.
 
-\image html classDiagramJoint.png "Inheritance diagram between classes implementing joints."
+\image html classDiagramJoint.png "Inheritance diagram between classes implementing joints. Red line represents pointer to object."
 
 \subsection subsec_hppDevice_bodies Bodies
 

@@ -46,6 +46,20 @@ namespace hpp {
       return shPtr;
     }
 
+    AnchorJointShPtr AnchorJoint::create(const std::string& name)
+    {
+      CkitMat4 initialPosition;
+      AnchorJoint *ptr = new AnchorJoint();
+      AnchorJointShPtr shPtr = AnchorJointShPtr(ptr);
+      AnchorJointWkPtr wkPtr = AnchorJointWkPtr(shPtr);
+      if (ptr->init(wkPtr, name, initialPosition) != KD_OK) {
+	shPtr.reset();
+	return shPtr;
+      }
+      hppDout(info, "Created anchor joint without initial position" + name);
+      return shPtr;
+    }
+
     void AnchorJoint::
     fillPropertyVector(std::vector<CkppPropertyShPtr>& outPropertyVector)
       const
@@ -69,6 +83,13 @@ namespace hpp {
        (Joint::abstractMatrixFromCkitMat4(initialPosition))),
       CkppAnchorJointComponent()
     {
+    }
+
+    AnchorJoint::AnchorJoint() :
+      hpp::model::Joint(0),
+      CkppAnchorJointComponent()
+    {
+      jointFactory_ = &impl::ObjectFactory::createJointAnchor;
     }
 
     AnchorJoint::~AnchorJoint()

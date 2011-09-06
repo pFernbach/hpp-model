@@ -49,8 +49,9 @@ namespace hpp {
       }
 
       static AnchorJointShPtr create(const std::string& name,
-				     const CkitMat4& initialPosition=
-				     CkitMat4());
+				     const CkitMat4& initialPosition);
+
+      static AnchorJointShPtr create(const std::string& name);
 
       virtual void 
       fillPropertyVector(std::vector<CkppPropertyShPtr> &outPropertyVector)
@@ -62,6 +63,7 @@ namespace hpp {
 
     protected:
       AnchorJoint(const CkitMat4& initialPosition);
+      AnchorJoint();
       ktStatus init (const AnchorJointWkPtr &weakPtr,
 		     const std::string &name,
 		     const CkitMat4& initialPosition);

@@ -9,12 +9,6 @@ digraph CD  {
 	"hpp::model::JointRotation" [shape = box]
 
 	CjrlJoint [shape = box] 
-	subgraph cluster0 {
-		"hpp::model::impl::Joint" [shape = box] 
-		"hpp::model::impl::JointFreeflyer" [shape = box] 
-		"hpp::model::impl::JointRotation" [shape = box]
-		"hpp::model::impl::JointTranslation" [shape = box]
-	}
 	subgraph cluster1 {
 		"CkppFreeflyerJointComponent" [shape = box]
 		"CkppRotationJointComponent" [shape = box]
@@ -22,10 +16,6 @@ digraph CD  {
 		"CkppJointComponent" [shape = box]
 	}
 
-	"hpp::model::impl::Joint" -> CjrlJoint
-	"hpp::model::impl::JointFreeflyer" -> "hpp::model::impl::Joint"
-	"hpp::model::impl::JointRotation" -> "hpp::model::impl::Joint"
-	"hpp::model::impl::JointTranslation" -> "hpp::model::impl::Joint"
 	"CkppFreeflyerJointComponent" -> "CkppJointComponent"
 	"CkppRotationJointComponent" -> "CkppJointComponent"
 	"CkppTranslationJointComponent" -> "CkppJointComponent"
@@ -34,9 +24,7 @@ digraph CD  {
 	"hpp::model::JointRotation" -> "hpp::model::Joint"
 	"hpp::model::JointTranslation" -> "hpp::model::Joint"
 
-	"hpp::model::JointFreeflyer" -> "hpp::model::impl::JointFreeflyer"
-	"hpp::model::JointRotation" -> "hpp::model::impl::JointRotation"
-	"hpp::model::JointTranslation" -> "hpp::model::impl::JointTranslation"
+	"hpp::model::Joint" -> "CjrlJoint" [color = red]
 
 	"hpp::model::JointFreeflyer" -> "CkppFreeflyerJointComponent"
 	"hpp::model::JointRotation" -> "CkppRotationJointComponent"

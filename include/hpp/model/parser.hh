@@ -91,6 +91,20 @@ namespace hpp {
 			       inPrebuiltChildComponentVector,
 			       CkprXMLBuildingContextShPtr& inOutContext,
 			       CkppComponentShPtr& outComponent);
+      /// \brief Write local class representing a anchor joint into kxml file.
+      ktStatus
+      writeAnchorJoint(const CkppComponentConstShPtr& inComponent,
+		       CkprXMLWriterShPtr& inOutWriter,
+		       CkprXMLTagShPtr& inOutTag);
+      /// \brief Build local class representing a anchor joint from kxml file.
+      ktStatus
+      buildAnchorJoint(const CkprXMLTagConstShPtr& inTag,
+		       const CkppComponentShPtr&
+		       inOutParentComponent,
+		       std::vector< CkppComponentShPtr >&
+		       inPrebuiltChildComponentVector,
+		       CkprXMLBuildingContextShPtr& inOutContext,
+		       CkppComponentShPtr& outComponent);
       /// @}
     }; // Parser
   } // namespace model

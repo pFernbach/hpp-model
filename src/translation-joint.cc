@@ -46,6 +46,20 @@ namespace hpp {
       return shPtr;
     }
 
+    TranslationJointShPtr TranslationJoint::create(const std::string& name)
+    {
+      CkitMat4 initialPosition;
+      TranslationJoint *ptr = new TranslationJoint();
+      TranslationJointShPtr shPtr = TranslationJointShPtr(ptr);
+      TranslationJointWkPtr wkPtr = TranslationJointWkPtr(shPtr);
+      if (ptr->init(wkPtr, name, initialPosition) != KD_OK) {
+	shPtr.reset();
+	return shPtr;
+      }
+      hppDout(info, "Created translation joint without initial position" + name);
+      return shPtr;
+    }
+
     void TranslationJoint::
     fillPropertyVector(std::vector<CkppPropertyShPtr>& outPropertyVector)
       const
@@ -69,6 +83,13 @@ namespace hpp {
        (Joint::abstractMatrixFromCkitMat4(initialPosition))),
       CkppTranslationJointComponent()
     {
+    }
+
+    TranslationJoint::TranslationJoint() :
+      hpp::model::Joint(0),
+      CkppTranslationJointComponent()
+    {
+      jointFactory_ = &impl::ObjectFactory::createJointTranslation;
     }
 
     TranslationJoint::~TranslationJoint()

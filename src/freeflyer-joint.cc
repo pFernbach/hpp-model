@@ -46,6 +46,20 @@ namespace hpp {
       return shPtr;
     }
 
+    FreeflyerJointShPtr FreeflyerJoint::create(const std::string& name)
+    {
+      CkitMat4 initialPosition;
+      FreeflyerJoint *ptr = new FreeflyerJoint();
+      FreeflyerJointShPtr shPtr = FreeflyerJointShPtr(ptr);
+      FreeflyerJointWkPtr wkPtr = FreeflyerJointWkPtr(shPtr);
+      if (ptr->init(wkPtr, name, initialPosition) != KD_OK) {
+	shPtr.reset();
+	return shPtr;
+      }
+      hppDout(info, "Created freeflyer joint without initial position" + name);
+      return shPtr;
+    }
+
     void FreeflyerJoint::
     fillPropertyVector(std::vector<CkppPropertyShPtr>& outPropertyVector)
       const
@@ -69,6 +83,14 @@ namespace hpp {
        (Joint::abstractMatrixFromCkitMat4(initialPosition))),
       CkppFreeFlyerJointComponent()
     {
+      jointFactory_ = 0;
+    }
+
+    FreeflyerJoint::FreeflyerJoint() :
+      hpp::model::Joint(0),
+      CkppFreeFlyerJointComponent()
+    {
+      jointFactory_ = &impl::ObjectFactory::createJointFreeflyer;
     }
 
     FreeflyerJoint::~FreeflyerJoint()

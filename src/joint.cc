@@ -33,6 +33,7 @@
 #include <hpp/util/debug.hh>
 
 #include "hpp/model/joint.hh"
+#include "hpp/model/device.hh"
 #include "hpp/model/body.hh"
 #include "hpp/model/exception.hh"
 
@@ -242,7 +243,9 @@ namespace hpp {
       ///
       /// Attach the body to the dynamic part of the joint
       ///
-      jrlJoint()->setLinkedBody(*(body.get()));
+      if (jrlJoint()) {
+	jrlJoint()->setLinkedBody(*(body.get()));
+      }
       
       ///
       /// Store pointer to the joint in body
@@ -390,6 +393,18 @@ namespace hpp {
       }
     }
 
+    // ======================================================================
+
+    void Joint::createDynamicPart()
+    {
+      if (jointFactory_) {
+	CkitMat4 initialPos = kppJoint()->kwsJoint()->initialPosition();
+	dynamicJoint_ =
+	  jointFactory_(&Device::objectFactory_,
+			Joint::abstractMatrixFromCkitMat4(initialPos));
+	insertBody();
+      }
+    }
   } // namespace model
 } // namespace hpp
 

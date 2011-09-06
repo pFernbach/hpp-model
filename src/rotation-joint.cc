@@ -46,6 +46,20 @@ namespace hpp {
       return shPtr;
     }
 
+    RotationJointShPtr RotationJoint::create(const std::string& name)
+    {
+      CkitMat4 initialPosition;
+      RotationJoint *ptr = new RotationJoint();
+      RotationJointShPtr shPtr = RotationJointShPtr(ptr);
+      RotationJointWkPtr wkPtr = RotationJointWkPtr(shPtr);
+      if (ptr->init(wkPtr, name, initialPosition) != KD_OK) {
+	shPtr.reset();
+	return shPtr;
+      }
+      hppDout(info, "Created freeflyer joint without initial position" + name);
+      return shPtr;
+    }
+
     void RotationJoint::
     fillPropertyVector(std::vector<CkppPropertyShPtr>& outPropertyVector)
       const
@@ -69,6 +83,14 @@ namespace hpp {
        (Joint::abstractMatrixFromCkitMat4(initialPosition))),
       CkppRotationJointComponent()
     {
+      jointFactory_ = 0;
+    }
+
+    RotationJoint::RotationJoint() :
+      hpp::model::Joint(0),
+      CkppRotationJointComponent()
+    {
+      jointFactory_ = &impl::ObjectFactory::createJointRotation;
     }
 
     RotationJoint::~RotationJoint()

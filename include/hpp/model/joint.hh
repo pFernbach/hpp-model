@@ -21,10 +21,13 @@
 #ifndef HPP_MODEL_JOINT_COMMON_HH
 #define HPP_MODEL_JOINT_COMMON_HH
 
+#include <boost/function.hpp>
+
 #include <jrl/mal/matrixabstractlayer.hh>
 #include <KineoModel/kppProperty.h>
 #include <KineoModel/kppJointComponent.h>
 
+#include "hpp/model/robot-dynamics-impl.hh"
 #include "hpp/model/fwd.hh"
 
 KIT_PREDEF_CLASS(CkppDoubleProperty);
@@ -34,9 +37,27 @@ KIT_PREDEF_CLASS(CjrlJoint);
 namespace hpp {
   namespace model {
     /// \brief Joint with dynamic and geometric properties
-    /// Implementation of this class should derive from
-    /// \li a CkppDeviceComponent implementation and,
-    /// \li an implementation of CjrlJoint.
+    /// Implementations of this class should derive from
+    /// \li a CkppDeviceComponent implementation
+    /// and provide a pointer to a CjrlJoint object implementing the dynamic
+    /// part of the joint.
+    ///
+    /// There are two ways of building joints in a kinematic chain.
+    /// \li The first way consists in calling function create of a
+    /// joint implementation, and providing the position of the joint
+    /// in space. See for instance
+    /// (hpp::model::FreeflyerJoint::create(const std::string &name, const
+    /// CkitMat4 &initialPosition)).
+    /// \li The second way consists in reading a kxml file using Kitelab
+    /// parser. In this case, joints are created without initial position. The
+    /// initial position of the joint is provided later on. This raises an
+    /// issue since it is not possible through CjrlJoint to change the
+    /// initial position of the joint. For this reason, method "create" without
+    /// initial position does not construct the CjrlJoint object, but rather
+    /// should provide a function to create it later on (see source code of
+    /// hpp::model::FreeflyerJoint::create(const std::string &name) and
+    /// hpp::model::FreeflyerJoint::FreeflyerJoint()) for an example.
+
     class Joint
     {
     public:
@@ -44,17 +65,17 @@ namespace hpp {
       ///
       /// \name Conversion between KineoWorks and Mal homogeneous Matrices
       /// @{
-	
+
       ///
       /// \brief Conversion from KineoWorks to Matrix Abstraction Layer
       ///
       static matrix4d abstractMatrixFromCkitMat4(const CkitMat4& matrix);
-	
+
       ///
       /// \brief Conversion from Matrix Abstraction Layer to KineoWorks
       ///
       static CkitMat4 CkitMat4MatrixFromAbstract(const matrix4d& matrix);
-	
+
       ///
       ///@}
       ///
@@ -84,7 +105,7 @@ namespace hpp {
 
       ///
       /// \name Kinematic chain
-      /// @{ 
+      /// @{
       ///
       /// \brief Get the parent joint
       ///
@@ -133,7 +154,7 @@ namespace hpp {
       /// \param dofRank Id of the dof in the joint
       ///
       virtual double lowerBound(unsigned int dofRank) const;
-      
+
       ///
       /// \brief Get the upper bound of a given degree of freedom of the joint.
       ///
@@ -154,7 +175,7 @@ namespace hpp {
       /// \param dofRank Id of the dof in the joint
       ///
       virtual void upperBound(unsigned int dofRank, double upperBound);
-      
+
       ///
       /// \brief Set the bounds of the degrees of freedom of the joint
       ///
@@ -173,7 +194,7 @@ namespace hpp {
       void velocityBounds(unsigned int dofRank,
 			  const double& lowerVelocityBound,
 			  const double& upperVelocityBound);
-      
+
       ///
       /// @}
       ///
@@ -201,6 +222,9 @@ namespace hpp {
       ///
       /// @}
       ///
+
+      /// Create dynamic part of joint if creation has been delayed
+      void createDynamicPart();
 
       ///
       /// \name CkppComponent properties
@@ -234,9 +258,9 @@ namespace hpp {
       static const std::string INERTIA_MATRIX_XZ_STRING_ID;
       static const CkppProperty::TPropertyID INERTIA_MATRIX_YZ_ID;
       static const std::string INERTIA_MATRIX_YZ_STRING_ID;
-      
+
     private:
-      
+
       CkppDoublePropertyShPtr mass_;
       CkppDoublePropertyShPtr comX_;
       CkppDoublePropertyShPtr comY_;
@@ -251,11 +275,15 @@ namespace hpp {
       ///
       /// @}
       ///
-      
+
     protected:
       Joint(CjrlJoint* joint);
       /// \brief Create properties and store weak pointer
       ktStatus init(const JointWkPtr& weakPtr);
+      /// Pointer to factory method creating dynamic part of joint
+      boost::function < CjrlJoint* (impl::ObjectFactory*,
+				    const matrix4d& positionMatrix) >
+      jointFactory_;
 
     private:
       JointWkPtr weakPtr_;

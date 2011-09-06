@@ -21,6 +21,7 @@
 #include <kprParserXML/kprParserManager.h>
 #include <hpp/util/debug.hh>
 #include "hpp/model/humanoid-robot.hh"
+#include "hpp/model/anchor-joint.hh"
 #include "hpp/model/freeflyer-joint.hh"
 #include "hpp/model/rotation-joint.hh"
 #include "hpp/model/translation-joint.hh"
@@ -69,6 +70,16 @@ namespace hpp {
 	 &Parser::buildTranslationJoint, NULL);
       assert(status == KD_OK);
       hppDout(info, "register HPP_TRANSLATION_JOINT tag");
+      // Write anchor joint
+      CkprParserManager::defaultManager()->addXMLWriterMethod < Parser >
+	(this, &Parser::writeAnchorJoint);
+      // Read anchor joint
+      status =
+	CkprParserManager::defaultManager()->addXMLInheritedBuilderMethod < Parser >
+	("HPP_ANCHOR_JOINT", "ANCHOR_JOINT", this,
+	 &Parser::buildAnchorJoint, NULL);
+      assert(status == KD_OK);
+      hppDout(info, "register HPP_ANCHOR_JOINT tag");
     }
 
     Parser::~Parser()
@@ -171,6 +182,30 @@ namespace hpp {
 			  CkppComponentShPtr& outComponent)
     {
       outComponent = TranslationJoint::create("TRANSLATION");
+      return KD_OK;
+    }
+
+    ktStatus Parser::
+    writeAnchorJoint(const CkppComponentConstShPtr& inComponent,
+		     CkprXMLWriterShPtr& inOutWriter,
+		     CkprXMLTagShPtr& inOutTag)
+    {
+      if (KIT_DYNAMIC_PTR_CAST(const AnchorJoint, inComponent)) {
+	inOutTag->name("HPP_ANCHOR_JOINT");
+	return KD_OK;
+      }
+      return KD_ERROR;
+    }
+
+    ktStatus Parser::
+    buildAnchorJoint(const CkprXMLTagConstShPtr& inTag,
+		     const CkppComponentShPtr& inOutParentComponent,
+		     std::vector< CkppComponentShPtr >&
+		     inPrebuiltChildComponentVector,
+		     CkprXMLBuildingContextShPtr& inOutContext,
+		     CkppComponentShPtr& outComponent)
+    {
+      outComponent = AnchorJoint::create("ANCHOR");
       return KD_OK;
     }
 

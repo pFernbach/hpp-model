@@ -50,8 +50,9 @@ namespace hpp {
       }
 
       static FreeflyerJointShPtr create(const std::string& name,
-					const CkitMat4& initialPosition=
-					CkitMat4());
+					const CkitMat4& initialPosition);
+
+      static FreeflyerJointShPtr create(const std::string& name);
 
       virtual void 
       fillPropertyVector(std::vector<CkppPropertyShPtr> &outPropertyVector)
@@ -63,6 +64,7 @@ namespace hpp {
 
     protected:
       FreeflyerJoint(const CkitMat4& initialPosition);
+      FreeflyerJoint();
       ktStatus init (const FreeflyerJointWkPtr &weakPtr,
 		     const std::string &name,
 		     const CkitMat4& initialPosition);

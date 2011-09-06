@@ -68,6 +68,8 @@ namespace hpp {
 	BOTH
       } EwhichPart;
 
+      static impl::ObjectFactory objectFactory_;
+
       /// \name Construction, copy and destruction
       /// @{
       virtual ~Device();
@@ -274,6 +276,14 @@ namespace hpp {
       void componentWillInsertChild
       (const CkitNotificationConstShPtr& notification);
 
+      /// \brief Initialize kinematic chain
+      /// If dynamic part of joints have not been created, create them.
+      /// In any case, call parent implementation.
+      /// \note When reading a kxml file, the position of joints is not
+      /// known at construction. For this reason, the dynamic part of each
+      /// joint is created later by this function.
+      virtual bool initialize ();
+
       /// \brief Creation of a new device
       /// \return a shared pointer to the new device
       /// \param name Name of the device (is passed to CkkpDeviceComponent)
@@ -325,7 +335,7 @@ namespace hpp {
 				 double& yMin, double& zMin, double& xMax,
 				 double& yMax, double& zMax) const;
 
-      static impl::ObjectFactory objectFactory_;
+      void initializeKinematicChain(JointShPtr joint);
     }; // class Device
   } // namespace model
 } // namespace hpp

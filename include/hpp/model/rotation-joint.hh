@@ -49,8 +49,9 @@ namespace hpp {
       }
 
       static RotationJointShPtr create(const std::string& name,
-				       const CkitMat4& initialPosition=
-				       CkitMat4());
+				       const CkitMat4& initialPosition);
+
+      static RotationJointShPtr create(const std::string& name);
 
       virtual void 
       fillPropertyVector(std::vector<CkppPropertyShPtr> &outPropertyVector)
@@ -62,6 +63,7 @@ namespace hpp {
 
     protected:
       RotationJoint(const CkitMat4& initialPosition);
+      RotationJoint();
       ktStatus init (const RotationJointWkPtr &weakPtr,
 		     const std::string &name,
 		     const CkitMat4& initialPosition);

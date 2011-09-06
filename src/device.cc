@@ -130,6 +130,31 @@ namespace hpp {
 
     // ========================================================================
 
+    bool Device::initialize ()
+    {
+      JointShPtr rootJoint = getRootJoint();
+      initializeKinematicChain(rootJoint);
+      impl::DynamicRobot::rootJoint(*(rootJoint->jrlJoint()));
+      if (!impl::DynamicRobot::initialize()) {
+	throw Exception("Failed to initialize impl::DynamicRobot");
+      }
+      return true;
+    }
+
+    // ========================================================================
+
+    void Device::initializeKinematicChain(JointShPtr joint)
+    {
+      joint->createDynamicPart();
+      for (unsigned int iChild=0; iChild < joint->countChildJoints();
+	   iChild++) {
+	JointShPtr child = joint->childJoint(iChild);
+	initializeKinematicChain(child);
+	joint->jrlJoint()->addChildJoint(*(child->jrlJoint()));
+      }
+    }
+
+    // ========================================================================
     ktStatus
     Device::axisAlignedBoundingBox (double& xMin, double& yMin, double& zMin,
 				    double& xMax, double& yMax, double& zMax)
@@ -816,7 +841,9 @@ namespace hpp {
     void Device::insertDynamicPart(JointShPtr parent, JointShPtr child)
     {
       hppDout(info, "");
-      parent->jrlJoint()->addChildJoint(*(child->jrlJoint()));
+      if (parent->jrlJoint()) {
+	parent->jrlJoint()->addChildJoint(*(child->jrlJoint()));
+      }
     }
 
   } // namespace model
