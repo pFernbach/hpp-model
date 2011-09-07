@@ -140,19 +140,15 @@ namespace hpp {
     HumanoidRobot::HumanoidRobot
     (CjrlRobotDynamicsObjectFactory *objFactory) :
       impl::DynamicRobot(), impl::HumanoidDynamicRobot(objFactory),
-      Device()
+      Device(),
+      gazeJoint_(),
+      leftAnkleJoint_(),
+      rightAnkleJoint_(),
+      leftWristJoint_(),
+      rightWristJoint_(),
+      waistJoint_(),
+      chestJoint_()
     {
-      waist(0);
-      chest(0);
-      leftWrist(0);
-      rightWrist(0);
-      leftHand(0);
-      rightHand(0);
-      leftAnkle(0);
-      rightAnkle(0);
-      leftFoot(0);
-      rightFoot(0);
-      gazeJoint(0);
       CkitNotificator::defaultNotificator()->subscribe<HumanoidRobot>
 	(CkppComponent::DID_INSERT_CHILD, this,
 	 &HumanoidRobot::componentDidInsertChild);
@@ -179,89 +175,114 @@ namespace hpp {
     {
       const std::string name = KIT_DYNAMIC_PTR_CAST(CkppComponent,
 						    joint)->name();
-
       if (name == gaze_->value()) {
+	hppDout(info, "gaze = " << name);
 	impl::HumanoidDynamicRobot::gazeJoint(joint->jrlJoint());
+	gazeJoint_ = joint;
       } else if (name == leftAnkle_->value()) {
-	// Create left foot
+	hppDout(info, "left ankle = " << name);
 	impl::HumanoidDynamicRobot::leftAnkle(joint->jrlJoint());
-	CjrlFoot* foot = Device::objectFactory()->createFoot(joint->jrlJoint());
-	vector3d anklePosition;
-	double length = soleLength_->value();
-	double width = soleWidth_->value();
-	anklePosition[0] = anklePosInLeftFootFrameX_->value();
-	anklePosition[1] = anklePosInLeftFootFrameY_->value();
-	anklePosition[2] = anklePosInLeftFootFrameZ_->value();
-	foot->setSoleSize(length, width);
-	foot->setAnklePositionInLocalFrame(anklePosition);
-	impl::HumanoidDynamicRobot::leftFoot(foot);
+	leftAnkleJoint_ = joint;
+	// Create left foot if not already created
+	if (impl::HumanoidDynamicRobot::leftFoot() == 0) {
+	  CjrlFoot* foot = 
+	    Device::objectFactory()->createFoot(joint->jrlJoint());
+	  vector3d anklePosition;
+	  double length = soleLength_->value();
+	  double width = soleWidth_->value();
+	  anklePosition[0] = anklePosInLeftFootFrameX_->value();
+	  anklePosition[1] = anklePosInLeftFootFrameY_->value();
+	  anklePosition[2] = anklePosInLeftFootFrameZ_->value();
+	  foot->setSoleSize(length, width);
+	  foot->setAnklePositionInLocalFrame(anklePosition);
+	  impl::HumanoidDynamicRobot::leftFoot(foot);
+	}
       } else if (name == rightAnkle_->value()) {
-	// Create right foot
+	hppDout(info, "right ankle = " << name);
 	impl::HumanoidDynamicRobot::rightAnkle(joint->jrlJoint());
-	CjrlFoot* foot = Device::objectFactory()->createFoot(joint->jrlJoint());
-	vector3d anklePosition;
-	double length = soleLength_->value();
-	double width = soleWidth_->value();
-	anklePosition[0] = anklePosInLeftFootFrameX_->value();
-	anklePosition[1] = -anklePosInLeftFootFrameY_->value();
-	anklePosition[2] = anklePosInLeftFootFrameZ_->value();
-	foot->setSoleSize(length, width);
-	foot->setAnklePositionInLocalFrame(anklePosition);
-	impl::HumanoidDynamicRobot::rightFoot(foot);
+	rightAnkleJoint_ = joint;
+	// Create right foot if not already created
+	if (impl::HumanoidDynamicRobot::rightFoot() == 0) {
+	  CjrlFoot* foot =
+	    Device::objectFactory()->createFoot(joint->jrlJoint());
+	  vector3d anklePosition;
+	  double length = soleLength_->value();
+	  double width = soleWidth_->value();
+	  anklePosition[0] = anklePosInLeftFootFrameX_->value();
+	  anklePosition[1] = -anklePosInLeftFootFrameY_->value();
+	  anklePosition[2] = anklePosInLeftFootFrameZ_->value();
+	  foot->setSoleSize(length, width);
+	  foot->setAnklePositionInLocalFrame(anklePosition);
+	  impl::HumanoidDynamicRobot::rightFoot(foot);
+	}
       } else if (name == leftWrist_->value()) {
-	// Create left hand
+	hppDout(info, "left wrist = " << name);
 	impl::HumanoidDynamicRobot::leftWrist(joint->jrlJoint());
-	CjrlHand* hand = Device::objectFactory()->createHand(joint->jrlJoint());
-	vector3d center;
-	center[0] = leftHandCenterX_->value();
-	center[1] = leftHandCenterY_->value();
-	center[2] = leftHandCenterZ_->value();
-	vector3d thumbAxis;
-	thumbAxis[0] = leftThumbAxisX_->value();
-	thumbAxis[1] = leftThumbAxisY_->value();
-	thumbAxis[2] = leftThumbAxisZ_->value();
-	vector3d forefinger;
-	forefinger[0] = leftForeFingerAxisX_->value();
-	forefinger[1] = leftForeFingerAxisY_->value();
-	forefinger[2] = leftForeFingerAxisZ_->value();
-	vector3d palmNormal;
-	palmNormal[0] = leftPalmNormalX_->value();
-	palmNormal[1] = leftPalmNormalY_->value();
-	palmNormal[2] = leftPalmNormalZ_->value();
-	hand->setCenter(center);
-	hand->setThumbAxis(thumbAxis);
-	hand->setForeFingerAxis(forefinger);
-	hand->setPalmNormal(palmNormal);
-	impl::HumanoidDynamicRobot::leftHand(hand);
+	leftWristJoint_ = joint;
+	// Create left hand if not already created
+	if (impl::HumanoidDynamicRobot::leftHand() == 0) {
+	  CjrlHand* hand =
+	    Device::objectFactory()->createHand(joint->jrlJoint());
+	  vector3d center;
+	  center[0] = leftHandCenterX_->value();
+	  center[1] = leftHandCenterY_->value();
+	  center[2] = leftHandCenterZ_->value();
+	  vector3d thumbAxis;
+	  thumbAxis[0] = leftThumbAxisX_->value();
+	  thumbAxis[1] = leftThumbAxisY_->value();
+	  thumbAxis[2] = leftThumbAxisZ_->value();
+	  vector3d forefinger;
+	  forefinger[0] = leftForeFingerAxisX_->value();
+	  forefinger[1] = leftForeFingerAxisY_->value();
+	  forefinger[2] = leftForeFingerAxisZ_->value();
+	  vector3d palmNormal;
+	  palmNormal[0] = leftPalmNormalX_->value();
+	  palmNormal[1] = leftPalmNormalY_->value();
+	  palmNormal[2] = leftPalmNormalZ_->value();
+	  hand->setCenter(center);
+	  hand->setThumbAxis(thumbAxis);
+	  hand->setForeFingerAxis(forefinger);
+	  hand->setPalmNormal(palmNormal);
+	  impl::HumanoidDynamicRobot::leftHand(hand);
+	}
       } else if (name == rightWrist_->value()) {
-	// Create right hand
+	hppDout(info, "right wrist = " << name);
 	impl::HumanoidDynamicRobot::rightWrist(joint->jrlJoint());
-	CjrlHand* hand = Device::objectFactory()->createHand(joint->jrlJoint());
-	vector3d center;
-	center[0] = leftHandCenterX_->value();
-	center[1] = -leftHandCenterY_->value();
-	center[2] = leftHandCenterZ_->value();
-	vector3d thumbAxis;
-	thumbAxis[0] = leftThumbAxisX_->value();
-	thumbAxis[1] = -leftThumbAxisY_->value();
-	thumbAxis[2] = leftThumbAxisZ_->value();
-	vector3d forefinger;
-	forefinger[0] = leftForeFingerAxisX_->value();
-	forefinger[1] = -leftForeFingerAxisY_->value();
-	forefinger[2] = leftForeFingerAxisZ_->value();
-	vector3d palmNormal;
-	palmNormal[0] = leftPalmNormalX_->value();
-	palmNormal[1] = -leftPalmNormalY_->value();
-	palmNormal[2] = leftPalmNormalZ_->value();
-	hand->setCenter(center);
-	hand->setThumbAxis(thumbAxis);
-	hand->setForeFingerAxis(forefinger);
-	hand->setPalmNormal(palmNormal);
-	impl::HumanoidDynamicRobot::rightHand(hand);
+	rightWristJoint_ = joint;
+	// Create right hand
+	if (impl::HumanoidDynamicRobot::rightHand() == 0) {
+	  CjrlHand* hand =
+	    Device::objectFactory()->createHand(joint->jrlJoint());
+	  vector3d center;
+	  center[0] = leftHandCenterX_->value();
+	  center[1] = -leftHandCenterY_->value();
+	  center[2] = leftHandCenterZ_->value();
+	  vector3d thumbAxis;
+	  thumbAxis[0] = leftThumbAxisX_->value();
+	  thumbAxis[1] = -leftThumbAxisY_->value();
+	  thumbAxis[2] = leftThumbAxisZ_->value();
+	  vector3d forefinger;
+	  forefinger[0] = leftForeFingerAxisX_->value();
+	  forefinger[1] = -leftForeFingerAxisY_->value();
+	  forefinger[2] = leftForeFingerAxisZ_->value();
+	  vector3d palmNormal;
+	  palmNormal[0] = leftPalmNormalX_->value();
+	  palmNormal[1] = -leftPalmNormalY_->value();
+	  palmNormal[2] = leftPalmNormalZ_->value();
+	  hand->setCenter(center);
+	  hand->setThumbAxis(thumbAxis);
+	  hand->setForeFingerAxis(forefinger);
+	  hand->setPalmNormal(palmNormal);
+	  impl::HumanoidDynamicRobot::rightHand(hand);
+	}
       } else if (name == waist_->value()) {
+	hppDout(info, "waist = " << name);
 	impl::HumanoidDynamicRobot::waist(joint->jrlJoint());
+	waistJoint_ = joint;
       } else if (name == chest_->value()) {
+	hppDout(info, "chest = " << name);
 	impl::HumanoidDynamicRobot::chest(joint->jrlJoint());
+	chestJoint_ = joint;
       }
     }
 
@@ -317,51 +338,51 @@ namespace hpp {
 
     // ======================================================================
 
-    Joint* HumanoidRobot::hppWaist()
+    JointShPtr HumanoidRobot::hppWaist()
     {
-      return dynamic_cast<Joint*>(waist());
+      return waistJoint_;
     }
 
     // ======================================================================
 
-    Joint* HumanoidRobot::hppChest()
+    JointShPtr HumanoidRobot::hppChest()
     {
-      return dynamic_cast<Joint*>(chest());
+      return chestJoint_;
     }
 
     // ======================================================================
 
-    Joint* HumanoidRobot::hppLeftWrist()
+    JointShPtr HumanoidRobot::hppLeftWrist()
     {
-      return dynamic_cast<Joint*>(leftWrist());
+      return leftWristJoint_;
     }
 
     // ======================================================================
 
-    Joint* HumanoidRobot::hppRightWrist()
+    JointShPtr HumanoidRobot::hppRightWrist()
     {
-      return dynamic_cast<Joint*>(rightWrist());
+      return rightWristJoint_;
     }
 
     // ======================================================================
 
-    Joint* HumanoidRobot::hppLeftAnkle()
+    JointShPtr HumanoidRobot::hppLeftAnkle()
     {
-      return dynamic_cast<Joint*>(leftAnkle());
+      return leftAnkleJoint_;
     }
 
     // ======================================================================
 
-    Joint* HumanoidRobot::hppRightAnkle()
+    JointShPtr HumanoidRobot::hppRightAnkle()
     {
-      return dynamic_cast<Joint*>(rightAnkle());
+      return rightAnkleJoint_;
     }
 
     // ======================================================================
 
-    Joint* HumanoidRobot::hppGazeJoint()
+    JointShPtr HumanoidRobot::hppGazeJoint()
     {
-      return dynamic_cast<Joint*>(gazeJoint());
+      return gazeJoint_;
     }
 
     // ======================================================================
@@ -656,6 +677,74 @@ namespace hpp {
 
     void HumanoidRobot::updateProperty(const CkppPropertyShPtr& property)
     {
+      vector3d v;
+      if (property == gazeOriginX_) {
+	gazeOriginX_->value(gazeOrigin()(0));
+      } else if (property == gazeOriginY_) {
+	gazeOriginY_->value(gazeOrigin()(1));
+      } else if (property == gazeOriginZ_) {
+	gazeOriginZ_->value(gazeOrigin()(2));
+      } else if (property == gazeDirectionX_) {
+	gazeDirectionX_->value(gazeDirection()(0));
+      } else if (property == gazeDirectionY_) {
+	gazeDirectionY_->value(gazeDirection()(1));
+      } else if (property == gazeDirectionZ_) {
+	gazeDirectionZ_->value(gazeDirection()(2));
+      } else if (property == anklePosInLeftFootFrameX_) {
+	leftFoot()->getAnklePositionInLocalFrame(v);
+	anklePosInLeftFootFrameX_->value(v(0));
+      } else if (property == anklePosInLeftFootFrameY_) {
+	leftFoot()->getAnklePositionInLocalFrame(v);
+	anklePosInLeftFootFrameY_->value(v(1));
+      } else if (property == anklePosInLeftFootFrameZ_) {
+	leftFoot()->getAnklePositionInLocalFrame(v);
+	anklePosInLeftFootFrameZ_->value(v(2));
+      } else if (property == soleLength_) {
+	double soleLength, soleWidth;
+	leftFoot()->getSoleSize(soleLength, soleWidth);
+	soleLength_->value(soleLength);
+      } else if (property == soleWidth_) {
+	double soleLength, soleWidth;
+	leftFoot()->getSoleSize(soleLength, soleWidth);
+	soleWidth_->value(soleWidth);
+      } else if (propery == leftHandCenterX_) {
+	leftHand()->getCenter(v);
+	leftHandCenterX_->value(v(0));
+      } else if (propery == leftHandCenterY_) {
+	leftHand()->getCenter(v);
+	leftHandCenterY_->value(v(1));
+      } else if (propery == leftHandCenterZ_) {
+	leftHand()->getCenter(v);
+	leftHandCenterZ_->value(v(2));
+      } else if (propery == leftThumbAxisX_) {
+	leftHand()->getThumbAxis(v);
+	leftThumbAxisX_->value(v(0));
+      } else if (propery == leftThumbAxisY_) {
+	leftHand()->getThumbAxis(v);
+	leftThumbAxisY_->value(v(1));
+      } else if (propery == leftThumbAxisZ_) {
+	leftHand()->getThumbAxis(v);
+	leftThumbAxisZ_->value(v(2));
+      } else if (propery == leftForeFingerAxisX_) {
+	leftHand()->getForeFingerAxis(v);
+	leftForeFingerAxisX_->value(v(0));
+      } else if (propery == leftForeFingerAxisY_) {
+	leftHand()->getForeFingerAxis(v);
+	leftForeFingerAxisY_->value(v(1));
+      } else if (propery == leftForeFingerAxisZ_) {
+	leftHand()->getForeFingerAxis(v);
+	leftForeFingerAxisZ_->value(v(2));
+      } else if (propery == leftPalmNormalX_) {
+	leftHand()->getPalmNormal(v);
+	leftPalmNormalX_->value(v(0));
+      } else if (propery == leftPalmNormalY_) {
+	leftHand()->getPalmNormal(v);
+	leftPalmNormalY_->value(v(1));
+      } else if (propery == leftPalmNormalZ_) {
+	leftHand()->getPalmNormal(v);
+	leftPalmNormalZ_->value(v(2));
+      }
+
       hppDout(info,"HumanoidRobot::updateProperty: "
 		<< *property);
     }
@@ -915,6 +1004,23 @@ namespace hpp {
       }
       return success;
     }
+
+    bool HumanoidRobot::initialize ()
+    {
+      hppDout(info, "");
+      Device::initialize();
+      typedef std::vector< CkppJointComponentShPtr > vector_t;
+      vector_t jointVector;
+      getJointComponentVector(jointVector);
+      for (vector_t::iterator it = jointVector.begin();
+	   it != jointVector.end(); it++) {
+	JointShPtr joint = KIT_DYNAMIC_PTR_CAST(Joint, *it);
+	if (joint == 0) {
+	  throw Exception("Joint is not of type hpp::model::Joint.");
+	}
+	registerSpecificJoint(joint);
+      }
+    }
   } // namespace model
 } // namespace hpp
 
@@ -922,27 +1028,48 @@ namespace hpp {
 std::ostream& operator<<(std::ostream& os, hpp::model::HumanoidRobot& robot)
 {
   os << (hpp::model::Device&)robot << std::endl;
-  if (robot.hppGazeJoint())
+  if (robot.hppGazeJoint()) {
     os << "gaze joint: " << robot.hppGazeJoint()->kppJoint()->name()
        << std::endl;
-  if (robot.hppWaist())
+  } else {
+    os << "no gaze joint"  << std::endl;
+  }
+  if (robot.hppWaist()) {
     os << "waist joint: " << robot.hppWaist()->kppJoint()->name()
        << std::endl;
-  if (robot.hppChest())
+  } else {
+    os << "no waist joint"  << std::endl;
+  }
+  if (robot.hppChest()) {
     os << "chest joint: " << robot.hppChest()->kppJoint()->name()
        << std::endl;
-  if (robot.hppLeftWrist())
+  } else {
+    os << "no chest joint"  << std::endl;
+  }
+  if (robot.hppLeftWrist()) {
     os << "left wrist joint: " << robot.hppLeftWrist()->kppJoint()->name()
        << std::endl;
-  if (robot.hppRightWrist())
+  } else {
+    os << "no left wrist"  << std::endl;
+  }
+  if (robot.hppRightWrist()) {
     os << "right wrist joint: " << robot.hppRightWrist()->kppJoint()->name()
        << std::endl;
-  if (robot.hppLeftAnkle())
+  } else {
+    os << "no right wrist"  << std::endl;
+  }
+  if (robot.hppLeftAnkle()) {
     os << "left ankle joint: " << robot.hppLeftAnkle()->kppJoint()->name()
        << std::endl;
-  if (robot.hppRightAnkle())
+  } else {
+    os << "no left ankle"  << std::endl;
+  }
+  if (robot.hppRightAnkle()) {
     os << "right ankle joint: " << robot.hppRightAnkle()->kppJoint()->name()
        << std::endl;
+  } else {
+    os << "no right ankle"  << std::endl;
+  }
 
   os << "gaze origin: " << robot.gazeOrigin() << std::endl;
   os << "gaze direction: " << robot.gazeDirection() << std::endl;

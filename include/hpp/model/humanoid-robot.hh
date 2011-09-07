@@ -199,26 +199,28 @@ namespace hpp {
       ///
 
       /// \brief Get Joint corresponding to the waist.
-      Joint* hppWaist();
+      JointShPtr hppWaist();
 
       /// \brief Get Joint corresponding to the chest.
-      Joint* hppChest();
+      JointShPtr hppChest();
 
       /// \brief Get Joint corresponding to the left wrist.
-      Joint* hppLeftWrist();
+      JointShPtr hppLeftWrist();
 
       /// \brief Get Joint corresponding to the right wrist.
-      Joint* hppRightWrist();
+      JointShPtr hppRightWrist();
 
       /// \brief Get Joint corresponding to the left ankle.
-      Joint* hppLeftAnkle();
+      JointShPtr hppLeftAnkle();
 
       /// \brief Get Joint corresponding to the right ankle.
-      Joint* hppRightAnkle();
+      JointShPtr hppRightAnkle();
 
       /// \brief Get gaze joint
-      Joint* hppGazeJoint();
+      JointShPtr hppGazeJoint();
 
+      /// \brief Set specific joints via properties
+      virtual bool initialize();
       /// @}
 
       /// \brief Creation of a new humanoid robot
@@ -257,6 +259,13 @@ namespace hpp {
       void registerSpecificJoint(const JointShPtr& joint);
       /// \brief Store weak pointer to object.
       HumanoidRobotWkPtr weakPtr_;
+      JointShPtr gazeJoint_;
+      JointShPtr leftAnkleJoint_;
+      JointShPtr rightAnkleJoint_;
+      JointShPtr leftWristJoint_;
+      JointShPtr rightWristJoint_;
+      JointShPtr waistJoint_;
+      JointShPtr chestJoint_;
     }; // class HumanoidRobot
   } // namespace model
 } // namespace hpp
