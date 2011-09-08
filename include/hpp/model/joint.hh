@@ -76,6 +76,9 @@ namespace hpp {
       ///
       static CkitMat4 CkitMat4MatrixFromAbstract(const matrix4d& matrix);
 
+      /// \brief Get a shared pointer to joint from dynamic part
+      static JointShPtr fromJrlJoint(CjrlJoint* joint);
+
       ///
       ///@}
       ///
@@ -288,6 +291,7 @@ namespace hpp {
     private:
       JointWkPtr weakPtr_;
       CjrlJoint* dynamicJoint_;
+      static std::map <CjrlJoint*, JointShPtr> jointMap_;
     }; // class Joint
   } // namespace model
 } // namespace hpp

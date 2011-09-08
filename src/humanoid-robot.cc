@@ -140,14 +140,7 @@ namespace hpp {
     HumanoidRobot::HumanoidRobot
     (CjrlRobotDynamicsObjectFactory *objFactory) :
       impl::DynamicRobot(), impl::HumanoidDynamicRobot(objFactory),
-      Device(),
-      gazeJoint_(),
-      leftAnkleJoint_(),
-      rightAnkleJoint_(),
-      leftWristJoint_(),
-      rightWristJoint_(),
-      waistJoint_(),
-      chestJoint_()
+      Device()
     {
       CkitNotificator::defaultNotificator()->subscribe<HumanoidRobot>
 	(CkppComponent::DID_INSERT_CHILD, this,
@@ -178,11 +171,9 @@ namespace hpp {
       if (name == gaze_->value()) {
 	hppDout(info, "gaze = " << name);
 	impl::HumanoidDynamicRobot::gazeJoint(joint->jrlJoint());
-	gazeJoint_ = joint;
       } else if (name == leftAnkle_->value()) {
 	hppDout(info, "left ankle = " << name);
 	impl::HumanoidDynamicRobot::leftAnkle(joint->jrlJoint());
-	leftAnkleJoint_ = joint;
 	// Create left foot if not already created
 	if (impl::HumanoidDynamicRobot::leftFoot() == 0) {
 	  CjrlFoot* foot =
@@ -200,7 +191,6 @@ namespace hpp {
       } else if (name == rightAnkle_->value()) {
 	hppDout(info, "right ankle = " << name);
 	impl::HumanoidDynamicRobot::rightAnkle(joint->jrlJoint());
-	rightAnkleJoint_ = joint;
 	// Create right foot if not already created
 	if (impl::HumanoidDynamicRobot::rightFoot() == 0) {
 	  CjrlFoot* foot =
@@ -218,7 +208,6 @@ namespace hpp {
       } else if (name == leftWrist_->value()) {
 	hppDout(info, "left wrist = " << name);
 	impl::HumanoidDynamicRobot::leftWrist(joint->jrlJoint());
-	leftWristJoint_ = joint;
 	// Create left hand if not already created
 	if (impl::HumanoidDynamicRobot::leftHand() == 0) {
 	  CjrlHand* hand =
@@ -248,7 +237,6 @@ namespace hpp {
       } else if (name == rightWrist_->value()) {
 	hppDout(info, "right wrist = " << name);
 	impl::HumanoidDynamicRobot::rightWrist(joint->jrlJoint());
-	rightWristJoint_ = joint;
 	// Create right hand
 	if (impl::HumanoidDynamicRobot::rightHand() == 0) {
 	  CjrlHand* hand =
@@ -278,11 +266,9 @@ namespace hpp {
       } else if (name == waist_->value()) {
 	hppDout(info, "waist = " << name);
 	impl::HumanoidDynamicRobot::waist(joint->jrlJoint());
-	waistJoint_ = joint;
-      } else if (name == chest_->value()) {
+      } if (name == chest_->value()) {
 	hppDout(info, "chest = " << name);
 	impl::HumanoidDynamicRobot::chest(joint->jrlJoint());
-	chestJoint_ = joint;
       }
     }
 
@@ -340,49 +326,49 @@ namespace hpp {
 
     JointShPtr HumanoidRobot::hppWaist()
     {
-      return waistJoint_;
+      return Joint::fromJrlJoint(waist());
     }
 
     // ======================================================================
 
     JointShPtr HumanoidRobot::hppChest()
     {
-      return chestJoint_;
+      return Joint::fromJrlJoint(chest());
     }
 
     // ======================================================================
 
     JointShPtr HumanoidRobot::hppLeftWrist()
     {
-      return leftWristJoint_;
+      return Joint::fromJrlJoint(leftWrist());
     }
 
     // ======================================================================
 
     JointShPtr HumanoidRobot::hppRightWrist()
     {
-      return rightWristJoint_;
+      return Joint::fromJrlJoint(rightWrist());
     }
 
     // ======================================================================
 
     JointShPtr HumanoidRobot::hppLeftAnkle()
     {
-      return leftAnkleJoint_;
+      return Joint::fromJrlJoint(leftAnkle());
     }
 
     // ======================================================================
 
     JointShPtr HumanoidRobot::hppRightAnkle()
     {
-      return rightAnkleJoint_;
+      return Joint::fromJrlJoint(rightAnkle());
     }
 
     // ======================================================================
 
     JointShPtr HumanoidRobot::hppGazeJoint()
     {
-      return gazeJoint_;
+      return Joint::fromJrlJoint(gazeJoint());
     }
 
     // ======================================================================

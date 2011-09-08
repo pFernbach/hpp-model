@@ -259,13 +259,6 @@ namespace hpp {
       void registerSpecificJoint(const JointShPtr& joint);
       /// \brief Store weak pointer to object.
       HumanoidRobotWkPtr weakPtr_;
-      JointShPtr gazeJoint_;
-      JointShPtr leftAnkleJoint_;
-      JointShPtr rightAnkleJoint_;
-      JointShPtr leftWristJoint_;
-      JointShPtr rightWristJoint_;
-      JointShPtr waistJoint_;
-      JointShPtr chestJoint_;
     }; // class HumanoidRobot
   } // namespace model
 } // namespace hpp

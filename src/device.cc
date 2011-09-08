@@ -493,7 +493,7 @@ namespace hpp {
 				     kppJoint)) {
 	  outJrlDynamicsDofVector[jrlRankInConfig] =
 	    kwsDofVector[rankInCkwsConfig];
-	  hppDout(warning, "Joint value: " <<
+	  hppDout(info, "Joint value: " <<
 		  outJrlDynamicsDofVector[jrlRankInConfig]);
 	  rankInCkwsConfig ++;
 	}
@@ -502,7 +502,7 @@ namespace hpp {
 				     kppJoint)) {
 	  outJrlDynamicsDofVector[jrlRankInConfig] =
 	    kwsDofVector[rankInCkwsConfig];
-	  hppDout(warning, "Joint value: " <<
+	  hppDout(info, "Joint value: " <<
 		  outJrlDynamicsDofVector[jrlRankInConfig]);
 	  rankInCkwsConfig ++;
 	}

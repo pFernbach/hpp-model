@@ -39,6 +39,7 @@
 
 namespace hpp {
   namespace model {
+    std::map <CjrlJoint*, JointShPtr> Joint::jointMap_;
     // Mass
     const CkppProperty::TPropertyID
     Joint::MASS_ID(CkppProperty::makeID());
@@ -147,10 +148,10 @@ namespace hpp {
 	    << kppJoint()->name() << ".";
 	throw Exception(oss.str());
       }
-      if (jrlJoint()->addChildJoint(*(childJoint->jrlJoint()))
-	  != KD_OK) {
+      if (!jrlJoint()->addChildJoint(*(childJoint->jrlJoint()))) {
 	std::ostringstream oss;
-	oss << "Failed to add a child joint to dynamicJRLJapan::Joint "
+	oss << "Failed to add " << childJoint->kppJoint()->name()
+	    << " as child joint to dynamicJRLJapan::Joint "
 	    << kppJoint()->name() << ".";
 	throw Exception(oss.str());
       }
@@ -314,6 +315,9 @@ namespace hpp {
 				   INERTIA_MATRIX_YZ_STRING_ID);
       if (!inertiaMatrixYZ_) return KD_ERROR;
 
+      if (dynamicJoint_) {
+	jointMap_[dynamicJoint_] = weakPtr_.lock();
+      }
       return KD_OK;
     }
 
@@ -332,6 +336,8 @@ namespace hpp {
       outPropertyVector.push_back(inertiaMatrixYZ_);
     }
 
+    // ======================================================================
+
     matrix4d Joint::abstractMatrixFromCkitMat4(const CkitMat4& matrix)
     {
       hppDout(info, matrix);
@@ -346,6 +352,8 @@ namespace hpp {
       return abstractMatrix;
     }
 
+    // ======================================================================
+
     CkitMat4 Joint::CkitMat4MatrixFromAbstract(const matrix4d& matrix)
     {
       CkitMat4 kitMat4;
@@ -356,6 +364,14 @@ namespace hpp {
       }
       return kitMat4;
     }
+
+    // ======================================================================
+
+    JointShPtr Joint::fromJrlJoint(CjrlJoint* joint)
+    {
+      return jointMap_[joint];
+    }
+
 
     // ======================================================================
 
@@ -402,6 +418,7 @@ namespace hpp {
 	dynamicJoint_ =
 	  jointFactory_(&Device::objectFactory_,
 			Joint::abstractMatrixFromCkitMat4(initialPos));
+	jointMap_[dynamicJoint_] = weakPtr_.lock();
 	insertBody();
       }
     }
