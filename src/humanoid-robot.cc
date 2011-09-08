@@ -185,7 +185,7 @@ namespace hpp {
 	leftAnkleJoint_ = joint;
 	// Create left foot if not already created
 	if (impl::HumanoidDynamicRobot::leftFoot() == 0) {
-	  CjrlFoot* foot = 
+	  CjrlFoot* foot =
 	    Device::objectFactory()->createFoot(joint->jrlJoint());
 	  vector3d anklePosition;
 	  double length = soleLength_->value();
@@ -677,74 +677,6 @@ namespace hpp {
 
     void HumanoidRobot::updateProperty(const CkppPropertyShPtr& property)
     {
-      vector3d v;
-      if (property == gazeOriginX_) {
-	gazeOriginX_->value(gazeOrigin()(0));
-      } else if (property == gazeOriginY_) {
-	gazeOriginY_->value(gazeOrigin()(1));
-      } else if (property == gazeOriginZ_) {
-	gazeOriginZ_->value(gazeOrigin()(2));
-      } else if (property == gazeDirectionX_) {
-	gazeDirectionX_->value(gazeDirection()(0));
-      } else if (property == gazeDirectionY_) {
-	gazeDirectionY_->value(gazeDirection()(1));
-      } else if (property == gazeDirectionZ_) {
-	gazeDirectionZ_->value(gazeDirection()(2));
-      } else if (property == anklePosInLeftFootFrameX_) {
-	leftFoot()->getAnklePositionInLocalFrame(v);
-	anklePosInLeftFootFrameX_->value(v(0));
-      } else if (property == anklePosInLeftFootFrameY_) {
-	leftFoot()->getAnklePositionInLocalFrame(v);
-	anklePosInLeftFootFrameY_->value(v(1));
-      } else if (property == anklePosInLeftFootFrameZ_) {
-	leftFoot()->getAnklePositionInLocalFrame(v);
-	anklePosInLeftFootFrameZ_->value(v(2));
-      } else if (property == soleLength_) {
-	double soleLength, soleWidth;
-	leftFoot()->getSoleSize(soleLength, soleWidth);
-	soleLength_->value(soleLength);
-      } else if (property == soleWidth_) {
-	double soleLength, soleWidth;
-	leftFoot()->getSoleSize(soleLength, soleWidth);
-	soleWidth_->value(soleWidth);
-      } else if (propery == leftHandCenterX_) {
-	leftHand()->getCenter(v);
-	leftHandCenterX_->value(v(0));
-      } else if (propery == leftHandCenterY_) {
-	leftHand()->getCenter(v);
-	leftHandCenterY_->value(v(1));
-      } else if (propery == leftHandCenterZ_) {
-	leftHand()->getCenter(v);
-	leftHandCenterZ_->value(v(2));
-      } else if (propery == leftThumbAxisX_) {
-	leftHand()->getThumbAxis(v);
-	leftThumbAxisX_->value(v(0));
-      } else if (propery == leftThumbAxisY_) {
-	leftHand()->getThumbAxis(v);
-	leftThumbAxisY_->value(v(1));
-      } else if (propery == leftThumbAxisZ_) {
-	leftHand()->getThumbAxis(v);
-	leftThumbAxisZ_->value(v(2));
-      } else if (propery == leftForeFingerAxisX_) {
-	leftHand()->getForeFingerAxis(v);
-	leftForeFingerAxisX_->value(v(0));
-      } else if (propery == leftForeFingerAxisY_) {
-	leftHand()->getForeFingerAxis(v);
-	leftForeFingerAxisY_->value(v(1));
-      } else if (propery == leftForeFingerAxisZ_) {
-	leftHand()->getForeFingerAxis(v);
-	leftForeFingerAxisZ_->value(v(2));
-      } else if (propery == leftPalmNormalX_) {
-	leftHand()->getPalmNormal(v);
-	leftPalmNormalX_->value(v(0));
-      } else if (propery == leftPalmNormalY_) {
-	leftHand()->getPalmNormal(v);
-	leftPalmNormalY_->value(v(1));
-      } else if (propery == leftPalmNormalZ_) {
-	leftHand()->getPalmNormal(v);
-	leftPalmNormalZ_->value(v(2));
-      }
-
       hppDout(info,"HumanoidRobot::updateProperty: "
 		<< *property);
     }
@@ -754,6 +686,34 @@ namespace hpp {
     bool HumanoidRobot::modifiedProperty(const CkppPropertyShPtr &property)
     {
       if (!CkppDeviceComponent::modifiedProperty(property)) return false;
+
+      vector3d	go = gazeOrigin();
+      vector3d gd = gazeDirection();
+
+      if (property == gazeOriginX_) {
+	go(0) = gazeOriginX_->value();
+	return true;
+      }
+      else if (property == gazeOriginY_) {
+	go(1) = gazeOriginY_->value();
+	return true;
+      }
+      else if (property == gazeOriginZ_) {
+	go(2) = gazeOriginZ_->value();
+	return true;
+      }
+      else if (property == gazeDirectionX_) {
+	gd(0) = gazeDirectionX_->value();
+	return true;
+      }
+      else if (property == gazeDirectionY_) {
+	gd(1) = gazeDirectionY_->value();
+	return true;
+      }
+      else if (property == gazeDirectionZ_) {
+	gd(2) = gazeDirectionZ_->value();
+	return true;
+      }
       hppDout(info,"HumanoidRobot::modifiedProperty: "
 		<< *property);
       return true;
