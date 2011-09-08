@@ -35,12 +35,12 @@
 namespace hpp {
   namespace model {
     template <class HDR = impl::HumanoidDynamicRobot>
-    class ChppSpecificHumanoidRobot;
+    class SpecificHumanoidRobot;
 
-#define ChppSpecificHumanoidRobotShPtr			\
-    boost::shared_ptr< ChppSpecificHumanoidRobot<HDR> >
-#define ChppSpecificHumanoidRobotWkPtr			\
-    boost::weak_ptr< ChppSpecificHumanoidRobot<HDR> >
+#define SpecificHumanoidRobotShPtr			\
+    boost::shared_ptr< SpecificHumanoidRobot<HDR> >
+#define SpecificHumanoidRobotWkPtr			\
+    boost::weak_ptr< SpecificHumanoidRobot<HDR> >
 
 
     /// \brief Specific implementation of humanoid robot with geometric and dynamic model .
@@ -52,14 +52,14 @@ namespace hpp {
     /// \li derive impl::HumanoidDynamicRobot into CoptHumanoidDynamicRobot
     /// and overload the methods you want to optimize,
 
-    /// \li define your own ChppSpecificHumanoidRobot class by
+    /// \li define your own SpecificHumanoidRobot class by
     /// instanciating the template with your implementation:
 
-    /// \code typedef ChppSpecificHumanoidRobot<CoptHumanoidDynamicRobot> CyourOptHppHumanoidRobot; \endcode
+    /// \code typedef SpecificHumanoidRobot<CoptHumanoidDynamicRobot> CyourOptHppHumanoidRobot; \endcode
 
     /// \image html classDiagramHumanoid.png "Inheritance diagram of a composite humanoid robot class based on an optimized implementation of the humanoid robot dynamic model."
 
-    template <class HDR> class ChppSpecificHumanoidRobot :
+    template <class HDR> class SpecificHumanoidRobot :
       public HDR, public HumanoidRobot
     {
     public:
@@ -77,6 +77,10 @@ namespace hpp {
       /// \return true
       bool isComponentClonable() const;
 
+      /// \brief Disambiguate parent method
+      /// Call HumanoidRobot::initialize()
+      virtual bool initialize();
+
       ///
       /// @}
       ///
@@ -84,30 +88,26 @@ namespace hpp {
       /// \brief Creation of a new humanoid robot
       /// \return a shared pointer to the new robot
       /// \param name Name of the device (is passed to CkkpDeviceComponent)
-      static ChppSpecificHumanoidRobotShPtr create(std::string name);
+      static SpecificHumanoidRobotShPtr create(std::string name);
 
     protected:
       /// \brief Constructor
       /// \param objFactory factory necessary to build a CjrlDynamicHumanoidRobot.
-      ChppSpecificHumanoidRobot(CjrlRobotDynamicsObjectFactory *objFactory);
+      SpecificHumanoidRobot(CjrlRobotDynamicsObjectFactory *objFactory);
 
       /// \brief Initialization.
-      ktStatus init(const ChppSpecificHumanoidRobotWkPtr& weakPtr,
+      ktStatus init(const SpecificHumanoidRobotWkPtr& weakPtr,
 		    const std::string& name);
-
-      /// \brief Initialization with shared pointer.
-      ktStatus init(const ChppSpecificHumanoidRobotWkPtr& weakPtr,
-		    const ChppSpecificHumanoidRobotShPtr& device);
 
     private:
 
       /// \brief Store weak pointer to object.
-      ChppSpecificHumanoidRobotWkPtr weakPtr_;
+      SpecificHumanoidRobotWkPtr weakPtr_;
     };
 
 
     template <class HDR>
-    ChppSpecificHumanoidRobot<HDR>::ChppSpecificHumanoidRobot
+    SpecificHumanoidRobot<HDR>::SpecificHumanoidRobot
     (CjrlRobotDynamicsObjectFactory *objFactory) :
       impl::DynamicRobot(), impl::HumanoidDynamicRobot(objFactory), HDR(objFactory),
       HumanoidRobot(objFactory)
@@ -116,14 +116,14 @@ namespace hpp {
 
     // =====================================================================
 
-    template <class HDR> ChppSpecificHumanoidRobotShPtr
-    ChppSpecificHumanoidRobot<HDR>::create(std::string name)
+    template <class HDR> SpecificHumanoidRobotShPtr
+    SpecificHumanoidRobot<HDR>::create(std::string name)
     {
       impl::ObjectFactory* objFactory = new impl::ObjectFactory();
 
-      ChppSpecificHumanoidRobot<HDR> *hppDevice =
-	new ChppSpecificHumanoidRobot<HDR>(objFactory);
-      ChppSpecificHumanoidRobotShPtr hppDeviceShPtr(hppDevice);
+      SpecificHumanoidRobot<HDR> *hppDevice =
+	new SpecificHumanoidRobot<HDR>(objFactory);
+      SpecificHumanoidRobotShPtr hppDeviceShPtr(hppDevice);
 
       if (hppDevice->init(hppDeviceShPtr, name) != KD_OK) {
 	hppDeviceShPtr.reset();
@@ -134,7 +134,7 @@ namespace hpp {
     // ======================================================================
 
     template <class HDR> CkwsDeviceShPtr
-    ChppSpecificHumanoidRobot<HDR>::clone() const
+    SpecificHumanoidRobot<HDR>::clone() const
     {
       return CkwsDeviceShPtr();
     }
@@ -142,7 +142,7 @@ namespace hpp {
     // ======================================================================
 
     template <class HDR> CkppComponentShPtr
-    ChppSpecificHumanoidRobot<HDR>::cloneComponent() const
+    SpecificHumanoidRobot<HDR>::cloneComponent() const
     {
       return CkppComponentShPtr();
     }
@@ -150,38 +150,28 @@ namespace hpp {
     // ======================================================================
 
     template <class HDR> bool
-    ChppSpecificHumanoidRobot<HDR>::isComponentClonable() const
+    SpecificHumanoidRobot<HDR>::isComponentClonable() const
     {
       return false;
     }
 
-    // ======================================================================
-
-    template <class HDR> ktStatus
-    ChppSpecificHumanoidRobot<HDR>::init
-    (const ChppSpecificHumanoidRobotWkPtr& inDevWkPtr, const std::string &name)
+    template <class HDR>
+    bool SpecificHumanoidRobot<HDR>::initialize()
     {
-      ktStatus success = Device::init(inDevWkPtr, name);
-
-      if(KD_OK == success) {
-	weakPtr_ = inDevWkPtr;
-      }
-      return success;
+      return HumanoidRobot::initialize();
     }
 
     // ======================================================================
 
     template <class HDR> ktStatus
-    ChppSpecificHumanoidRobot<HDR>::init
-    (const ChppSpecificHumanoidRobotWkPtr& weakPtr,
-     const ChppSpecificHumanoidRobotShPtr& device)
+    SpecificHumanoidRobot<HDR>::init
+    (const SpecificHumanoidRobotWkPtr& inDevWkPtr, const std::string &name)
     {
-      ktStatus  success = Device::init(weakPtr, device);
+      ktStatus success = HumanoidRobot::init(inDevWkPtr, name);
 
       if(KD_OK == success) {
-	weakPtr_ = weakPtr;
+	weakPtr_ = inDevWkPtr;
       }
-
       return success;
     }
   } // namespace model
