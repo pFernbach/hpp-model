@@ -205,16 +205,6 @@ namespace hpp {
       /// \name Attached body
       /// @{
 
-      ///
-      /// \brief Attach a body to the joint
-      ///
-      void setAttachedBody(const BodyShPtr& inBody);
-
-      ///
-      /// \brief Get the body attached to the joint
-      ///
-      BodyShPtr attachedBody() const;
-
       /// \brief Insert a body of type hpp::model::Body before adding geometry
       /// When the first solid component is added to a joint component,
       /// an object of class CkwsKCDBody is inserted to the underlying

@@ -102,7 +102,7 @@ namespace hpp {
 	  for (std::vector<CkcdObjectShPtr>::const_iterator it =
 		 outerList.begin(); it != outerList.end(); it++) {
 	    const CkcdObjectShPtr& outerObject = *it;
-	    
+
 #ifdef HPP_DEBUG
 	    CkppSolidComponentShPtr solidComp =
 	      KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, outerObject);

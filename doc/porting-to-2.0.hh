@@ -64,3 +64,25 @@
 /// pointers. Most methods manipulating joints take as input or
 /// return shared pointer to hpp::model::Joint as well. This might
 /// imply some minor modifications in client code.
+///
+/// \subsection hpp_model_porting_body Modification in class Body
+///
+/// class hpp::model::Body does not derive anymore from impl::DynamicBody.
+/// When creating a joint, it is now necessary to create
+/// \li a hpp::model::Body object and
+/// \li a impl::DynamicBody object (implementation of CjrlBody).
+///
+/// Method hpp::model::Joint::insertBody() does that for the user.
+///
+/// Methods hpp::model::Joint::setAttachedBody() and
+/// hpp::model::Joint::attachedBody() have been suppressed. They can be replaced
+/// by parent class CkwsJoint implementation through dynamic casting.
+///
+/// if <c>joint</c> is of type <c>hpp::model::JointShPtr</c>, the attached body
+/// can be retrieved by:
+/// \code hpp::model::BodyShPtr body = KIT_DYNAMIC_PTR_CAST(hpp::model::Joint, joint->attachedBody());\endcode
+///
+/// Methods hpp::model::Body::hppJoint() have been suppressed. the joint owning
+/// a body can be accessed by parent class CkwsKCDBody and dynamic casting.
+/// \code hpp::model::JointShPtr joint = KIT_DYNAMIC_PTR_CAST(hpp::model::Joint, body->joint());\endcode
+///

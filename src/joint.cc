@@ -235,30 +235,6 @@ namespace hpp {
       jrlJoint()->upperVelocityBound(dofRank, upperVelocityBound);
     }
 
-    void Joint::setAttachedBody(const BodyShPtr& body)
-    {
-      ///
-      /// Attach the body to the geometric part of the joint
-      ///
-      kppJoint()->kwsJoint()->setAttachedBody(body);
-      ///
-      /// Attach the body to the dynamic part of the joint
-      ///
-      if (jrlJoint()) {
-	jrlJoint()->setLinkedBody(*(body.get()));
-      }
-      
-      ///
-      /// Store pointer to the joint in body
-      ///
-      body->hppJoint(this);
-    }
-
-    BodyShPtr Joint::attachedBody() const
-    {
-      return KIT_DYNAMIC_PTR_CAST(Body, kppJoint()->kwsJoint()->attachedBody());
-    }
-
     ktStatus Joint::init(const JointWkPtr& weakPtr)
     {
       weakPtr_ = weakPtr;
@@ -384,14 +360,22 @@ namespace hpp {
       if (!kwsBody) {
 	hppDout(info, "creating " + name + "-body");
 	BodyShPtr body = Body::create(name + "-body");
+	kppJoint()->kwsJoint()->setAttachedBody(body);
+      } else if (!KIT_DYNAMIC_PTR_CAST(Body, kwsBody)) {
+	hppDout(info, "Joint " << name << 
+		" already has a body, but not of type hpp::model::Body.");
+      }
+
+      if (jrlJoint() && !jrlJoint()->linkedBody()) {
+	CjrlBody* jrlBody = Device::objectFactory_.createBody();
 	// Set mass
-	body->mass(mass_->value());
+	jrlBody->mass(mass_->value());
 	// Set local center of mass
 	vector3d com;
 	com[0] = comX_->value();
 	com[1] = comY_->value();
 	com[2] = comZ_->value();
-	body->localCenterOfMass(com);
+	jrlBody->localCenterOfMass(com);
 	// Set inertia matrix
 	matrix3d inertia;
 	inertia(0,0) = inertiaMatrixXX_->value();
@@ -400,12 +384,8 @@ namespace hpp {
 	inertia(0,1) = inertia(1,0) = inertiaMatrixXY_->value();
 	inertia(0,2) = inertia(2,0) = inertiaMatrixXZ_->value();
 	inertia(1,2) = inertia(2,1) = inertiaMatrixYZ_->value();
-	body->inertiaMatrix(inertia);
-
-	setAttachedBody(body);
-      } else if (!KIT_DYNAMIC_PTR_CAST(Body, kwsBody)) {
-	hppDout(info, "Joint " << name << 
-		" already has a body, but not of type hpp::model::Body.");
+	jrlBody->inertiaMatrix(inertia);
+	jrlJoint()->setLinkedBody(*jrlBody);
       }
     }
 
@@ -437,17 +417,22 @@ std::ostream& operator<<(std::ostream& os, const hpp::model::Joint& joint)
   os << "Current transformation geometric part:" << std::endl;
   os << joint.kppJoint()->kwsJoint()->currentPosition() << std:: endl;
 
-  hpp::model::BodyShPtr hppBody = joint.attachedBody();
-  if (hppBody) {
-    os << "Attached body:" << std::endl;
-    os << "Mass of the attached body: " << hppBody->mass() << std::endl;
-    os << "Local center of mass:" << hppBody->localCenterOfMass() << std::endl;
-    os << "Inertia matrix:" << std::endl;
-    os << hppBody->inertiaMatrix() << std::endl;
+  const CjrlJoint* jrlJoint = joint.jrlJoint();
+  if (jrlJoint) {
+    CjrlBody* hppBody = jrlJoint->linkedBody();
+    if (hppBody) {
+      os << "Attached body:" << std::endl;
+      os << "Mass of the attached body: " << hppBody->mass() << std::endl;
+      os << "Local center of mass:" << hppBody->localCenterOfMass()
+	 << std::endl;
+      os << "Inertia matrix:" << std::endl;
+      os << hppBody->inertiaMatrix() << std::endl;
+    } else {
+      os << "No attached body" << std::endl;
+    }
   } else {
-    os << "No attached body" << std::endl;
+    os << "No dynamic part" << std::endl;
   }
-
   for (unsigned int iChild=0; iChild < joint.countChildJoints();
        iChild++) {
     os << *(joint.childJoint(iChild)) << std::endl;

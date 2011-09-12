@@ -59,13 +59,13 @@ namespace hpp {
     /// number of such pairs can be retrieved by calling
     /// nbDistPairs(). distAndPairsOfPoints() also returns distances
     /// and pairs of closest points for each computed pair.
-    
+
     /// The constructor is protected and method create returns a
     /// shared pointer to the device.
-    
+
     /// \sa Smart pointers documentation:
     /// http://www.boost.org/libs/smart_ptr/smart_ptr.htm
-    class Body : public CkwsKCDBody, public impl::DynamicBody
+    class Body : public CkwsKCDBody
     {
     public:
 
@@ -82,7 +82,7 @@ namespace hpp {
       ///
       ///
       /// \brief Add a geometric object to the body
-      
+
       /// \param solidCompRef Reference to the solid component to add.
       /// \param position Position of the object before attaching it to the body
       /// (default value=Identity).
@@ -140,18 +140,6 @@ namespace hpp {
       /// @}
       ///
 
-      /// \name Joint the body is attached to
-      /// @{
-
-      /// \brief Store a pointer to the joint the body is attached to
-      void hppJoint(Joint* joint) {joint_ = joint;};
-
-      /// \brief Get a pointer to the joint the body is attached to
-      Joint* hppJoint() const { return joint_; };
-
-      ///
-      /// @}
-      ///
     protected:
 
       /// \brief Pointer to the joint the body is attached to
