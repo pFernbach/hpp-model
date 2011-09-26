@@ -112,6 +112,8 @@ namespace hpp {
 
     Joint::~Joint() 
     {
+      hppDout(info, "hpp::model::Joint::~Joint(): this = "
+	      << this << std::endl);
     }
 
     JointShPtr Joint::parentJoint() const
@@ -293,6 +295,8 @@ namespace hpp {
 
       if (dynamicJoint_) {
 	jointMap_[dynamicJoint_] = weakPtr_.lock();
+	hppDout(info, "jointMap_[" << dynamicJoint_ << "] = " <<
+		jointMap_[dynamicJoint_]);
       }
       return KD_OK;
     }
@@ -399,6 +403,8 @@ namespace hpp {
 	  jointFactory_(&Device::objectFactory_,
 			Joint::abstractMatrixFromCkitMat4(initialPos));
 	jointMap_[dynamicJoint_] = weakPtr_.lock();
+	hppDout(info, "jointMap_[" << dynamicJoint_ << "] = " <<
+		jointMap_[dynamicJoint_]);
 	insertBody();
       }
     }
