@@ -166,6 +166,7 @@ namespace hpp {
 
     void HumanoidRobot::registerSpecificJoint(const JointShPtr& joint)
     {
+      if (joint->jrlJoint() == 0) return;
       const std::string name = KIT_DYNAMIC_PTR_CAST(CkppComponent,
 						    joint)->name();
       if (name == gaze_->value()) {
