@@ -37,60 +37,60 @@
 
 namespace hpp {
   namespace model {
-    BodyShPtr Body::create(const std::string& name)
-    {
-      Body* hppBody = new Body(name);
-      BodyShPtr hppBodyShPtr(hppBody);
-      BodyWkPtr hppBodyWkPtr = hppBodyShPtr;
+BodyShPtr Body::create(const std::string& name)
+{
+  Body* hppBody = new Body(name);
+  BodyShPtr hppBodyShPtr(hppBody);
+  BodyWkPtr hppBodyWkPtr = hppBodyShPtr;
 
-      if (hppBody->init(hppBodyWkPtr) != KD_OK) {
+  if (hppBody->init(hppBodyWkPtr) != KD_OK) {
 	hppDout(error," error in create() ");
 	hppBodyShPtr.reset();
-      }
-      return hppBodyShPtr;
-    }
+  }
+  return hppBodyShPtr;
+}
 
-    //=========================================================================
+//=========================================================================
 
-    ktStatus Body::init(const BodyWkPtr weakPtr)
-    {
-      weakPtr_ = weakPtr;
-      return CkwsKCDBody::init(weakPtr);
-    }
+ktStatus Body::init(const BodyWkPtr weakPtr)
+{
+  weakPtr_ = weakPtr;
+  return CkwsKCDBody::init(weakPtr);
+}
 
-    //=========================================================================
+//=========================================================================
 
-    bool
-    Body::addInnerObject(const CkppSolidComponentRefShPtr& solidCompRef,
+bool
+Body::addInnerObject(const CkppSolidComponentRefShPtr& solidCompRef,
 			 const CkitMat4& position,
 			 bool distanceComputation)
-    {
-      CkppSolidComponentShPtr solidComponent =
+{
+  CkppSolidComponentShPtr solidComponent =
 	solidCompRef->referencedSolidComponent();
 
 #ifdef HPP_DEBUG
-      std::string innerName = solidComponent->name();
-      std::string outerName;
+  std::string innerName = solidComponent->name();
+  std::string outerName;
 #endif
-      // Attach solid component to the joint associated to the body
-      CkwsJointShPtr bodyKwsJoint = CkwsBody::joint();
-      CkppJointComponentShPtr bodyKppJoint =
+  // Attach solid component to the joint associated to the body
+  CkwsJointShPtr bodyKwsJoint = CkwsBody::joint();
+  CkppJointComponentShPtr bodyKppJoint =
 	KIT_DYNAMIC_PTR_CAST(CkppJointComponent, bodyKwsJoint);
 
-      // Test that body is attached to a joint
-      if (bodyKppJoint) {
+  // Test that body is attached to a joint
+  if (bodyKppJoint) {
 	solidComponent->setAbsolutePosition(position);
 	bodyKppJoint->addSolidComponentRef(solidCompRef);
-      }
-      else {
+  }
+  else {
 	hppDout(error, "The body is not attached to any joint.");
 	throw Exception("The body is not attached to any joint.");
-      }
+  }
 
-      // If requested, add the object in the list of objects the
-      //distance to which needs to be computed and build the
-      //corresponding analyses.
-      if (distanceComputation) {
+  // If requested, add the object in the list of objects the
+  //distance to which needs to be computed and build the
+  //corresponding analyses.
+  if (distanceComputation) {
 	CkcdObjectShPtr innerObject =
 	  KIT_DYNAMIC_PTR_CAST(CkcdObject, solidComponent);
 	if (innerObject) {
@@ -101,78 +101,78 @@ namespace hpp {
 	  const std::vector<CkcdObjectShPtr>& outerList = outerObjForDist_;
 	  for (std::vector<CkcdObjectShPtr>::const_iterator it =
 		 outerList.begin(); it != outerList.end(); it++) {
-	    const CkcdObjectShPtr& outerObject = *it;
+	const CkcdObjectShPtr& outerObject = *it;
 
 #ifdef HPP_DEBUG
-	    CkppSolidComponentShPtr solidComp =
-	      KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, outerObject);
-	    if (solidComp) {
-	      outerName = solidComp->name();
-	    } else {
-	      outerName = std::string("");
-	    }
+	CkppSolidComponentShPtr solidComp =
+	  KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, outerObject);
+	if (solidComp) {
+	  outerName = solidComp->name();
+	} else {
+	  outerName = std::string("");
+	}
 #endif
-	    // Instantiate the analysis object
-	    CkcdAnalysisShPtr analysis = CkcdAnalysis::create();
-	    analysis->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
-	    // Ignore tolerance for distance computations
-	    analysis->ignoreTolerance(true);
+	// Instantiate the analysis object
+	CkcdAnalysisShPtr analysis = CkcdAnalysis::create();
+	analysis->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
+	// Ignore tolerance for distance computations
+	analysis->ignoreTolerance(true);
 
-	    // retrieve the test trees associated with the objects
-	    CkcdTestTreeShPtr leftTree = innerObject->collectTestTrees();
-	    CkcdTestTreeShPtr rightTree = outerObject->collectTestTrees();
+	// retrieve the test trees associated with the objects
+	CkcdTestTreeShPtr leftTree = innerObject->collectTestTrees();
+	CkcdTestTreeShPtr rightTree = outerObject->collectTestTrees();
 
-	    // associate the lists with the analysis object
-	    analysis->leftTestTree(leftTree);
-	    analysis->rightTestTree(rightTree);
+	// associate the lists with the analysis object
+	analysis->leftTestTree(leftTree);
+	analysis->rightTestTree(rightTree);
 
-	    hppDout(info,"creating analysis between "
-		    << innerName << " and "
-		    << outerName);
-	    distCompPairs_.push_back(analysis);
+	hppDout(info,"creating analysis between "
+		<< innerName << " and "
+		<< outerName);
+	distCompPairs_.push_back(analysis);
 	  }
 	}
 	else {
 	  hppDout(error,"cannot cast solid component into CkcdObject.");
 	  throw Exception("cannot cast solid component into CkcdObject.");
 	}
-      }
-      return true;
-    }
+  }
+  return true;
+}
 
-    //=========================================================================
+//=========================================================================
 
-    void Body::addOuterObject(const CkcdObjectShPtr& outerObject,
-			      bool distanceComputation)
+void Body::addOuterObject(const CkcdObjectShPtr& outerObject,
+			  bool distanceComputation)
 
-    {
+{
 #ifdef HPP_DEBUG
-      std::string innerName;
-      std::string outerName;
-      CkppSolidComponentShPtr solidComp =
+  std::string innerName;
+  std::string outerName;
+  CkppSolidComponentShPtr solidComp =
 	KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, outerObject);
-      if (solidComp) {
+  if (solidComp) {
 	outerName = solidComp->name();
-      } else {
+  } else {
 	outerName = std::string("");
-      }
+  }
 #endif
-      // Append object at the end of KineoWorks set of outer objects
-      // for collision checking
-      std::vector<CkcdObjectShPtr> outerList = outerObjects();
-      outerList.push_back(outerObject);
-      outerObjects(outerList);
+  // Append object at the end of KineoWorks set of outer objects
+  // for collision checking
+  std::vector<CkcdObjectShPtr> outerList = outerObjects();
+  outerList.push_back(outerObject);
+  outerObjects(outerList);
 
-      // If distance computation is requested, build necessary CkcdAnalysis
-      // objects
-      if (distanceComputation) {
+  // If distance computation is requested, build necessary CkcdAnalysis
+  // objects
+  if (distanceComputation) {
 	// Store object in case inner objects are added a posteriori
 	outerObjForDist_.push_back(outerObject);
 
 	// Build distance computation objects (CkcdAnalysis)
 	const std::vector<CkcdObjectShPtr> innerList = innerObjForDist_;
 	for (std::vector<CkcdObjectShPtr>::const_iterator it =
-	       innerList.begin(); it != innerList.end(); it++) {
+	   innerList.begin(); it != innerList.end(); it++) {
 	  const CkcdObjectShPtr& innerObject=*it;
 
 	  // Instantiate the analysis object
@@ -192,9 +192,9 @@ namespace hpp {
 #ifdef HPP_DEBUG
 	  solidComp = KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, innerObject);
 	  if (solidComp) {
-	    innerName = solidComp->name();
+	innerName = solidComp->name();
 	  } else {
-	    innerName = std::string("");
+	innerName = std::string("");
 	  }
 #endif
 	  hppDout(info,"creating analysis between "
@@ -203,36 +203,36 @@ namespace hpp {
 
 	  distCompPairs_.push_back(analysis);
 	}
-      }
-    }
+  }
+}
 
-    //=========================================================================
+//=========================================================================
 
-    void Body::resetOuterObjects()
-    {
-      outerObjForDist_.clear();
-      distCompPairs_.clear();
-    }
+void Body::resetOuterObjects()
+{
+  outerObjForDist_.clear();
+  distCompPairs_.clear();
+}
 
 
-    //=========================================================================
+//=========================================================================
 
-    ktStatus
-    Body::distAndPairsOfPoints(unsigned int pairId,
-			       double& outDistance,
-			       CkitPoint3& outPointBody,
-			       CkitPoint3& outPointEnv,
-			       CkcdObjectShPtr &outObjectBody,
-			       CkcdObjectShPtr &outObjectEnv,
-			       CkcdAnalysisType::Type type)
-    {
-      KWS_PRECONDITION(pairId < nbDistPairs());
+ktStatus
+Body::distAndPairsOfPoints(unsigned int pairId,
+			   double& outDistance,
+			   CkitPoint3& outPointBody,
+			   CkitPoint3& outPointEnv,
+			   CkcdObjectShPtr &outObjectBody,
+			   CkcdObjectShPtr &outObjectEnv,
+			   CkcdAnalysisType::Type type)
+{
+  KWS_PRECONDITION(pairId < nbDistPairs());
 
-      CkcdAnalysisShPtr analysis = distCompPairs_[pairId];
-      analysis->analysisType(type);
+  CkcdAnalysisShPtr analysis = distCompPairs_[pairId];
+  analysis->analysisType(type);
 
-      ktStatus status = analysis->compute();
-      if (KD_SUCCEEDED(status)) {
+  ktStatus status = analysis->compute();
+  if (KD_SUCCEEDED(status)) {
 	hppDout(info,"compute succeeded.");
 	unsigned int nbDistances = analysis->countExactDistanceReports();
 
@@ -259,19 +259,19 @@ namespace hpp {
 	  outDistance = distanceReport->distance();
 
 	  if(distanceReport->countPairs()>0) {
-	    CkitMat4 firstPos, secondPos;
-	    // get points in the frame of the object
-	    distanceReport->getPoints(0,leftPoint,rightPoint) ;
-	    // get geometry
-	    outObjectBody = distanceReport->pair(0).first->geometry();
-	    outObjectEnv = distanceReport->pair(0).second->geometry();
-	    outObjectBody->getAbsolutePosition(firstPos);
-	    outObjectEnv->getAbsolutePosition(secondPos);
-	    //from these geometry points we can get points in absolute
-	    //frame(world) or relative frame(geometry).
-	    //here we want points in the absolute frame.
-	    outPointBody= firstPos * leftPoint;
-	    outPointEnv = secondPos * rightPoint;
+	CkitMat4 firstPos, secondPos;
+	// get points in the frame of the object
+	distanceReport->getPoints(0,leftPoint,rightPoint) ;
+	// get geometry
+	outObjectBody = distanceReport->pair(0).first->geometry();
+	outObjectEnv = distanceReport->pair(0).second->geometry();
+	outObjectBody->getAbsolutePosition(firstPos);
+	outObjectEnv->getAbsolutePosition(secondPos);
+	//from these geometry points we can get points in absolute
+	//frame(world) or relative frame(geometry).
+	//here we want points in the absolute frame.
+	outPointBody= firstPos * leftPoint;
+	outPointEnv = secondPos * rightPoint;
 	  }
 
 	  // get object
@@ -281,11 +281,11 @@ namespace hpp {
 	  return KD_OK;
 	}
 
-      } else {
+  } else {
 	hppDout(error,":distAndPairsOfPoints: compute failed.");
 	return KD_ERROR;
-      }
-      return KD_OK;
-    }
+  }
+  return KD_OK;
+}
   } // namespace model
 } // namespace hpp
