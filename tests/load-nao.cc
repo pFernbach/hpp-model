@@ -142,6 +142,15 @@ BOOST_AUTO_TEST_CASE(display)
 
   printComponent (modelTreeComponent);
 
+  if (parser->writeComponentToFile("./romeo-hpp-return.kxml",
+				   modelTreeComponent) != KD_OK) {
+    CkprParser::Error error = parser->lastError();
+    std::string message = "failed to write ./romeo-hpp-return.kxml.\n"
+      + std::string(error.errorMessage());
+    hppDout(error, message);
+    throw Exception(message);
+  }
+
   CkppModelTreeShPtr modelTree =
     KIT_DYNAMIC_PTR_CAST(CkppModelTree,modelTreeComponent);
   if (!modelTree)
