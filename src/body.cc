@@ -253,8 +253,8 @@ namespace hpp {
 	else{
       
 	  CkcdExactDistanceReportShPtr distanceReport;
-	  CkitPoint3 leftPoint, rightPoint;
-      
+	  CkcdPoint leftPoint, rightPoint;
+
 	  //distances are ordered from lowest value, to highest value.
 	  distanceReport = analysis->exactDistanceReport(0);
       
