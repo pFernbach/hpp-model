@@ -235,14 +235,14 @@ namespace hpp {
     {
       KWS_PRECONDITION(pairId < nbDistPairs());
 
-      CkcdAnalysisShPtr analysis = attDistCompPairs[inPairId];
+      CkcdAnalysisShPtr analysis = distCompPairs_[inPairId];
       analysis->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
 
       ktStatus status = analysis->compute();
       if (KD_SUCCEEDED(status)) {
 	hppDout(info,"compute succeeded.");
 	unsigned int nbDistances = analysis->countExactDistanceReports();
-    
+
 	if(nbDistances == 0) {
 	  //no distance information available, return 0 for instance;
 	  hppDout(info,"no distance report.");
