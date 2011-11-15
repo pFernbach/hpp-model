@@ -23,6 +23,7 @@ SET(CXX_DISABLE_WERROR TRUE)
 INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/cpack.cmake)
+INCLUDE(cmake/kineo.cmake)
 
 SET(PROJECT_NAME hpp-model)
 SET(PROJECT_DESCRIPTION
