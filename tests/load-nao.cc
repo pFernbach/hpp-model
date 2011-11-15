@@ -24,11 +24,19 @@
 #include <boost/test/output_test_stream.hpp>
 using boost::test_tools::output_test_stream;
 
+#include <KineoUtility/kitParameterMap.h>
+
 #include <kprParserXML/kprParserManager.h>
+
+#include <KineoModel/kppComponentFactoryRegistry.h>
 #include <KineoModel/kppComponent.h>
 #include <KineoModel/kppModelTree.h>
 #include <KineoModel/kppDeviceNode.h>
 #include "KineoModel/kppLicense.h"
+
+#include <KineoController/kppDocument.h>
+
+#include <KineoModuleManager/kppModuleManager.h>
 
 #include <hpp/util/debug.hh>
 #include "hpp/model/humanoid-robot.hh"
@@ -84,9 +92,21 @@ BOOST_AUTO_TEST_CASE(display)
 {
   hpp::model::validateLicense();
   CkppComponentShPtr modelTreeComponent;
+
+  // Initialize module manager.
+  CkppModuleManagerShPtr moduleManager = CkppModuleManager::create ();
+
+  std::string moduleDirectoryPath = getenv ("KPP_INSTALL_DIR");
+  moduleDirectoryPath += "/bin/modules/";
+
+  moduleManager->addSearchDirectory (moduleDirectoryPath);
+
+  moduleManager->initializeModules ();
+
   hpp::model::Parser extra;
   CkprParserManagerShPtr parser = CkprParserManager::defaultManager();
   std::string filename("/home/florent/devel/nao/model/nao-hpp.kxml");
+  parser->moduleManager (moduleManager);
   if (parser->loadComponentFromFile(filename,
 				    modelTreeComponent) != KD_OK) {
     CkprParser::Error error = parser->lastError();
