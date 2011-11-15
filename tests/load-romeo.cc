@@ -34,8 +34,6 @@ using boost::test_tools::output_test_stream;
 #include <KineoModel/kppDeviceNode.h>
 #include "KineoModel/kppLicense.h"
 
-#include <KineoController/kppDocument.h>
-
 #include <KineoModuleManager/kppModuleManager.h>
 
 #include <hpp/util/debug.hh>
@@ -110,29 +108,11 @@ BOOST_AUTO_TEST_CASE(display)
   std::string filename("./romeo-hpp.kxml");
   CkppComponentShPtr modelTreeComponent;
 
-  // Create component factory registry and test it.
-  CkppDocumentShPtr document
-    = CkppDocument::create (parser->moduleManager ());
-  CkppComponentFactoryRegistryShPtr componentFactoryRegistry
-    = document->componentFactoryRegistry ();
-
-  if (componentFactoryRegistry->empty ())
-    hppDout (error, "Component factory registry is empty.");
-
-  if (!componentFactoryRegistry
-      ->makeComponent (CkppDeviceComponent::REGISTRY_CLASS_ID))
-    hppDout (error, "Component factory registry does not contain "
-	     << CkppDeviceComponent::REGISTRY_CLASS_ID);
-
-  // Create empty parameter map. This is an "optional" argument of
-  // loadComponentFromFile but is required in the prototype.
-  CkitParameterMapShPtr parameterMap = CkitParameterMap::create ();
-
   // Parse file and retrieve components.
   if (parser->loadComponentFromFile(filename,
 				    modelTreeComponent,
-				    componentFactoryRegistry,
-				    parameterMap) != KD_OK) {
+				    CkppComponentFactoryRegistry::create (),
+				    CkitParameterMap::create ()) != KD_OK) {
     CkprParser::Error error = parser->lastError();
     std::string message = "failed to read " + filename + ".\n"
       + std::string(error.errorMessage());
