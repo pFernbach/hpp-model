@@ -91,7 +91,6 @@ void printComponent (const CkppComponentShPtr& i_component,
 BOOST_AUTO_TEST_CASE(display)
 {
   hpp::model::validateLicense();
-  CkppComponentShPtr modelTreeComponent;
 
   // Initialize module manager.
   CkppModuleManagerShPtr moduleManager = CkppModuleManager::create ();
@@ -103,12 +102,36 @@ BOOST_AUTO_TEST_CASE(display)
 
   moduleManager->initializeModules ();
 
+  // Create parser that will load the components.
   hpp::model::Parser extra;
   CkprParserManagerShPtr parser = CkprParserManager::defaultManager();
   std::string filename("/home/florent/devel/nao/model/nao-hpp.kxml");
   parser->moduleManager (moduleManager);
+  CkppComponentShPtr modelTreeComponent;
+
+  // Create component factory registry and test it.
+  CkppDocumentShPtr document
+    = CkppDocument::create (parser->moduleManager ());
+  CkppComponentFactoryRegistryShPtr componentFactoryRegistry
+    = document->componentFactoryRegistry ();
+
+  if (componentFactoryRegistry->empty ())
+    hppDout (error, "Component factory registry is empty.");
+
+  if (!componentFactoryRegistry
+      ->makeComponent (CkppDeviceComponent::REGISTRY_CLASS_ID))
+    hppDout (error, "Component factory registry does not contain "
+	     << CkppDeviceComponent::REGISTRY_CLASS_ID);
+
+  // Create empty parameter map. This is an "optional" argument of
+  // loadComponentFromFile but is required in the prototype.
+  CkitParameterMapShPtr parameterMap = CkitParameterMap::create ();
+
+  // Parse file and retrieve components.
   if (parser->loadComponentFromFile(filename,
-				    modelTreeComponent) != KD_OK) {
+				    modelTreeComponent,
+				    componentFactoryRegistry,
+				    parameterMap) != KD_OK) {
     CkprParser::Error error = parser->lastError();
     std::string message = "failed to read " + filename + ".\n"
       + std::string(error.errorMessage());
