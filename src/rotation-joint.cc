@@ -103,7 +103,9 @@ namespace hpp {
     {
       ktStatus status = KD_OK;
       weakPtr_ = weakPtr;
-      status = CkppRotationJointComponent::init(weakPtr, name);
+      status = CkppRotationJointComponent::init(weakPtr,
+						name,
+						makeDefaultBodyFactory ());
       if (status == KD_ERROR) return KD_ERROR;
       status = Joint::init(weakPtr);
       if (status == KD_ERROR) return KD_ERROR;

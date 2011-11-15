@@ -102,7 +102,9 @@ namespace hpp {
     {
       ktStatus status = KD_OK;
       weakPtr_ = weakPtr;
-      status = CkppAnchorJointComponent::init(weakPtr, name);
+      status = CkppAnchorJointComponent::init(weakPtr,
+					      name,
+					      makeDefaultBodyFactory ());
       if (status == KD_ERROR) return KD_ERROR;
       status = Joint::init(weakPtr);
       if (status == KD_ERROR) return KD_ERROR;
