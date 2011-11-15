@@ -133,7 +133,11 @@ namespace hpp {
 			CkprXMLBuildingContextShPtr& inOutContext,
 			CkppComponentShPtr& outComponent)
     {
+      hppDout(info, "building FreeFlyerJoint.");
       outComponent = FreeflyerJoint::create("FREEFLYER");
+      if (!outComponent) {
+	hppDout(error, "failed to create FreeFlyerJoint");
+      }
       return KD_OK;
     }
 
@@ -157,7 +161,11 @@ namespace hpp {
 		       CkprXMLBuildingContextShPtr& inOutContext,
 		       CkppComponentShPtr& outComponent)
     {
+      hppDout(info, "building RotationJoint.");
       outComponent = RotationJoint::create("ROTATION");
+      if (!outComponent) {
+	hppDout(error, "failed to create RotationJoint");
+      }
       return KD_OK;
     }
 
@@ -181,7 +189,11 @@ namespace hpp {
 			  CkprXMLBuildingContextShPtr& inOutContext,
 			  CkppComponentShPtr& outComponent)
     {
+      hppDout(info, "building TranslationJoint.");
       outComponent = TranslationJoint::create("TRANSLATION");
+      if (!outComponent) {
+	hppDout(error, "failed to create TranslationJoint");
+      }
       return KD_OK;
     }
 
@@ -205,7 +217,11 @@ namespace hpp {
 		     CkprXMLBuildingContextShPtr& inOutContext,
 		     CkppComponentShPtr& outComponent)
     {
+      hppDout(info, "building AnchorJoint.");
       outComponent = AnchorJoint::create("ANCHOR");
+      if (!outComponent) {
+	hppDout(error, "failed to create AnchorJoint");
+      }
       return KD_OK;
     }
 
