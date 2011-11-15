@@ -125,16 +125,14 @@ namespace hpp {
 #endif
 	    // Instantiate the analysis object
 	    CkcdAnalysisShPtr analysis = CkcdAnalysis::create();
-	    analysis->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
+	    analysis->analysisData ()
+	      ->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
 	    // Ignore tolerance for distance computations
-	    analysis->doesIgnoreTolerance(true);
-	    // retrieve the test trees associated with the objects
-	    CkcdTestTreeShPtr leftTree = innerObject->collectTestTrees();
-	    CkcdTestTreeShPtr rightTree = outerObject->collectTestTrees();
+	    analysis->analysisData ()->isToleranceActivated(false);
 
 	    // associate the lists with the analysis object
-	    analysis->leftTestTree(leftTree);
-	    analysis->rightTestTree(rightTree);
+	    analysis->leftObject (innerObject);
+	    analysis->rightObject (outerObject);
 
 	    hppDout(info,"creating analysis between "
 		    << innerName << " and "
@@ -187,17 +185,14 @@ namespace hpp {
 
 	  // Instantiate the analysis object
 	  CkcdAnalysisShPtr analysis = CkcdAnalysis::create();
-	  analysis->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
+	  analysis->analysisData ()
+	    ->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
 	  // Ignore tolerance for distance computations
-	  analysis->doesIgnoreTolerance(true);
-
-	  // retrieve the test trees associated with the objects
-	  CkcdTestTreeShPtr leftTree = innerObject->collectTestTrees();
-	  CkcdTestTreeShPtr rightTree = outerObject->collectTestTrees();
+	  analysis->analysisData ()->isToleranceActivated (false);
 
 	  // associate the lists with the analysis object
-	  analysis->leftTestTree(leftTree);
-	  analysis->rightTestTree(rightTree);
+	  analysis->leftObject (innerObject);
+	  analysis->rightObject (outerObject);
 
 #ifdef HPP_DEBUG
 	  solidComp = KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, innerObject);
