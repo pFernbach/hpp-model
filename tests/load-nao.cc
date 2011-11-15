@@ -105,8 +105,9 @@ BOOST_AUTO_TEST_CASE(display)
   // Create parser that will load the components.
   hpp::model::Parser extra;
   CkprParserManagerShPtr parser = CkprParserManager::defaultManager();
-  std::string filename("/home/florent/devel/nao/model/nao-hpp.kxml");
   parser->moduleManager (moduleManager);
+
+  std::string filename("./romeo-hpp.kxml");
   CkppComponentShPtr modelTreeComponent;
 
   // Create component factory registry and test it.
