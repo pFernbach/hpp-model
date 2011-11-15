@@ -26,7 +26,6 @@
 #include <KineoKCDModel/kppKCDAssembly.h>
 #include <kcd2/kcdAnalysis.h>
 #include <kcd2/kcdExactDistanceReport.h>
-#include <kcd2/kcdGeometrySubElement.h>
 #include <kcd2/kcdPoint.h>
 
 #include <jrl/mal/matrixabstractlayer.hh>
@@ -231,10 +230,8 @@ namespace hpp {
     ktStatus
     Body::distAndPairsOfPoints(unsigned int inPairId,
 			       double& outDistance,
-			       CkcdPoint3& outPointBody,
-			       CkcdPoint3& outPointEnv,
-			       CkcdGeometryConstShPtr& outObjectBody,
-			       CkcdGeometryConstShPtr& outObjectEnv)
+			       CkcdPoint& outPointBody,
+			       CkcdPoint& outPointEnv)
     {
       KWS_PRECONDITION(pairId < nbDistPairs());
 
@@ -250,10 +247,7 @@ namespace hpp {
 	  //no distance information available, return 0 for instance;
 	  hppDout(info,"no distance report.");
 	  outDistance = 0;
-      
-	  outObjectBody.reset();
-	  outObjectEnv.reset();
-      
+
 	  return KD_OK;
 	}
 	else{
@@ -267,22 +261,11 @@ namespace hpp {
 	  //exact distance between two lists is always stored at the first
 	  //rank of Distance reports.
 	  outDistance = distanceReport->distance();
-      
-	  assert(distanceReport->countPairs()>0);
-	  CkcdMat4 firstPos, secondPos;
-	  // get points in the frame of the object
-	  distanceReport->getPoints(0,leftPoint,rightPoint) ;
-	  // get geometry
-	  outObjectBody = distanceReport->pair(0).first->geometry();
-	  outObjectEnv = distanceReport->pair(0).second->geometry();
-	  outObjectBody->getAbsolutePosition(firstPos);
-	  outObjectEnv->getAbsolutePosition(secondPos);
-	  //from these geometry points we can get points in absolute
-	  //frame(world) or relative frame(geometry).
-	  //here we want points in the absolute frame.
-	  outPointBody= firstPos * leftPoint;
-	  outPointEnv = secondPos * rightPoint;
-      
+
+	  assert(analysis->countExactDistanceReports() > 0);
+	  // Get points in absolute frame(world).
+	  distanceReport->getPointsAbsolute (outPointBody, outPointEnv);
+
 	  return KD_OK;
 	}
 

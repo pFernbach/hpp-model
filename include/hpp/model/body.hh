@@ -123,14 +123,10 @@ namespace hpp {
       /// \retval outDistance Distance between body and outer objects
       /// \retval outPointBody Closest point on body (in global reference frame)
       /// \retval outPointEnv Closest point in outer object set (in global reference frame)
-      /// \retval outObjectBody Closest object on body
-      /// \retval outObjectEnv Closest object in outer object list
       ktStatus distAndPairsOfPoints(unsigned int pairId,
 				    double& outDistance,
 				    CkcdPoint& outPointBody,
-				    CkcdPoint& outPointEnv,
-				    CkcdGeometryConstShPtr &outObjectBody,
-				    CkcdGeometryConstShPtr &outObjectEnv);
+				    CkcdPoint& outPointEnv);
 
       ///
       /// @}
