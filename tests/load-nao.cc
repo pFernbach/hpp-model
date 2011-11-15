@@ -48,6 +48,38 @@ namespace hpp {
   } // namespace model
 } // namespace hpp
 
+// Define function that prints a component tree hierarchy starting
+// from a root component.
+void printComponent (const CkppComponentShPtr& i_component,
+		     std::set<int> lastChildDepths = std::set<int> (),
+		     int depth = 0);
+
+void printComponent (const CkppComponentShPtr& i_component,
+		     std::set<int> lastChildDepths,
+		     int depth)
+{
+  std::cout << i_component->name () << std::endl;
+  for (unsigned i = 0;
+       i < i_component->countChildComponents ();
+       ++i)
+    {
+      for (int j = 0; j < depth; ++j)
+	if (lastChildDepths.find (j) != lastChildDepths.end ())
+	  std::cout << "    ";
+	else
+	  std::cout << "|   ";
+      std::cout << "|-> ";
+
+      if (i == i_component->countChildComponents () - 1)
+	lastChildDepths.insert (depth);
+
+      printComponent (i_component->childComponent (i),
+		      lastChildDepths,
+		      depth + 1);
+      lastChildDepths.erase (depth);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(display)
 {
   hpp::model::validateLicense();
@@ -63,6 +95,9 @@ BOOST_AUTO_TEST_CASE(display)
     hppDout(error, message);
     throw Exception(message);
   }
+
+  printComponent (modelTreeComponent);
+
   CkppModelTreeShPtr modelTree =
     KIT_DYNAMIC_PTR_CAST(CkppModelTree,modelTreeComponent);
   if (!modelTree)
@@ -85,5 +120,4 @@ BOOST_AUTO_TEST_CASE(display)
   
   humanoidRobot->initialize();
   output_test_stream output;
-  std::cout << *humanoidRobot;
 }
