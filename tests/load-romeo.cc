@@ -19,7 +19,7 @@
 
 #include <sstream>
 
-#define BOOST_TEST_MODULE LOAD_NAO
+#define BOOST_TEST_MODULE LOAD_ROMEO
 #include <boost/test/unit_test.hpp>
 #include <boost/test/output_test_stream.hpp>
 using boost::test_tools::output_test_stream;
