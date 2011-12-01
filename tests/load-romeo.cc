@@ -34,8 +34,6 @@ using boost::test_tools::output_test_stream;
 #include <KineoModel/kppDeviceNode.h>
 #include "KineoModel/kppLicense.h"
 
-#include <KineoModuleManager/kppModuleManager.h>
-
 #include <hpp/util/debug.hh>
 #include "hpp/model/humanoid-robot.hh"
 #include "hpp/model/parser.hh"
@@ -90,20 +88,9 @@ BOOST_AUTO_TEST_CASE(display)
 {
   hpp::model::validateLicense();
 
-  // Initialize module manager.
-  CkppModuleManagerShPtr moduleManager = CkppModuleManager::create ();
-
-  std::string moduleDirectoryPath = getenv ("KPP_INSTALL_DIR");
-  moduleDirectoryPath += "/bin/modules/";
-
-  moduleManager->addSearchDirectory (moduleDirectoryPath);
-
-  moduleManager->initializeModules ();
-
   // Create parser that will load the components.
   hpp::model::Parser extra;
   CkprParserManagerShPtr parser = CkprParserManager::defaultManager();
-  parser->moduleManager (moduleManager);
 
   std::string filename("./romeo-hpp.kxml");
   CkppComponentShPtr modelTreeComponent;
@@ -150,7 +137,7 @@ BOOST_AUTO_TEST_CASE(display)
 
   if (!humanoidRobot)
     throw Exception("Device is not of type HumanoidRobot.");
-  
+
   humanoidRobot->initialize();
   output_test_stream output;
 }
