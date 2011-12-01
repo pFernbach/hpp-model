@@ -662,7 +662,11 @@ namespace hpp {
 
     // ======================================================================
 
-    void HumanoidRobot::updateProperty(const CkppPropertyShPtr& property)
+    void HumanoidRobot::updateProperty(const CkppPropertyShPtr&
+#ifdef HPP_DEBUG
+				       property
+#endif
+				       )
     {
       hppDout(info,"HumanoidRobot::updateProperty: "
 		<< *property);
@@ -967,6 +971,7 @@ namespace hpp {
 	}
 	registerSpecificJoint(joint);
       }
+      return true;
     }
   } // namespace model
 } // namespace hpp

@@ -88,7 +88,7 @@ namespace hpp {
 
     ktStatus Parser::writeHumanoidRobot
     (const CkppComponentConstShPtr& inComponent,
-     CkprXMLWriterShPtr& inOutWriter,
+     CkprXMLWriterShPtr&,
      CkprXMLTagShPtr& inOutTag)
     {
       if (KIT_DYNAMIC_PTR_CAST(const HumanoidRobot, inComponent)) {
@@ -99,10 +99,10 @@ namespace hpp {
     }
 
     ktStatus Parser::buildHumanoidRobot
-    (const CkprXMLTagConstShPtr& inTag,
-     const CkppComponentShPtr& inOutParentComponent,
-     std::vector< CkppComponentShPtr >& inPrebuiltChildComponentVector,
-     CkprXMLBuildingContextShPtr& inOutContext,
+    (const CkprXMLTagConstShPtr&,
+     const CkppComponentShPtr&,
+     std::vector< CkppComponentShPtr >&,
+     CkprXMLBuildingContextShPtr&,
      CkppComponentShPtr& outComponent)
     {
       hppDout(info, "building HumanoidRobot.");
@@ -115,7 +115,7 @@ namespace hpp {
 
     ktStatus Parser::
     writeFreeflyerJoint(const CkppComponentConstShPtr& inComponent,
-			CkprXMLWriterShPtr& inOutWriter,
+			CkprXMLWriterShPtr&,
 			CkprXMLTagShPtr& inOutTag)
     {
       if (KIT_DYNAMIC_PTR_CAST(const FreeflyerJoint, inComponent)) {
@@ -126,11 +126,10 @@ namespace hpp {
     }
 
     ktStatus Parser::
-    buildFreeflyerJoint(const CkprXMLTagConstShPtr& inTag,
-			const CkppComponentShPtr& inOutParentComponent,
-			std::vector< CkppComponentShPtr >&
-			inPrebuiltChildComponentVector,
-			CkprXMLBuildingContextShPtr& inOutContext,
+    buildFreeflyerJoint(const CkprXMLTagConstShPtr&,
+			const CkppComponentShPtr&,
+			std::vector< CkppComponentShPtr >&,
+			CkprXMLBuildingContextShPtr&,
 			CkppComponentShPtr& outComponent)
     {
       hppDout(info, "building FreeFlyerJoint.");
@@ -143,7 +142,7 @@ namespace hpp {
 
     ktStatus Parser::
     writeRotationJoint(const CkppComponentConstShPtr& inComponent,
-		       CkprXMLWriterShPtr& inOutWriter,
+		       CkprXMLWriterShPtr&,
 		       CkprXMLTagShPtr& inOutTag)
     {
       if (KIT_DYNAMIC_PTR_CAST(const RotationJoint, inComponent)) {
@@ -154,11 +153,10 @@ namespace hpp {
     }
 
     ktStatus Parser::
-    buildRotationJoint(const CkprXMLTagConstShPtr& inTag,
-		       const CkppComponentShPtr& inOutParentComponent,
-		       std::vector< CkppComponentShPtr >&
-		       inPrebuiltChildComponentVector,
-		       CkprXMLBuildingContextShPtr& inOutContext,
+    buildRotationJoint(const CkprXMLTagConstShPtr&,
+		       const CkppComponentShPtr&,
+		       std::vector< CkppComponentShPtr >&,
+		       CkprXMLBuildingContextShPtr&,
 		       CkppComponentShPtr& outComponent)
     {
       hppDout(info, "building RotationJoint.");
@@ -171,7 +169,7 @@ namespace hpp {
 
     ktStatus Parser::
     writeTranslationJoint(const CkppComponentConstShPtr& inComponent,
-			  CkprXMLWriterShPtr& inOutWriter,
+			  CkprXMLWriterShPtr&,
 			  CkprXMLTagShPtr& inOutTag)
     {
       if (KIT_DYNAMIC_PTR_CAST(const TranslationJoint, inComponent)) {
@@ -182,11 +180,10 @@ namespace hpp {
     }
 
     ktStatus Parser::
-    buildTranslationJoint(const CkprXMLTagConstShPtr& inTag,
-			  const CkppComponentShPtr& inOutParentComponent,
-			  std::vector< CkppComponentShPtr >&
-			  inPrebuiltChildComponentVector,
-			  CkprXMLBuildingContextShPtr& inOutContext,
+    buildTranslationJoint(const CkprXMLTagConstShPtr&,
+			  const CkppComponentShPtr&,
+			  std::vector< CkppComponentShPtr >&,
+			  CkprXMLBuildingContextShPtr&,
 			  CkppComponentShPtr& outComponent)
     {
       hppDout(info, "building TranslationJoint.");
@@ -199,7 +196,7 @@ namespace hpp {
 
     ktStatus Parser::
     writeAnchorJoint(const CkppComponentConstShPtr& inComponent,
-		     CkprXMLWriterShPtr& inOutWriter,
+		     CkprXMLWriterShPtr&,
 		     CkprXMLTagShPtr& inOutTag)
     {
       if (KIT_DYNAMIC_PTR_CAST(const AnchorJoint, inComponent)) {
@@ -210,11 +207,10 @@ namespace hpp {
     }
 
     ktStatus Parser::
-    buildAnchorJoint(const CkprXMLTagConstShPtr& inTag,
-		     const CkppComponentShPtr& inOutParentComponent,
-		     std::vector< CkppComponentShPtr >&
-		     inPrebuiltChildComponentVector,
-		     CkprXMLBuildingContextShPtr& inOutContext,
+    buildAnchorJoint(const CkprXMLTagConstShPtr&,
+		     const CkppComponentShPtr&,
+		     std::vector< CkppComponentShPtr >&,
+		     CkprXMLBuildingContextShPtr&,
 		     CkppComponentShPtr& outComponent)
     {
       hppDout(info, "building AnchorJoint.");

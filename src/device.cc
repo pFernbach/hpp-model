@@ -296,7 +296,7 @@ namespace hpp {
 				       double& zMin, double& xMax,
 				       double& yMax, double& zMax) const
     {
-      double x,y,z;
+      kcdReal x,y,z;
 
       // If the object has no bounding box, ignore it
       if (!object->boundingBox()) {
@@ -305,25 +305,25 @@ namespace hpp {
       object->boundingBox()->getHalfLengths(x, y, z) ;
 
       /*Matrices absolute et relative*/
-      CkitMat4 matrixAbsolutePosition;
-      CkitMat4 matrixRelativePosition;
+      CkcdMat4 matrixAbsolutePosition;
+      CkcdMat4 matrixRelativePosition;
       object->getAbsolutePosition(matrixAbsolutePosition);
       object->boundingBox()->getRelativePosition(matrixRelativePosition);
 
       /*Creer les points et change position points*/
-      CkitMat4 matrixChangePosition =
+      CkcdMat4 matrixChangePosition =
 	matrixAbsolutePosition*matrixRelativePosition;
 
-      CkitPoint3 position[8];
+      CkcdPoint position[8];
 
-      position[0]=matrixChangePosition*CkitPoint3( x, y, z);
-      position[1]=matrixChangePosition*CkitPoint3( x, y,-z);
-      position[2]=matrixChangePosition*CkitPoint3( x,-y, z);
-      position[3]=matrixChangePosition*CkitPoint3(-x, y, z);
-      position[4]=matrixChangePosition*CkitPoint3( x,-y,-z);
-      position[5]=matrixChangePosition*CkitPoint3(-x,-y, z);
-      position[6]=matrixChangePosition*CkitPoint3(-x, y,-z);
-      position[7]=matrixChangePosition*CkitPoint3(-x,-y,-z);
+      position[0]=matrixChangePosition*CkcdPoint( x, y, z);
+      position[1]=matrixChangePosition*CkcdPoint( x, y,-z);
+      position[2]=matrixChangePosition*CkcdPoint( x,-y, z);
+      position[3]=matrixChangePosition*CkcdPoint(-x, y, z);
+      position[4]=matrixChangePosition*CkcdPoint( x,-y,-z);
+      position[5]=matrixChangePosition*CkcdPoint(-x,-y, z);
+      position[6]=matrixChangePosition*CkcdPoint(-x, y,-z);
+      position[7]=matrixChangePosition*CkcdPoint(-x,-y,-z);
 
       for(int i=0; i<8; i++)
 	{
@@ -428,7 +428,9 @@ namespace hpp {
       // Count the number of extra dofs of the CkppDeviceComponent
       // since the first degrees of freedom of kwsDofVector correspond
       // to these extra-dofs.
-      unsigned int rankInCkwsConfig = countExtraDofs();
+      unsigned int rankInCkwsConfig = countExtraDofs(); // deprecated
+      assert (rankInCkwsConfig == 0);
+      rankInCkwsConfig = CkwsDevice::rootJoint ()->customSubspace ()->size ();
       std::vector< CkppJointComponentShPtr > kppJointVector;
       getJointComponentVector(kppJointVector);
 
@@ -532,7 +534,9 @@ namespace hpp {
 				      std::vector<double>& outKwsDofVector)
     {
       /// Count the number of extra dofs of the CkppDeviceComponent.
-      unsigned int rankInDofValues = countExtraDofs();
+      unsigned int rankInDofValues = countExtraDofs(); // deprecated
+      assert (rankInDofValues == 0);
+      rankInDofValues = CkwsDevice::rootJoint ()->customSubspace ()->size ();
 
       std::vector< CkppJointComponentShPtr > kppJointVector;
       getJointComponentVector(kppJointVector);
@@ -544,7 +548,9 @@ namespace hpp {
       for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size();
 	   iKppJoint++) {
 	CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
+#ifdef HPP_DEBUG
 	unsigned int jointDim = kppJoint->countDofComponents();
+#endif
 	JointShPtr joint = KIT_DYNAMIC_PTR_CAST(Joint, kppJoint);
 	KIT_ASSERT(joint);
 	/// Get associated CjrlJoint
@@ -837,7 +843,7 @@ namespace hpp {
     // ======================================================================
 
     void Device::
-    componentDidInsertChild(const CkitNotificationConstShPtr& notification)
+    componentDidInsertChild(const CkitNotificationConstShPtr&)
     {
     }
 
