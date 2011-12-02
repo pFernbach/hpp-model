@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(display)
   hpp::model::validateLicense();
 
   // Create parser that will load the components.
-  hpp::model::Parser extra;
+  hpp::model::Parser extra(true);
   CkprParserManagerShPtr parser = CkprParserManager::defaultManager();
 
   std::string filename("./romeo-hpp.kxml");

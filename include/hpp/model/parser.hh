@@ -30,7 +30,12 @@ namespace hpp {
   namespace model {
     class Parser {
     public:
-      Parser();
+      /// Add tags to Kineo parser
+      /// \param addon: whether the parser is embedded in and addon application.
+      /// \note Initialization is slightly different depending on whether the
+      /// parser is constructed by an addon application of by a plug-in to
+      /// Kitelab.
+      Parser(bool addon = true);
       ~Parser();
 
       ///

@@ -35,36 +35,37 @@
 
 namespace hpp {
   namespace model {
-    Parser::Parser()
+    Parser::Parser(bool addon)
     {
-      // Initialize module manager.
-      CkppModuleManagerShPtr moduleManager = CkppModuleManager::create ();
-      char* env = getenv ("LD_LIBRARY_PATH");
-      if (env) {
-	typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-	boost::char_separator<char> sep(":");
-	std::string ld_library_path (env);
-	tokenizer tokens (ld_library_path, sep);
+      if (addon) {
+	// Initialize module manager.
+	CkppModuleManagerShPtr moduleManager = CkppModuleManager::create ();
+	char* env = getenv ("LD_LIBRARY_PATH");
+	if (env) {
+	  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+	  boost::char_separator<char> sep(":");
+	  std::string ld_library_path (env);
+	  tokenizer tokens (ld_library_path, sep);
 
-	for (tokenizer::iterator it = tokens.begin (); it != tokens.end ();
-	     it++ ) {
-	  hppDout (info, "Adding directory: " << *it);
-	  moduleManager->addSearchDirectory (*it);
+	  for (tokenizer::iterator it = tokens.begin (); it != tokens.end ();
+	       it++ ) {
+	    hppDout (info, "Adding directory: " << *it);
+	    moduleManager->addSearchDirectory (*it);
+	  }
 	}
-      }
-      moduleManager->initializeModules ();
+	moduleManager->initializeModules ();
 
-      if (moduleManager->countModules () == 0) {
-	hppDout (warning, "No module loaded. "
-		 "Are you sure you LD_LIBRARY_PATH is correctly set?");
-      } else {
-	for (unsigned int i=0; i < moduleManager->countModules (); i++) {
-	  hppDout (info, "Module " << i << ": "
-		   << moduleManager->module (i)->name ());
+	if (moduleManager->countModules () == 0) {
+	  hppDout (warning, "No module loaded. "
+		   "Are you sure you LD_LIBRARY_PATH is correctly set?");
+	} else {
+	  for (unsigned int i=0; i < moduleManager->countModules (); i++) {
+	    hppDout (info, "Module " << i << ": "
+		     << moduleManager->module (i)->name ());
+	  }
 	}
-      }
-
       CkprParserManager::defaultManager()->moduleManager (moduleManager);
+      }
 
       ktStatus status = KD_ERROR;
       // Write humanoid robot
