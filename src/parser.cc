@@ -33,6 +33,8 @@
 #include "hpp/model/translation-joint.hh"
 #include "hpp/model/parser.hh"
 
+#define HPP_MODEL_PARSER_MODULEPATH "/home/florent/devel/hpp/stable/kineo-2.06/bin/modulesd"
+
 namespace hpp {
   namespace model {
     Parser::Parser(bool addon)
@@ -40,19 +42,13 @@ namespace hpp {
       if (addon) {
 	// Initialize module manager.
 	CkppModuleManagerShPtr moduleManager = CkppModuleManager::create ();
-	char* env = getenv ("LD_LIBRARY_PATH");
-	if (env) {
-	  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-	  boost::char_separator<char> sep(":");
-	  std::string ld_library_path (env);
-	  tokenizer tokens (ld_library_path, sep);
+	moduleManager->addModuleFile (std::string(HPP_MODEL_PARSER_MODULEPATH)
+				      + std::string("/KineoDeviceParsingd.so"));
+	moduleManager->addModuleFile (std::string(HPP_MODEL_PARSER_MODULEPATH)
+				      + std::string("/KineoDeviceBased.so"));
+	moduleManager->addModuleFile (std::string(HPP_MODEL_PARSER_MODULEPATH)
+				      + std::string("/KineoDeviced.so"));
 
-	  for (tokenizer::iterator it = tokens.begin (); it != tokens.end ();
-	       it++ ) {
-	    hppDout (info, "Adding directory: " << *it);
-	    moduleManager->addSearchDirectory (*it);
-	  }
-	}
 	moduleManager->initializeModules ();
 
 	if (moduleManager->countModules () == 0) {
