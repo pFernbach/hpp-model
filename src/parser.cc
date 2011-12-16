@@ -63,6 +63,10 @@ namespace hpp {
       CkprParserManager::defaultManager()->moduleManager (moduleManager);
       }
 
+#ifdef HPP_DEBUG
+      CkitLogManager::createInstance("/tmp/kite.log");
+#endif
+
       ktStatus status = KD_ERROR;
       // Write humanoid robot
       CkprParserManager::defaultManager()->addXMLWriterMethod < Parser >
