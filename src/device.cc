@@ -12,6 +12,7 @@
 #include <KineoModel/kppRotationJointComponent.h>
 #include <KineoModel/kppTranslationJointComponent.h>
 #include <KineoModel/kppSolidComponentRef.h>
+#include <KineoModel/kppSteeringMethodComponent.h>
 
 #include <kwsioConfig.h>
 #include <jrl/mal/matrixabstractlayer.hh>
@@ -108,6 +109,7 @@ namespace hpp {
       ktStatus success = CkppDeviceComponent::init(weakPtr, name);
 
       if(KD_OK == success) {
+	hppDout (info, "CkppDeviceComponent::init succeeded.");
 	weakPtr_ = weakPtr;
       } else {
 	hppDout(error, "failed to initialize CkppDeviceComponent.");
@@ -867,6 +869,8 @@ std::ostream& operator<<(std::ostream& os, hpp::model::Device& device)
   os << std::endl;
   os << "  Current configuration: " << device.currentConfiguration()
      << std::endl;
+  os << "  Steering method component: "
+     << device.steeringMethodComponent ()->name () << std::endl;
   os << std::endl;
   os << std::endl;
   os << "  Writing kinematic chain" << std::endl;
