@@ -64,6 +64,7 @@ SEARCH_FOR_BOOST()
 ADD_REQUIRED_DEPENDENCY("abstract-robot-dynamics >= 1.16")
 ADD_REQUIRED_DEPENDENCY("jrl-dynamics >= 1.19")
 ADD_REQUIRED_DEPENDENCY("kwsIO >= 1.0")
+ADD_REQUIRED_DEPENDENCY("KineoController >= 2.06")
 ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.4")
 
 # Compile documentation
