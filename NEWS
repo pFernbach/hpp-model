@@ -1,3 +1,12 @@
+12/20/2011 Release 2.1
+
+    Compatibility with Kitelab-2.06
+
+09/27/2011 Release 2.0
+
+    Package better fits KineoPathPlanner model:
+      - joints now derive from Kineo joint component implementation classes.
+
 04/19/2011 Release 1.8
 
     Implementation of abstract-robot-dynamics not configurable anymore,
