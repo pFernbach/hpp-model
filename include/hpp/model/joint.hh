@@ -30,9 +30,9 @@
 #include "hpp/model/robot-dynamics-impl.hh"
 #include "hpp/model/fwd.hh"
 
-KIT_PREDEF_CLASS(CkppDoubleProperty);
-KIT_PREDEF_CLASS(CkwsJoint);
-KIT_PREDEF_CLASS(CjrlJoint);
+KIT_PREDEF_CLASS(CkppDoubleProperty)
+KIT_PREDEF_CLASS(CkwsJoint)
+KIT_PREDEF_CLASS(CjrlJoint)
 
 namespace hpp {
   namespace model {

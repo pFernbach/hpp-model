@@ -26,7 +26,7 @@
 
 namespace hpp {
   namespace model {
-    KIT_PREDEF_CLASS(RotationJoint);
+    KIT_PREDEF_CLASS(RotationJoint)
     ///
     /// \brief Rotation joint.
     ///

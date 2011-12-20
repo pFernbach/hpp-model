@@ -26,7 +26,7 @@
 
 namespace hpp {
   namespace model {
-    KIT_PREDEF_CLASS(TranslationJoint);
+    KIT_PREDEF_CLASS(TranslationJoint)
     ///
     /// \brief Translation joint.
     ///
