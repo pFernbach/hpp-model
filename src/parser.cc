@@ -33,7 +33,7 @@
 #include "hpp/model/translation-joint.hh"
 #include "hpp/model/parser.hh"
 
-#define HPP_MODEL_PARSER_MODULEPATH "/home/florent/devel/hpp/stable/kineo-2.06/bin/modulesd"
+#include "module-dir.hh"
 
 namespace hpp {
   namespace model {
@@ -42,12 +42,9 @@ namespace hpp {
       if (addon) {
 	// Initialize module manager.
 	CkppModuleManagerShPtr moduleManager = CkppModuleManager::create ();
-	moduleManager->addModuleFile (std::string(HPP_MODEL_PARSER_MODULEPATH)
-				      + std::string("/KineoDeviceParsingd.so"));
-	moduleManager->addModuleFile (std::string(HPP_MODEL_PARSER_MODULEPATH)
-				      + std::string("/KineoDeviceBased.so"));
-	moduleManager->addModuleFile (std::string(HPP_MODEL_PARSER_MODULEPATH)
-				      + std::string("/KineoDeviced.so"));
+	moduleManager->addModuleFile (HPP_MODEL_KINEODEVICEPARSING_SO);
+	moduleManager->addModuleFile (HPP_MODEL_KINEODEVICEBASE_SO);
+	moduleManager->addModuleFile (HPP_MODEL_KINEODEVICE_SO);
 
 	moduleManager->initializeModules ();
 
