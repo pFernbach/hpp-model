@@ -34,6 +34,8 @@ using boost::test_tools::output_test_stream;
 #include <KineoModel/kppDeviceNode.h>
 #include "KineoModel/kppLicense.h"
 
+#include <KineoController/kppDocument.h>
+
 #include <hpp/util/debug.hh>
 #include "hpp/model/humanoid-robot.hh"
 #include "hpp/model/parser.hh"
@@ -95,10 +97,16 @@ BOOST_AUTO_TEST_CASE(display)
   std::string filename("./romeo-hpp.kxml");
   CkppComponentShPtr modelTreeComponent;
 
+  CkppDocumentShPtr document =
+    CkppDocument::create (CkprParserManager::defaultManager()
+			  ->moduleManager ());
+  CkppComponentFactoryRegistryShPtr registry
+    = document->componentFactoryRegistry ();
+
   // Parse file and retrieve components.
   if (parser->loadComponentFromFile(filename,
 				    modelTreeComponent,
-				    CkppComponentFactoryRegistry::create (),
+				    registry,
 				    CkitParameterMap::create ()) != KD_OK) {
     CkprParser::Error error = parser->lastError();
     std::string message = "failed to read " + filename + ".\n"
