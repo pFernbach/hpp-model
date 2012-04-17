@@ -447,6 +447,11 @@ namespace hpp {
 	KIT_ASSERT(joint);
 	/// Get associated CjrlJoint
 	CjrlJoint* jrlJoint = joint->jrlJoint();
+
+	// Do nothing if it is an anchor joint.
+	if (jrlJoint->numberDof () == 0)
+	  continue;
+
 	unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
 
 	hppDout(info, "iKppJoint=" << kppJoint->name()
@@ -562,6 +567,11 @@ namespace hpp {
 	KIT_ASSERT(joint);
 	/// Get associated CjrlJoint
 	CjrlJoint* jrlJoint = joint->jrlJoint();
+
+	// Do nothing if it is an anchor joint.
+	if (jrlJoint->numberDof () == 0)
+	  continue;
+
 	unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
 
 	hppDout(info, ":jrlDynamicsToKwsDofValues: iKppJoint="
