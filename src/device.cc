@@ -515,6 +515,11 @@ namespace hpp {
 		  outJrlDynamicsDofVector[jrlRankInConfig]);
 	  rankInCkwsConfig ++;
 	}
+	else if(CkppAnchorJointComponentShPtr jointAnchor =
+		KIT_DYNAMIC_PTR_CAST(CkppAnchorJointComponent,
+				     kppJoint)) {
+	  // do nothing
+	}
 	else {
 	  hppDout(error, "unknown type of joint.");
 	  hppDout(error, "  vectorN: " <<
