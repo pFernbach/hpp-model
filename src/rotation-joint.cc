@@ -110,6 +110,7 @@ namespace hpp {
       status = Joint::init(weakPtr);
       if (status == KD_ERROR) return KD_ERROR;
       kwsJoint()->setCurrentPosition(initialPosition);
+      jrlJoint ()->setName (name);
       return KD_OK;
     }
   } // namespace model
