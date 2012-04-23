@@ -25,6 +25,7 @@
 
 #include "hpp/model/joint.hh"
 #include "hpp/model/anchor-joint.hh"
+#include "hpp/model/body-factory.hh"
 #include "hpp/model/exception.hh"
 #include "hpp/model/humanoid-robot.hh"
 
@@ -37,7 +38,7 @@ namespace hpp {
       AnchorJoint *ptr = new AnchorJoint(initialPosition);
       AnchorJointShPtr shPtr = AnchorJointShPtr(ptr);
       AnchorJointWkPtr wkPtr = AnchorJointWkPtr(shPtr);
-      
+
       if (ptr->init(wkPtr, name, initialPosition) != KD_OK) {
 	shPtr.reset();
 	return shPtr;
@@ -102,9 +103,10 @@ namespace hpp {
     {
       ktStatus status = KD_OK;
       weakPtr_ = weakPtr;
+      BodyFactoryShPtr bodyFactory = BodyFactory::create ();
       status = CkppAnchorJointComponent::init(weakPtr,
 					      name,
-					      makeDefaultBodyFactory ());
+					      bodyFactory);
       if (status == KD_ERROR) return KD_ERROR;
       status = Joint::init(weakPtr);
       if (status == KD_ERROR) return KD_ERROR;

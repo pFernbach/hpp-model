@@ -23,6 +23,7 @@
 
 #include <KineoModel/kppDoubleProperty.h>
 #include <KineoModel/kppJointComponent.h>
+#include <KineoModel/kppSolidComponentRef.h>
 #include <KineoWorks2/kwsJoint.h>
 #include <KineoWorks2/kwsJointDof.h>
 

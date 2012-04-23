@@ -25,6 +25,7 @@
 
 #include "hpp/model/joint.hh"
 #include "hpp/model/rotation-joint.hh"
+#include "hpp/model/body-factory.hh"
 #include "hpp/model/exception.hh"
 #include "hpp/model/humanoid-robot.hh"
 
@@ -37,7 +38,7 @@ namespace hpp {
       RotationJoint *ptr = new RotationJoint(initialPosition);
       RotationJointShPtr shPtr = RotationJointShPtr(ptr);
       RotationJointWkPtr wkPtr = RotationJointWkPtr(shPtr);
-      
+
       if (ptr->init(wkPtr, name, initialPosition) != KD_OK) {
 	shPtr.reset();
 	return shPtr;
@@ -103,9 +104,10 @@ namespace hpp {
     {
       ktStatus status = KD_OK;
       weakPtr_ = weakPtr;
+      BodyFactoryShPtr bodyFactory = BodyFactory::create ();
       status = CkppRotationJointComponent::init(weakPtr,
 						name,
-						makeDefaultBodyFactory ());
+						bodyFactory);
       if (status == KD_ERROR) return KD_ERROR;
       status = Joint::init(weakPtr);
       if (status == KD_ERROR) return KD_ERROR;

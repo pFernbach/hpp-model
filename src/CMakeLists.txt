@@ -36,6 +36,7 @@ ADD_LIBRARY(${LIBRARY_NAME}
   SHARED
   anchor-joint.cc
   body.cc
+  body-factory.cc
   device.cc
   freeflyer-joint.cc
   humanoid-robot.cc

@@ -41,11 +41,6 @@ namespace hpp {
   namespace model {
 
     Body::Body(std::string name) : joint_(NULL), name_(name) {
-#ifdef KITELAB_205004
-      std::vector<CkcdObjectShPtr> vect;
-      vect.push_back(CkcdAssembly::create());
-      innerObjects(vect);
-#endif
     }
 
     BodyShPtr Body::create(const std::string& name)
@@ -244,13 +239,13 @@ namespace hpp {
 	  return KD_OK;
 	}
 	else{
-      
+
 	  CkcdExactDistanceReportShPtr distanceReport;
 	  CkcdPoint leftPoint, rightPoint;
 
 	  //distances are ordered from lowest value, to highest value.
 	  distanceReport = analysis->exactDistanceReport(0);
-      
+
 	  //exact distance between two lists is always stored at the first
 	  //rank of Distance reports.
 	  outDistance = distanceReport->distance();

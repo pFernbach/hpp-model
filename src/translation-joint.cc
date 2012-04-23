@@ -25,6 +25,7 @@
 
 #include "hpp/model/joint.hh"
 #include "hpp/model/translation-joint.hh"
+#include "hpp/model/body-factory.hh"
 #include "hpp/model/exception.hh"
 #include "hpp/model/humanoid-robot.hh"
 
@@ -37,7 +38,7 @@ namespace hpp {
       TranslationJoint *ptr = new TranslationJoint(initialPosition);
       TranslationJointShPtr shPtr = TranslationJointShPtr(ptr);
       TranslationJointWkPtr wkPtr = TranslationJointWkPtr(shPtr);
-      
+
       if (ptr->init(wkPtr, name, initialPosition) != KD_OK) {
 	shPtr.reset();
 	return shPtr;
@@ -102,10 +103,11 @@ namespace hpp {
     {
       ktStatus status = KD_OK;
       weakPtr_ = weakPtr;
+      BodyFactoryShPtr bodyFactory = BodyFactory::create ();
       status
 	= CkppTranslationJointComponent::init(weakPtr,
 					      name,
-					      makeDefaultBodyFactory ());
+					      bodyFactory);
       if (status == KD_ERROR) return KD_ERROR;
       status = Joint::init(weakPtr);
       if (status == KD_ERROR) return KD_ERROR;

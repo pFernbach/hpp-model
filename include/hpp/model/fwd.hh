@@ -29,6 +29,7 @@ namespace hpp {
     KIT_PREDEF_CLASS(HumanoidRobot)
     KIT_PREDEF_CLASS(Joint)
     KIT_PREDEF_CLASS(Body)
+    KIT_PREDEF_CLASS(BodyFactory)
   } // namespace model
 } // namespace hpp
 #endif //HPP_MODEL_FWD_HH
