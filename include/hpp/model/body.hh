@@ -78,6 +78,9 @@ namespace hpp {
       /// \brief Get name of object.
       const std::string& name() {return name_;}
 
+      /// \brief Set name of object.
+      void name (const std::string& name) {name_ = name;}
+
       /// \name Define inner and outer objects
       /// @{
       ///
