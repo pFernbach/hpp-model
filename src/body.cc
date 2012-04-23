@@ -145,6 +145,69 @@ namespace hpp {
 
     //=========================================================================
 
+    bool
+    Body::addInnerObject (const CkcdObjectShPtr& innerObject,
+			  bool distanceComputation)
+    {
+      // Check that object is not already in innerObjects list before
+      // adding it.
+      std::vector<CkcdObjectShPtr> innerList = innerObjects();
+      bool isInnerObject = false;
+      for (unsigned i = 0; i < innerList.size (); ++i)
+	{
+	  if (innerList[i] == innerObject)
+	    isInnerObject = true;
+	}
+      if (isInnerObject != true)
+      {
+	innerList.push_back(innerObject);
+	innerObjects(innerList);
+      }
+
+      // If requested, add the object in the list of objects the
+      //distance to which needs to be computed and build the
+      //corresponding analyses.
+      if (distanceComputation) {
+	CkppSolidComponentShPtr solidComponent
+	  = KIT_DYNAMIC_PTR_CAST (CkppSolidComponent, innerObject);
+
+	if (solidComponent) {
+	  hppDout(info,"adding " << solidComponent->name()
+		  << " to list of objects for distance computation.");
+	  innerObjForDist_.push_back(innerObject);
+	  // Build Exact distance computation analyses for this object
+	  const std::vector<CkcdObjectShPtr>& outerList = outerObjForDist_;
+	  for (std::vector<CkcdObjectShPtr>::const_iterator it =
+		 outerList.begin(); it != outerList.end(); it++) {
+	    const CkcdObjectShPtr& outerObject = *it;
+
+	    // Instantiate the analysis object
+	    CkcdAnalysisShPtr analysis = CkcdAnalysis::create();
+	    analysis->analysisData ()
+	      ->analysisType(CkcdAnalysisType::EXACT_DISTANCE);
+	    // Ignore tolerance for distance computations
+	    analysis->analysisData ()->isToleranceActivated(false);
+
+	    // associate the lists with the analysis object
+	    analysis->leftObject (innerObject);
+	    analysis->rightObject (outerObject);
+
+	    hppDout(info,"creating analysis between "
+		    << innerName << " and "
+		    << outerName);
+	    distCompPairs_.push_back(analysis);
+	  }
+	}
+	else {
+	  hppDout(error,"cannot cast solid component into CkcdObject.");
+	  throw Exception("cannot cast solid component into CkcdObject.");
+	}
+      }
+      return true;
+    }
+
+    //=========================================================================
+
     void Body::addOuterObject(const CkcdObjectShPtr& outerObject,
 			      bool distanceComputation)
 

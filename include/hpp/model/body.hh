@@ -99,6 +99,19 @@ namespace hpp {
 			  const CkitMat4& position=CkitMat4(),
 			  bool distanceComputation=false);
 
+      /// \brief Add a geometric object to the body
+
+      /// \param innerObject object to add.
+      /// \param distanceComputation whether this object should be put
+      /// in the distance computation analysis.
+      /// \return true if success, false otherwise.
+      /// The object is added to the inner object list of the body.
+      /// \note The body must be attached to a joint.
+      /// \note IF the object is already added, put it only in a
+      /// distance computation analysis.
+      bool addInnerObject (const CkcdObjectShPtr& innerObject,
+			   bool distanceComputation=true);
+
       /// \brief Add an object for collision testing with the body
       /// \param outerObject new object
       /// \param distanceComputation whether distance analyses should be added for
