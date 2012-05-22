@@ -238,6 +238,16 @@ namespace hpp {
       jrlJoint()->upperVelocityBound(dofRank, upperVelocityBound);
     }
 
+    void Joint::torqueBounds(unsigned int dofRank,
+			     const double& lowerTorqueBound,
+			     const double& upperTorqueBound)
+    {
+      // KPP side
+      // CjrlJoint side
+      jrlJoint()->lowerTorqueBound(dofRank, lowerTorqueBound);
+      jrlJoint()->upperTorqueBound(dofRank, upperTorqueBound);
+    }
+
     ktStatus Joint::init(const JointWkPtr& weakPtr)
     {
       weakPtr_ = weakPtr;

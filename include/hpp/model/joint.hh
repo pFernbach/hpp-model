@@ -199,6 +199,16 @@ namespace hpp {
 			  const double& upperVelocityBound);
 
       ///
+      /// \brief Set the torque bounds of the degrees of freedom of the joint
+      ///
+      /// \param dofRank Rank of the degree of freedom that is bounded
+      ///
+      /// \param upperTorqueBound upper torque bound of this deg. of freedom
+      void torqueBounds(unsigned int dofRank,
+			const double& lowerTorqueBound,
+			const double& upperTorqueBound);
+
+      ///
       /// @}
       ///
       ///
