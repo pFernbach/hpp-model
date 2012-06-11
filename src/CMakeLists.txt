@@ -37,6 +37,8 @@ ADD_LIBRARY(${LIBRARY_NAME}
   anchor-joint.cc
   body.cc
   body-factory.cc
+  capsule-body.cc
+  capsule-body-factory.cc
   device.cc
   freeflyer-joint.cc
   humanoid-robot.cc
@@ -51,5 +53,6 @@ SET_TARGET_PROPERTIES(${LIBRARY_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION})
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} jrl-dynamics)
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} kwsIO)
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-util)
+PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-geometry)
 
 INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION lib)

@@ -35,7 +35,7 @@
 
 #include "hpp/model/joint.hh"
 #include "hpp/model/device.hh"
-#include "hpp/model/body.hh"
+#include "hpp/model/capsule-body.hh"
 #include "hpp/model/exception.hh"
 
 namespace hpp {
@@ -374,9 +374,9 @@ namespace hpp {
       CkwsBodyShPtr kwsBody = kppJoint()->kwsJoint()->attachedBody();
       if (!kwsBody) {
 	hppDout(info, "creating " + name + "-body");
-	BodyShPtr body = Body::create(name + "-body");
+	CapsuleBodyShPtr body = CapsuleBody::create(name + "-body");
 	kppJoint()->kwsJoint()->setAttachedBody(body);
-      } else if (!KIT_DYNAMIC_PTR_CAST(Body, kwsBody)) {
+      } else if (!KIT_DYNAMIC_PTR_CAST(CapsuleBody, kwsBody)) {
 	hppDout(info, "Joint " << name << 
 		" already has a body, but not of type hpp::model::Body.");
       }

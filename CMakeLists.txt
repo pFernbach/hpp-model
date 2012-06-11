@@ -47,6 +47,8 @@ SET(${PROJECT_NAME}_HEADERS
   include/hpp/model/anchor-joint.hh
   include/hpp/model/body.hh
   include/hpp/model/body-factory.hh
+  include/hpp/model/capsule-body.hh
+  include/hpp/model/capsule-body-factory.hh
   include/hpp/model/device.hh
   include/hpp/model/exception.hh
   include/hpp/model/freeflyer-joint.hh
@@ -67,6 +69,7 @@ ADD_REQUIRED_DEPENDENCY("jrl-dynamics >= 1.19")
 ADD_REQUIRED_DEPENDENCY("kwsIO >= 1.0")
 ADD_REQUIRED_DEPENDENCY("KineoController >= 2.06")
 ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.4")
+ADD_REQUIRED_DEPENDENCY("hpp-geometry >= 1.0.1")
 
 # Compile documentation
 CONFIGURE_FILE(doc/main.hh.in doc/main.hh)
