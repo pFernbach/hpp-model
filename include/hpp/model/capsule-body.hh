@@ -124,6 +124,26 @@ namespace hpp {
 				     CkcdPoint& outPointEnv);
 
       /// \brief Compute minimum exact distance and closest points
+      /// between body and set of outer KCD objects.
+
+      /// \retval outDistance Distance between body and outer KCD objects
+      /// \retval outPointCapsuleBody Closest point on body (in global reference frame)
+      /// \retval outPointEnv Closest point in outer kcd object set (in global reference frame)
+      ktStatus kcdDistAndPairsOfPoints (double& outDistance,
+					CkcdPoint& outPointBody,
+					CkcdPoint& outPointEnv);
+
+      /// \brief Compute minimum exact distance and closest points
+      /// between body and set of outer capsules.
+
+      /// \retval outDistance Distance between body and outer capsules
+      /// \retval outPointCapsuleBody Closest point on body (in global reference frame)
+      /// \retval outPointEnv Closest point in outer capsule object set (in global reference frame)
+      ktStatus capsuleDistAndPairsOfPoints (double& outDistance,
+					    CkcdPoint& outPointBody,
+					    CkcdPoint& outPointEnv);
+
+      /// \brief Compute minimum exact distance and closest points
       /// between body and set of outer objects.
 
       /// \retval outDistance Distance between body and outer objects

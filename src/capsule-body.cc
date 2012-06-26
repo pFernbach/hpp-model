@@ -295,6 +295,72 @@ namespace hpp {
     //=========================================================================
 
     ktStatus
+    CapsuleBody::kcdDistAndPairsOfPoints (double& outDistance,
+					  CkcdPoint& outPointBody,
+					  CkcdPoint& outPointEnv)
+    {
+      double minDistance = std::numeric_limits<double>::max ();
+      CkcdPoint minPointBody, minPointEnv;
+      for (unsigned int i = 0; i < nbKCDDistPairs (); ++i)
+	{
+	  if (KD_OK == distAndPairsOfPoints (i,
+					     outDistance,
+					     outPointBody,
+					     outPointEnv))
+	    {
+	      if (outDistance < minDistance)
+		{
+		  minDistance = outDistance;
+		  minPointBody = outPointBody;
+		  minPointEnv = outPointEnv;
+		} 
+	    }
+	  else return KD_ERROR;
+	}
+
+      outDistance = minDistance;
+      outPointBody = minPointBody;
+      outPointEnv = minPointEnv;
+
+      return KD_OK;
+    }
+
+    //=========================================================================
+
+    ktStatus
+    CapsuleBody::capsuleDistAndPairsOfPoints (double& outDistance,
+					      CkcdPoint& outPointBody,
+					      CkcdPoint& outPointEnv)
+    {
+      double minDistance = std::numeric_limits<double>::max ();
+      CkcdPoint minPointBody, minPointEnv;
+      for (unsigned int i = nbKCDDistPairs (); i < nbDistPairs (); ++i)
+	{
+	  if (KD_OK == distAndPairsOfPoints (i,
+					     outDistance,
+					     outPointBody,
+					     outPointEnv))
+	    {
+	      if (outDistance < minDistance)
+		{
+		  minDistance = outDistance;
+		  minPointBody = outPointBody;
+		  minPointEnv = outPointEnv;
+		} 
+	    }
+	  else return KD_ERROR;
+	}
+
+      outDistance = minDistance;
+      outPointBody = minPointBody;
+      outPointEnv = minPointEnv;
+
+      return KD_OK;
+    }
+
+    //=========================================================================
+
+    ktStatus
     CapsuleBody::distAndPairsOfPoints (double& outDistance,
 				       CkcdPoint& outPointBody,
 				       CkcdPoint& outPointEnv)
