@@ -176,7 +176,6 @@ namespace hpp {
     {
       // Add capsule for collision checking but not for distance
       // computation.
-      Body::addOuterObject (outerCapsule, false);
 
       // If distance computation is requested, build necessary
       // distance computation pairs.
