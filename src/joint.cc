@@ -425,9 +425,12 @@ namespace hpp {
 std::ostream& operator<<(std::ostream& os, const hpp::model::Joint& joint)
 {
   os << "Joint: " << joint.kppJoint()->name() << std::endl;
-  os << "Rank in configuration dynamic part: "
-     << joint.jrlJoint()->rankInConfiguration()
-     << std::endl;
+  if (joint.jrlJoint()->numberDof () != 0)
+    os << "Rank in configuration dynamic part: "
+       << joint.jrlJoint()->rankInConfiguration()
+       << std::endl;
+  else
+    os << "Anchor joint" << std::endl;
   os << "Current transformation dynamic part:" << std::endl;
   os << joint.jrlJoint()->currentTransformation() << std:: endl;
   os << std::endl;
