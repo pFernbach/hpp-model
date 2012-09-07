@@ -120,6 +120,11 @@ namespace hpp {
       // Add capsule for collision checking but not for distance
       // computation.
 
+      // FIXME: For now we keep adding capsule (which is in fact a
+      // segment), but in reality this is unnecessary as long the user
+      // adds the real capsule as outer object later.
+      Body::addOuterObject (outerCapsule, false);
+
       // If distance computation is requested, build necessary
       // distance computation pairs.
       if (distanceComputation) {
