@@ -83,9 +83,9 @@ namespace hpp {
 	CkppSolidComponentShPtr solidComponent
 	  = KIT_DYNAMIC_PTR_CAST (CkppSolidComponent, innerCapsule);
 
-	// if (solidComponent) {
-	//   hppDout(info,"adding " << solidComponent->name ()
-	// 	  << " to list of capsules for distance computation.");
+	if (solidComponent) {
+	  hppDout(info,"adding " << solidComponent->name ()
+		  << " to list of capsules for distance computation.");
 	  innerCapsulesForDist_.push_back (innerCapsule);
 	  // Build Exact distance computation pairs for capsule
 	  const std::vector<capsule_t>& outerList = outerCapsulesForDist_;
@@ -102,11 +102,11 @@ namespace hpp {
 		    << outerName);
 	    capsuleDistCompPairs_.push_back(distCompPair);
 	  }
-	// }
-	// else {
-	//   hppDout(error,"cannot cast solid component into CkcdObject.");
-	//   throw Exception("cannot cast solid component into CkcdObject.");
-	// }
+	}
+	else {
+	  hppDout(error,"cannot cast solid component into CkcdObject.");
+	  throw Exception("cannot cast solid component into CkcdObject.");
+	}
       }
       return true;
     }

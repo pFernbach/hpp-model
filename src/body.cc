@@ -171,9 +171,9 @@ namespace hpp {
 	CkppSolidComponentShPtr solidComponent
 	  = KIT_DYNAMIC_PTR_CAST (CkppSolidComponent, innerObject);
 
-	// if (solidComponent) {
-	  // hppDout(info,"adding " << solidComponent->name()
-	  // 	  << " to list of objects for distance computation.");
+	if (solidComponent) {
+	  hppDout(info,"adding " << solidComponent->name()
+		  << " to list of objects for distance computation.");
 	  innerObjForDist_.push_back(innerObject);
 	  // Build Exact distance computation analyses for this object
 	  const std::vector<CkcdObjectShPtr>& outerList = outerObjForDist_;
@@ -197,11 +197,11 @@ namespace hpp {
 		    << outerName);
 	    distCompPairs_.push_back(analysis);
 	  }
-	// }
-	// else {
-	//   hppDout(error,"cannot cast solid component into CkcdObject.");
-	//   throw Exception("cannot cast solid component into CkcdObject.");
-	// }
+	}
+	else {
+	  hppDout(error,"cannot cast solid component into CkcdObject.");
+	  throw Exception("cannot cast solid component into CkcdObject.");
+	}
       }
       return true;
     }
