@@ -69,64 +69,6 @@ namespace hpp {
     //=========================================================================
 
     bool
-    CapsuleBody::addInnerCapsule (const CkppSolidComponentRefShPtr& solidCompRef,
-				  const CkitMat4& position,
-				  bool distanceComputation)
-    {
-      // Add capsule for collision checking and for distance
-      // computation.
-      Body::addInnerObject (solidCompRef, position, distanceComputation);
-
-      CkppSolidComponentShPtr solidComponent =
-	solidCompRef->referencedSolidComponent();
-
-      // If requested, add the capsule in the list of capsule the
-      // distance to which needs to be computed and build the
-      // corresponding distance pairs.
-      if (distanceComputation) {
-	capsule_t innerCapsule =
-	  KIT_DYNAMIC_PTR_CAST(hpp::geometry::collision::PolySegment,
-			       solidComponent);
-	if (innerCapsule) {
-	  hppDout(info,"adding " << solidComponent->name()
-		  << " to list of objects for distance computation.");
-	  innerCapsulesForDist_.push_back (innerCapsule);
-	  // Build Exact distance computation analyses for this object
-	  const std::vector<capsule_t>& outerList = outerCapsulesForDist_;
-	  for (std::vector<capsule_t>::const_iterator it =
-		 outerList.begin(); it != outerList.end(); it++) {
-	    const capsule_t& outerCapsule = *it;
-
-#ifdef HPP_DEBUG
-	    CkppSolidComponentShPtr solidComp =
-	      KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, outerObject);
-	    if (solidComp) {
-	      outerName = solidComp->name();
-	    } else {
-	      outerName = std::string("");
-	    }
-#endif
-	    // Build new collision pair between inner and outer
-	    // capsules.
-	    capsuleDistCompPair_t distCompPair (innerCapsule, outerCapsule);
-
-	    hppDout(info,"creating analysis between "
-		    << innerName << " and "
-		    << outerName);
-	    capsuleDistCompPairs_.push_back(distCompPair);
-	  }
-	}
-	else {
-	  hppDout(error,"cannot cast solid component into CkcdObject.");
-	  throw Exception("cannot cast solid component into CkcdObject.");
-	}
-      }
-      return true;
-    }
-
-    //=========================================================================
-
-    bool
     CapsuleBody::addInnerCapsule (const capsule_t& innerCapsule,
 				  bool distanceComputation)
     {

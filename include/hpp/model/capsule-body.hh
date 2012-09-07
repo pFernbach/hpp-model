@@ -53,18 +53,6 @@ namespace hpp {
       /// @{
       /// \brief Add a geometric object to the body
 
-      /// \param solidCompRef Reference to the solid component to add.
-      /// \param position Position of the object before attaching it to the body
-      /// (default value=Identity).
-      /// \param distanceComputation whether this object should be put in the
-      /// distance computation analysis.
-      /// \return true if success, false otherwise.
-      /// The object is added to the inner object list of the body.
-      /// \note The body must be attached to a joint.
-      bool addInnerCapsule (const CkppSolidComponentRefShPtr& solidCompRef,
-			    const CkitMat4& position=CkitMat4(),
-			    bool distanceComputation=false);
-
       /// \param innerCapsule capsule to add.
       /// \param distanceComputation whether this object should be put
       /// in the distance computation analysis.
