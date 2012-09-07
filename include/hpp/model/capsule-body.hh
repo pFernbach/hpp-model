@@ -27,7 +27,7 @@ INCLUDE
 #include <KineoUtility/kitDefine.h>
 #include <kcd2/kcdAnalysisType.h>
 
-#include <hpp/geometry/collision/poly-segment.hh>
+#include <hpp/geometry/component/segment.hh>
 
 #include "hpp/model/fwd.hh"
 #include "hpp/model/body.hh"
@@ -41,8 +41,8 @@ namespace hpp {
     {
     public:
 
-      typedef hpp::geometry::collision::PolySegmentShPtr capsule_t;
-      typedef std::pair<capsule_t,capsule_t> capsuleDistCompPair_t;
+      typedef hpp::geometry::component::SegmentShPtr capsule_t;
+      typedef std::pair<capsule_t, capsule_t> capsuleDistCompPair_t;
 
       /// \brief Creation of a body
       /// \param name Name of the new body.
