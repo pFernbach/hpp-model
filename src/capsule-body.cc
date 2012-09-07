@@ -138,7 +138,7 @@ namespace hpp {
 	  const capsule_t& innerCapsule=*it;
 
 #ifdef HPP_DEBUG
-	  solidComp = KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, innerObject);
+	  solidComp = KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, innerCapsule);
 	  if (solidComp) {
 	    innerName = solidComp->name();
 	  } else {
