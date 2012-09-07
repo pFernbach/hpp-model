@@ -76,8 +76,9 @@ namespace hpp {
       // computation.
       Body::addInnerObject (innerCapsule, distanceComputation);
 
-      // If requested, add the capsule in the list of capsules the
-      // distance to which needs to be computed.
+      // If requested, add the segment (equivalent to the capsule) in
+      // the list of segments the distance to which needs to be
+      // computed.
       if (distanceComputation) {
 	CkppSolidComponentShPtr solidComponent
 	  = KIT_DYNAMIC_PTR_CAST (CkppSolidComponent, innerCapsule);
