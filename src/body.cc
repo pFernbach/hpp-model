@@ -192,8 +192,14 @@ namespace hpp {
 	    analysis->leftObject (innerObject);
 	    analysis->rightObject (outerObject);
 
+# ifdef HPP_DEBUG
+	    std::string outerName;
+	    CkppSolidComponentShPtr outerComponent
+	      = KIT_DYNAMIC_PTR_CAST (CkppSolidComponent, outerObject);
+	    if (outerComponent) outerName = outerComponent->name ();
+# endif // HPP_DEBUG
 	    hppDout(info,"creating analysis between "
-		    << innerName << " and "
+		    << solidComponent->name () << " and "
 		    << outerName);
 	    distCompPairs_.push_back(analysis);
 	  }

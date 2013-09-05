@@ -98,8 +98,8 @@ namespace hpp {
 	    capsuleDistCompPair_t distCompPair (innerCapsule, outerCapsule);
 
 	    hppDout(info,"creating collision pair between "
-		    << innerName << " and "
-		    << outerName);
+		    << innerCapsule->name () << " and "
+		    << outerCapsule->name ());
 	    capsuleDistCompPairs_.push_back(distCompPair);
 	  }
 	}
@@ -138,16 +138,16 @@ namespace hpp {
 	  const capsule_t& innerCapsule=*it;
 
 #ifdef HPP_DEBUG
-	  solidComp = KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, innerCapsule);
+	  std::string innerName ("");
+	  CkppSolidComponentShPtr solidComp =
+	    KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, innerCapsule);
 	  if (solidComp) {
 	    innerName = solidComp->name();
-	  } else {
-	    innerName = std::string("");
 	  }
 #endif
 	  hppDout(info,"creating distance computation pair between "
 		  << innerName << " and "
-		  << outerName);
+		  << outerCapsule->name ());
 
 	  // Build new collision pair between inner and outer
 	  // capsules.
