@@ -23,6 +23,7 @@
 
 #include <hpp/util/debug.hh>
 
+#include <hpp/model/types.hh>
 #include "hpp/model/joint.hh"
 #include "hpp/model/translation-joint.hh"
 #include "hpp/model/capsule-body-factory.hh"
