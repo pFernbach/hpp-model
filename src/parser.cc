@@ -69,18 +69,16 @@ namespace hpp {
       CkprParserManager::defaultManager()->addXMLWriterMethod < Parser >
 	(this, &Parser::writeHumanoidRobot);
       // Read humanoid robot
-      status =CkprParserManager::defaultManager()->addXMLInheritedBuilderMethod
-	<Parser>("HPP_HUMANOID_ROBOT", "DEVICE", this,
-		 &Parser::buildHumanoidRobot, NULL);
+      status =CkprParserManager::defaultManager()->addXMLTagBuilderMethod
+	<Parser>("HPP_HUMANOID_ROBOT", this, &Parser::buildHumanoidRobot);
       assert(status == KD_OK);
       hppDout(info, "register HPP_HUMANOID_ROBOT tag");
       // Write freeflyer joint
       CkprParserManager::defaultManager()->addXMLWriterMethod < Parser >
 	(this, &Parser::writeFreeflyerJoint);
       // Read freeflyer joint
-      status =CkprParserManager::defaultManager()->addXMLInheritedBuilderMethod
-	<Parser>("HPP_FREEFLYER_JOINT", "FREEFLYER_JOINT", this,
-		 &Parser::buildFreeflyerJoint, NULL);
+      status =CkprParserManager::defaultManager()->addXMLTagBuilderMethod
+	<Parser>("HPP_FREEFLYER_JOINT", this, &Parser::buildFreeflyerJoint);
       assert(status == KD_OK);
       hppDout(info, "register HPP_FREEFLYER_JOINT tag");
       // Write rotation joint
@@ -88,9 +86,8 @@ namespace hpp {
 	(this, &Parser::writeRotationJoint);
       // Read rotation joint
       status =
-	CkprParserManager::defaultManager()->addXMLInheritedBuilderMethod < Parser >
-	("HPP_ROTATION_JOINT", "ROTATION_JOINT", this,
-	 &Parser::buildRotationJoint, NULL);
+	CkprParserManager::defaultManager()->addXMLTagBuilderMethod < Parser >
+	("HPP_ROTATION_JOINT", this, &Parser::buildRotationJoint);
       assert(status == KD_OK);
       hppDout(info, "register HPP_ROTATION_JOINT tag");
       // Write translation joint
@@ -98,9 +95,8 @@ namespace hpp {
 	(this, &Parser::writeTranslationJoint);
       // Read translation joint
       status =
-	CkprParserManager::defaultManager()->addXMLInheritedBuilderMethod < Parser >
-	("HPP_TRANSLATION_JOINT", "TRANSLATION_JOINT", this,
-	 &Parser::buildTranslationJoint, NULL);
+	CkprParserManager::defaultManager()->addXMLTagBuilderMethod < Parser >
+	("HPP_TRANSLATION_JOINT", this, &Parser::buildTranslationJoint);
       assert(status == KD_OK);
       hppDout(info, "register HPP_TRANSLATION_JOINT tag");
       // Write anchor joint
@@ -108,9 +104,8 @@ namespace hpp {
 	(this, &Parser::writeAnchorJoint);
       // Read anchor joint
       status =
-	CkprParserManager::defaultManager()->addXMLInheritedBuilderMethod < Parser >
-	("HPP_ANCHOR_JOINT", "ANCHOR_JOINT", this,
-	 &Parser::buildAnchorJoint, NULL);
+	CkprParserManager::defaultManager()->addXMLTagBuilderMethod < Parser >
+	("HPP_ANCHOR_JOINT", this, &Parser::buildAnchorJoint);
       assert(status == KD_OK);
       hppDout(info, "register HPP_ANCHOR_JOINT tag");
     }
