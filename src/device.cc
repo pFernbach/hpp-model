@@ -372,6 +372,22 @@ namespace hpp {
 
     // ========================================================================
 
+    ktStatus Device::addBodyDistance (const BodyDistanceShPtr& bodyDistance)
+    {
+      if (!bodyDistance)
+	{
+	  hppDout (error, "Null pointer to body distance object.");
+	  return KD_ERROR;
+	}
+      else
+	{
+	  bodyDistances_.push_back (bodyDistance);
+	  return KD_OK;
+	}
+    }
+
+    // ========================================================================
+
     bool Device::kwsToJrlDynamicsDofValues(const std::vector<double>&
 					   kwsDofVector,
 					   vectorN& outJrlDynamicsDofVector)

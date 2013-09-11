@@ -101,6 +101,9 @@ namespace hpp {
       /// \brief Get body distance vector.
       std::vector<BodyDistanceShPtr> bodyDistances () const;
 
+      /// \brief Push back body distance object in body distance vector.
+      ktStatus addBodyDistance (const BodyDistanceShPtr& bodyDistance);
+
       ///
       /// @}
       ///
