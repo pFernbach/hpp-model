@@ -76,6 +76,9 @@ namespace hpp {
       static BodyDistanceShPtr create (const CkwsKCDBodyAdvancedShPtr& body,
 				       const std::string& name);
 
+      /// \brief Get pointer to underlying body.
+      const CkwsKCDBodyAdvancedShPtr& body () {return body_;}
+
       /// \brief Get name of object.
       const std::string& name() {return name_;}
 
