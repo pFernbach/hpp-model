@@ -202,8 +202,6 @@ namespace hpp {
     {
       ktStatus status = KD_OK ;
 
-      std::vector<CkcdObjectShPtr> deviceInnerObjectList;
-
       //
       // Get body vector of device
       //
@@ -222,55 +220,16 @@ namespace hpp {
 	  // get the inner object list of the body
 	  //
 	  std::vector< CkcdObjectShPtr > kcdBodyInnerObjects =
-	    kcdBody->innerObjects() ;
+	    kcdBody->mobileObjects() ;
 
 	  //
-	  // and put each inner object in deviceInnerObjectList
+	  // and deactivate each object for collision analysis. 
 	  //
 	  for (unsigned int objectId =0 ; objectId < kcdBodyInnerObjects.size() ;
 	       objectId ++) {
 	    CkcdObjectShPtr kcdObject = kcdBodyInnerObjects[objectId] ;
-	    deviceInnerObjectList.push_back(kcdObject) ;
+	    kcdObject->activation (false) ;
 	  }
-	}
-	else {
-	  hppDout(error, ":ignoreDeviceForCollision : body is not KCD body.");
-	  return KD_ERROR ;
-	}
-      }
-
-      //
-      // Set all inner objects of device in the ignoredOuterObject list
-      // of each body of this device
-      //
-      CkwsDevice::TBodyVector thisBodyVector;
-      getBodyVector(thisBodyVector);
-
-      //
-      // For each body of this device
-      //
-      for (unsigned int bodyId = 0 ;  bodyId < thisBodyVector.size(); bodyId++)  {
-	CkwsKCDBodyAdvancedShPtr thisKcdBody;
-	if (thisKcdBody = KIT_DYNAMIC_PTR_CAST(CkwsKCDBodyAdvanced,
-					       thisBodyVector[bodyId])) {
-	  //
-	  // Get the list of ignored outer objects
-	  //
-	  std::vector<CkcdObjectShPtr> thisIgnoredObjectList =
-	    thisKcdBody->ignoredOuterObjects() ;
-
-	  //
-	  // Add to this list all the inner objects of device
-	  //
-	  for( unsigned int objectId = 0 ;
-	       objectId < deviceInnerObjectList.size() ; objectId++) {
-	    thisIgnoredObjectList.push_back(deviceInnerObjectList[objectId]) ;
-	  }
-
-	  //
-	  // Set this new list as ignored outer object list of this device body
-	  //
-	  thisKcdBody->ignoredOuterObjects(thisIgnoredObjectList) ;
 	}
 	else {
 	  hppDout(error, ":ignoreDeviceForCollision : body is not KCD body.");
@@ -288,7 +247,7 @@ namespace hpp {
 					double& zMin, double& xMax,
 					double& yMax, double& zMax) const
     {
-      std::vector<CkcdObjectShPtr> listObject = body->innerObjects();
+      std::vector<CkcdObjectShPtr> listObject = body->mobileObjects();
       unsigned int j= listObject.size();
       for(unsigned int i=0; i<j; i++)
 	{
