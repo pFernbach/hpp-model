@@ -28,10 +28,8 @@ namespace hpp {
     KIT_PREDEF_CLASS(FreeflyerJoint)
     KIT_PREDEF_CLASS(HumanoidRobot)
     KIT_PREDEF_CLASS(Joint)
-    KIT_PREDEF_CLASS(Body)
-    KIT_PREDEF_CLASS(CapsuleBody)
-    KIT_PREDEF_CLASS(BodyFactory)
-    KIT_PREDEF_CLASS(CapsuleBodyFactory)
+    KIT_PREDEF_CLASS(BodyDistance)
+    KIT_PREDEF_CLASS(CapsuleBodyDistance)
   } // namespace model
 } // namespace hpp
 #endif //HPP_MODEL_FWD_HH

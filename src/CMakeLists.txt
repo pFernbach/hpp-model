@@ -35,10 +35,8 @@ CONFIG_FILES(module-dir.hh)
 ADD_LIBRARY(${LIBRARY_NAME}
   SHARED
   anchor-joint.cc
-  body.cc
-  body-factory.cc
-  capsule-body.cc
-  capsule-body-factory.cc
+  body-distance.cc
+  capsule-body-distance.cc
   device.cc
   freeflyer-joint.cc
   humanoid-robot.cc

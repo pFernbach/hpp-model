@@ -7,6 +7,8 @@
 #include <cerrno>
 #include <iostream>
 
+#include <boost/foreach.hpp>
+
 #include <KineoModel/kppFreeFlyerJointComponent.h>
 #include <KineoModel/kppAnchorJointComponent.h>
 #include <KineoModel/kppRotationJointComponent.h>
@@ -18,18 +20,21 @@
 #include <jrl/mal/matrixabstractlayer.hh>
 #include <hpp/util/debug.hh>
 
-#include "hpp/model/body.hh"
 #include "hpp/model/device.hh"
 #include "hpp/model/exception.hh"
 #include "hpp/model/joint.hh"
+#include <hpp/model/body-distance.hh>
 
 namespace hpp {
   namespace model {
 
     impl::ObjectFactory Device::objectFactory_;
 
-    Device::Device() :
-      impl::DynamicRobot(objectFactory()), CkppDeviceComponent()
+    Device::Device()
+      : impl::DynamicRobot(objectFactory ()),
+	CkppDeviceComponent (),
+	bodyDistances_ (),
+	weakPtr_ ()
     {
       CkitNotificator::defaultNotificator()->subscribe<Device>
 	(CkppComponent::DID_INSERT_CHILD, this,
@@ -362,35 +367,13 @@ namespace hpp {
     ktStatus Device::addObstacle(const CkcdObjectShPtr& object,
 				 bool distanceComputation)
     {
-      // Get robot vector of bodies.
-      CkwsDevice::TBodyVector bodyVector;
-      getBodyVector(bodyVector);
-
       // Loop over bodies of robot.
-      for (CkwsDevice::TBodyIterator bodyIter = bodyVector.begin();
-	   bodyIter < bodyVector.end(); bodyIter++) {
-	// Try to cast body into CkwsKCDBody
-	CkwsKCDBodyShPtr kcdBody;
-	BodyShPtr hppBody;
-	if (kcdBody = KIT_DYNAMIC_PTR_CAST(CkwsKCDBody, *bodyIter)) {
-	  if(hppBody = KIT_DYNAMIC_PTR_CAST(Body, kcdBody)) {
-	    hppBody->addOuterObject(object, distanceComputation);
-	  }
-	  else {
-	    std::vector< CkcdObjectShPtr > collisionList =
-	      kcdBody->outerObjects();
-	    collisionList.push_back(object);
-	    kcdBody->outerObjects(collisionList);
-	  }
+      BOOST_FOREACH(BodyDistanceShPtr bodyDistance, bodyDistances_)
+	{
+	  bodyDistance->addOuterObject(object, distanceComputation);
 	}
-	else {
-	  hppDout(error, ":addObstacle: body is not KCD body."
-		  " Obstacle is not inserted.");
-	}
-      }
       return KD_OK;
     }
-
 
     // ========================================================================
 
@@ -419,6 +402,13 @@ namespace hpp {
       CkppJointComponentShPtr kppJointComponent = rootJointComponent();
       JointShPtr joint = KIT_DYNAMIC_PTR_CAST(Joint, kppJointComponent);
       return joint;
+    }
+
+    // ========================================================================
+
+    std::vector<BodyDistanceShPtr> Device::bodyDistances () const
+    {
+      return bodyDistances_;
     }
 
     // ========================================================================

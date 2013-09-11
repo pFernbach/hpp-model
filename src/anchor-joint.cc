@@ -26,7 +26,6 @@
 #include <hpp/model/types.hh>
 #include "hpp/model/joint.hh"
 #include "hpp/model/anchor-joint.hh"
-#include "hpp/model/capsule-body-factory.hh"
 #include "hpp/model/exception.hh"
 #include "hpp/model/humanoid-robot.hh"
 
@@ -104,10 +103,9 @@ namespace hpp {
     {
       ktStatus status = KD_OK;
       weakPtr_ = weakPtr;
-      CapsuleBodyFactoryShPtr bodyFactory = CapsuleBodyFactory::create ();
       status = CkppAnchorJointComponent::init(weakPtr,
 					      name,
-					      bodyFactory);
+					      makeDefaultBodyFactory ());
       if (status == KD_ERROR) return KD_ERROR;
       status = Joint::init(weakPtr);
       if (status == KD_ERROR) return KD_ERROR;

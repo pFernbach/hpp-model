@@ -1,6 +1,6 @@
 ///
-/// Copyright (c) 2011 CNRS
-/// Authors: Florent Lamiraux
+/// Copyright (c) 2011, 2013 CNRS
+/// Authors: Florent Lamiraux, Antonio El Khoury
 ///
 ///
 // This file is part of hpp-model
@@ -17,8 +17,8 @@
 // hpp-model  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#ifndef HPP_MODEL_BODY_HH
-#define HPP_MODEL_BODY_HH
+#ifndef HPP_MODEL_BODY_DISTANCE_HH
+#define HPP_MODEL_BODY_DISTANCE_HH
 
 /*************************************
 INCLUDE
@@ -26,9 +26,8 @@ INCLUDE
 
 #include <KineoUtility/kitDefine.h>
 #include <kcd2/kcdAnalysisType.h>
-#include <kwsKcd2/kwsKCDBody.h>
+#include <kwsKcd2/kwsKCDBodyAdvanced.h>
 
-#include "hpp/model/robot-dynamics-impl.hh"
 #include "hpp/model/fwd.hh"
 
 KIT_PREDEF_CLASS(CkppSolidComponentRef)
@@ -66,14 +65,16 @@ namespace hpp {
 
     /// \sa Smart pointers documentation:
     /// http://www.boost.org/libs/smart_ptr/smart_ptr.htm
-    class Body : public CkwsKCDBody
+    class BodyDistance
     {
     public:
 
-      /// \brief Creation of a body
-      /// \param name Name of the new body.
-      /// \return A shared pointer to a new body.
-      static BodyShPtr create(const std::string& name);
+      /// \brief Creation of a body distance
+      /// \param body Shared pointer to underlying Kws body.
+      /// \param name Name of the new body distance
+      /// \return A shared pointer to a new body distance.
+      static BodyDistanceShPtr create (const CkwsKCDBodyAdvancedShPtr& body,
+				       const std::string& name);
 
       /// \brief Get name of object.
       const std::string& name() {return name_;}
@@ -150,17 +151,18 @@ namespace hpp {
 
     protected:
 
-      /// \brief Pointer to the joint the body is attached to
-      Joint* joint_;
+      /// \brief Constructor.
+      BodyDistance (const CkwsKCDBodyAdvancedShPtr& body,
+		    const std::string& name);
 
-      /// \brief Constructor by name.
-      Body(std::string name);
-
-      /// \brief Initialization of body
+      /// \brief Initialization of body distance
       /// \param weakPtr weak pointer to itself
-      ktStatus init(const BodyWkPtr weakPtr);
+      ktStatus init(const BodyDistanceWkPtr weakPtr);
 
     private:
+
+      /// \brief Shared pointer to underlying body.
+      CkwsKCDBodyAdvancedShPtr body_;
 
       /// \brief Name of the body.
       std::string name_;
@@ -178,9 +180,9 @@ namespace hpp {
       std::vector<CkcdAnalysisShPtr> distCompPairs_;
 
       /// \brief Weak pointer to itself
-      BodyWkPtr weakPtr_;
-    }; // class Body
+      BodyDistanceWkPtr weakPtr_;
+    }; // class BodyDistance
   } // namespace model
 } // namespace hpp
 
-#endif // HPP_MODEL_BODY_HH
+#endif // HPP_MODEL_BODY_DISTANCE_HH

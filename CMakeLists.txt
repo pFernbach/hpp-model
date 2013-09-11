@@ -45,10 +45,8 @@ ENDIF()
 # Declare headers
 SET(${PROJECT_NAME}_HEADERS
   include/hpp/model/anchor-joint.hh
-  include/hpp/model/body.hh
-  include/hpp/model/body-factory.hh
-  include/hpp/model/capsule-body.hh
-  include/hpp/model/capsule-body-factory.hh
+  include/hpp/model/body-distance.hh
+  include/hpp/model/capsule-body-distance.hh
   include/hpp/model/device.hh
   include/hpp/model/exception.hh
   include/hpp/model/freeflyer-joint.hh

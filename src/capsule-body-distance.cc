@@ -33,48 +33,69 @@
 
 #include <hpp/geometry/collision/util.hh>
 
-#include "hpp/model/capsule-body.hh"
+#include <hpp/model/capsule-body-distance.hh>
 #include "hpp/model/joint.hh"
 #include "hpp/model/exception.hh"
-
-#define KITELAB_205004
 
 namespace hpp {
   namespace model {
 
-    CapsuleBody::CapsuleBody (std::string name) : Body (name) {
+    CapsuleBodyDistance::
+    CapsuleBodyDistance (const CkwsKCDBodyAdvancedShPtr& body,
+			 const std::string&  name) :
+      BodyDistance (body, name),
+      innerCapsulesForDist_ (),
+      outerCapsulesForDist_ (),
+      capsuleDistCompPairs_ (),
+      weakPtr_ (),
+      distPair_ (),
+      leftEndPoint1_ (),
+      leftEndPoint2_ (),
+      rightEndPoint1_ (),
+      rightEndPoint2_ (),
+      leftRadius_ (),
+      rightRadius_ (),
+      leftAbsPosition_ (),
+      rightAbsPosition_ (),
+      squareDistance_ (),
+      axis_ ()
+    {
     }
 
-    CapsuleBodyShPtr CapsuleBody::create (const std::string& name)
+    CapsuleBodyDistanceShPtr
+    CapsuleBodyDistance::create (const CkwsKCDBodyAdvancedShPtr& body,
+				 const std::string& name)
     {
-      CapsuleBody* capsuleBody = new CapsuleBody (name);
-      CapsuleBodyShPtr capsuleBodyShPtr (capsuleBody);
-      CapsuleBodyWkPtr capsuleBodyWkPtr = capsuleBodyShPtr;
+      CapsuleBodyDistance* capsuleBodyDistance
+	= new CapsuleBodyDistance (body, name);
+      CapsuleBodyDistanceShPtr capsuleBodyDistanceShPtr (capsuleBodyDistance);
+      CapsuleBodyDistanceWkPtr capsuleBodyDistanceWkPtr
+	= capsuleBodyDistanceShPtr;
 
-      if (capsuleBody->init (capsuleBodyWkPtr) != KD_OK) {
+      if (capsuleBodyDistance->init (capsuleBodyDistanceWkPtr) != KD_OK) {
 	hppDout (error," error in create() ");
-	capsuleBodyShPtr.reset();
+	capsuleBodyDistanceShPtr.reset();
       }
-      return capsuleBodyShPtr;
+      return capsuleBodyDistanceShPtr;
     }
 
     //=========================================================================
 
-    ktStatus CapsuleBody::init (const CapsuleBodyWkPtr weakPtr)
+    ktStatus CapsuleBodyDistance::init (const CapsuleBodyDistanceWkPtr weakPtr)
     {
       weakPtr_ = weakPtr;
-      return Body::init (weakPtr);
+      return BodyDistance::init (weakPtr);
     }
 
     //=========================================================================
 
     bool
-    CapsuleBody::addInnerCapsule (const capsule_t& innerCapsule,
+    CapsuleBodyDistance::addInnerCapsule (const capsule_t& innerCapsule,
 				  bool distanceComputation)
     {
       // Add capsule for collision checking and for distance
       // computation.
-      Body::addInnerObject (innerCapsule, distanceComputation);
+      BodyDistance::addInnerObject (innerCapsule, distanceComputation);
 
       // If requested, add the segment (equivalent to the capsule) in
       // the list of segments the distance to which needs to be
@@ -113,7 +134,7 @@ namespace hpp {
 
     //=========================================================================
 
-    void CapsuleBody::addOuterCapsule(const capsule_t& outerCapsule,
+    void CapsuleBodyDistance::addOuterCapsule(const capsule_t& outerCapsule,
 				      bool distanceComputation)
 
     {
@@ -123,7 +144,7 @@ namespace hpp {
       // FIXME: For now we keep adding capsule (which is in fact a
       // segment), but in reality this is unnecessary as long the user
       // adds the real capsule as outer object later.
-      Body::addOuterObject (outerCapsule, false);
+      BodyDistance::addOuterObject (outerCapsule, false);
 
       // If distance computation is requested, build necessary
       // distance computation pairs.
@@ -159,15 +180,15 @@ namespace hpp {
 
     //=========================================================================
 
-    void CapsuleBody::resetOuterObjects()
+    void CapsuleBodyDistance::resetOuterObjects()
     {
-      Body::resetOuterObjects ();
+      BodyDistance::resetOuterObjects ();
       resetOuterCapsules ();
     }
 
     //=========================================================================
 
-    void CapsuleBody::resetOuterCapsules()
+    void CapsuleBodyDistance::resetOuterCapsules()
     {
       outerCapsulesForDist_.clear();
       capsuleDistCompPairs_.clear();
@@ -177,7 +198,7 @@ namespace hpp {
     //=========================================================================
 
     ktStatus
-    CapsuleBody::distAndPairsOfPoints (unsigned int inPairId,
+    CapsuleBodyDistance::distAndPairsOfPoints (unsigned int inPairId,
 				       double& outDistance,
 				       CkcdPoint& outPointBody,
 				       CkcdPoint& outPointEnv)
@@ -186,7 +207,7 @@ namespace hpp {
 
       if (inPairId < nbKCDDistPairs ())
 	{
-	  Body::distAndPairsOfPoints
+	  BodyDistance::distAndPairsOfPoints
 	    (inPairId, outDistance, outPointBody, outPointEnv);
 
 	  // We assume here that there is only one inner object and
@@ -242,7 +263,7 @@ namespace hpp {
     //=========================================================================
 
     ktStatus
-    CapsuleBody::kcdDistAndPairsOfPoints (double& outDistance,
+    CapsuleBodyDistance::kcdDistAndPairsOfPoints (double& outDistance,
 					  CkcdPoint& outPointBody,
 					  CkcdPoint& outPointEnv)
     {
@@ -275,7 +296,7 @@ namespace hpp {
     //=========================================================================
 
     ktStatus
-    CapsuleBody::capsuleDistAndPairsOfPoints (double& outDistance,
+    CapsuleBodyDistance::capsuleDistAndPairsOfPoints (double& outDistance,
 					      CkcdPoint& outPointBody,
 					      CkcdPoint& outPointEnv)
     {
@@ -308,7 +329,7 @@ namespace hpp {
     //=========================================================================
 
     ktStatus
-    CapsuleBody::distAndPairsOfPoints (double& outDistance,
+    CapsuleBodyDistance::distAndPairsOfPoints (double& outDistance,
 				       CkcdPoint& outPointBody,
 				       CkcdPoint& outPointEnv)
     {

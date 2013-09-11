@@ -98,6 +98,9 @@ namespace hpp {
       /// \brief Get the root joint
       JointShPtr getRootJoint();
 
+      /// \brief Get body distance vector.
+      std::vector<BodyDistanceShPtr> bodyDistances () const;
+
       ///
       /// @}
       ///
@@ -323,6 +326,9 @@ namespace hpp {
       void insertDynamicPart(JointShPtr parent, JointShPtr child);
 
     private:
+
+      /// \brief Vector of body distances.
+      std::vector<BodyDistanceShPtr> bodyDistances_;
 
       /// \brief Store weak pointer to object.
       DeviceWkPtr weakPtr_;

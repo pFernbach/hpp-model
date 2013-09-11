@@ -17,8 +17,8 @@
 // hpp-model  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#ifndef HPP_MODEL_CAPSULE_BODY_HH
-#define HPP_MODEL_CAPSULE_BODY_HH
+#ifndef HPP_MODEL_CAPSULE_BODY_DISTANCE_HH
+#define HPP_MODEL_CAPSULE_BODY_DISTANCE_HH
 
 /*************************************
 INCLUDE
@@ -30,14 +30,14 @@ INCLUDE
 #include <hpp/geometry/component/segment.hh>
 
 #include "hpp/model/fwd.hh"
-#include "hpp/model/body.hh"
+#include <hpp/model/body-distance.hh>
 
 namespace hpp {
   namespace model {
 
     /// \brief Specialization of a body representing a capsule
     /// geometric object attached to a joint.
-    class CapsuleBody : public Body
+    class CapsuleBodyDistance : public BodyDistance
     {
     public:
 
@@ -47,7 +47,9 @@ namespace hpp {
       /// \brief Creation of a body
       /// \param name Name of the new body.
       /// \return A shared pointer to a new body.
-      static CapsuleBodyShPtr create (const std::string& name);
+      static
+      CapsuleBodyDistanceShPtr create (const CkwsKCDBodyAdvancedShPtr& body,
+				       const std::string& name);
 
       /// \name Define inner and outer objects
       /// @{
@@ -86,12 +88,12 @@ namespace hpp {
 
       /// \brief Get the number of pairs of object for which distance
       /// is computed
-      unsigned int nbDistPairs () { return Body::nbDistPairs ()
+      unsigned int nbDistPairs () { return BodyDistance::nbDistPairs ()
 	  + capsuleDistCompPairs_.size (); };
 
       /// \brief Get the number of kcd pairs of object for which
       /// distance is computed
-      unsigned int nbKCDDistPairs () { return Body::nbDistPairs (); };
+      unsigned int nbKCDDistPairs () { return BodyDistance::nbDistPairs (); };
 
       /// \brief Get the number of pairs of capsules for which
       /// distance is computed
@@ -104,7 +106,7 @@ namespace hpp {
       /// \param pairId id of the pair of objects
 
       /// \retval outDistance Distance between body and outer objects
-      /// \retval outPointCapsuleBody Closest point on body (in global reference frame)
+      /// \retval outPointCapsuleBodyDistance Closest point on body (in global reference frame)
       /// \retval outPointEnv Closest point in outer object set (in global reference frame)
       ktStatus distAndPairsOfPoints (unsigned int pairId,
 				     double& outDistance,
@@ -115,7 +117,7 @@ namespace hpp {
       /// between body and set of outer KCD objects.
 
       /// \retval outDistance Distance between body and outer KCD objects
-      /// \retval outPointCapsuleBody Closest point on body (in global reference frame)
+      /// \retval outPointCapsuleBodyDistance Closest point on body (in global reference frame)
       /// \retval outPointEnv Closest point in outer kcd object set (in global reference frame)
       ktStatus kcdDistAndPairsOfPoints (double& outDistance,
 					CkcdPoint& outPointBody,
@@ -125,7 +127,7 @@ namespace hpp {
       /// between body and set of outer capsules.
 
       /// \retval outDistance Distance between body and outer capsules
-      /// \retval outPointCapsuleBody Closest point on body (in global reference frame)
+      /// \retval outPointCapsuleBodyDistance Closest point on body (in global reference frame)
       /// \retval outPointEnv Closest point in outer capsule object set (in global reference frame)
       ktStatus capsuleDistAndPairsOfPoints (double& outDistance,
 					    CkcdPoint& outPointBody,
@@ -135,7 +137,7 @@ namespace hpp {
       /// between body and set of outer objects.
 
       /// \retval outDistance Distance between body and outer objects
-      /// \retval outPointCapsuleBody Closest point on body (in global reference frame)
+      /// \retval outPointCapsuleBodyDistance Closest point on body (in global reference frame)
       /// \retval outPointEnv Closest point in outer object set (in global reference frame)
       ktStatus distAndPairsOfPoints (double& outDistance,
 				     CkcdPoint& outPointBody,
@@ -147,12 +149,13 @@ namespace hpp {
 
     protected:
 
-      /// \brief Constructor by name.
-      CapsuleBody (std::string name);
+      /// \brief Constructor.
+      CapsuleBodyDistance (const CkwsKCDBodyAdvancedShPtr& body,
+			   const std::string& name);
 
       /// \brief Initialization of body
       /// \param weakPtr weak pointer to itself
-      ktStatus init (const CapsuleBodyWkPtr weakPtr);
+      ktStatus init (const CapsuleBodyDistanceWkPtr weakPtr);
 
     private:
 
@@ -168,7 +171,7 @@ namespace hpp {
       std::vector<capsuleDistCompPair_t> capsuleDistCompPairs_;
 
       /// \brief Weak pointer to itself
-      CapsuleBodyWkPtr weakPtr_;
+      CapsuleBodyDistanceWkPtr weakPtr_;
 
       /// \brief Temporary variables used in distance computation.
       mutable capsuleDistCompPair_t distPair_;
@@ -183,8 +186,8 @@ namespace hpp {
       mutable kcdReal squareDistance_;
       mutable CkitVect3 axis_;
 
-    }; // class CapsuleBody
+    }; // class CapsuleBodyDistance
   } // namespace model
 } // namespace hpp
 
-#endif // HPP_MODEL_CAPSULE_BODY_HH
+#endif // HPP_MODEL_CAPSULE_BODY_DISTANCE_HH
