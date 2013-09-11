@@ -39,7 +39,7 @@ namespace hpp {
 
     /// \brief Bodies as geometric objects attached to a joint.
 
-    /// It derives from KineoWorks CkwsKCDBody class and from an
+    /// It derives from KineoWorks CkwsKCDBodyAdvanced class and from an
     /// implementation of CjrlJoint.
 
     /// Objects attached to a body (called inner objects) are used for

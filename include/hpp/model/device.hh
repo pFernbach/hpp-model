@@ -333,7 +333,7 @@ namespace hpp {
       /// \brief Store weak pointer to object.
       DeviceWkPtr weakPtr_;
 
-      void computeBodyBoundingBox(const CkwsKCDBodyShPtr& body, double& xMin,
+      void computeBodyBoundingBox(const CkwsKCDBodyAdvancedShPtr& body, double& xMin,
 				  double& yMin, double& zMin, double& xMax,
 				  double& yMax, double& zMax) const;
 

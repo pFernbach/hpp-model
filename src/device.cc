@@ -183,12 +183,12 @@ namespace hpp {
       for(unsigned int i=0; i<j; i++)
 	{
 	  /*Dynamic cast*/
-	  CkwsKCDBodyShPtr a;
-	  a=KIT_DYNAMIC_PTR_CAST(CkwsKCDBody, bodyVector[i]);
+	  CkwsKCDBodyAdvancedShPtr a;
+	  a=KIT_DYNAMIC_PTR_CAST(CkwsKCDBodyAdvanced, bodyVector[i]);
 	  if(!a)
 	    {
 	      hppDout(error, ":axisAlignedBoundingBox: Error, "
-		      "the CkwsBody not of type CkwsKCDBody");
+		      "the CkwsBody not of type CkwsKCDBodyAdvanced");
 	      return KD_ERROR;
 	    }
 	  computeBodyBoundingBox(a,xMin,yMin,zMin,xMax,yMax,zMax);
@@ -215,8 +215,8 @@ namespace hpp {
       //
       for (unsigned int bodyId = 0 ;  bodyId < deviceBodyVector.size();
 	   bodyId++)  {
-	CkwsKCDBodyShPtr kcdBody;
-	if (kcdBody = KIT_DYNAMIC_PTR_CAST(CkwsKCDBody,
+	CkwsKCDBodyAdvancedShPtr kcdBody;
+	if (kcdBody = KIT_DYNAMIC_PTR_CAST(CkwsKCDBodyAdvanced,
 					   deviceBodyVector[bodyId])) {
 	  //
 	  // get the inner object list of the body
@@ -250,8 +250,8 @@ namespace hpp {
       // For each body of this device
       //
       for (unsigned int bodyId = 0 ;  bodyId < thisBodyVector.size(); bodyId++)  {
-	CkwsKCDBodyShPtr thisKcdBody;
-	if (thisKcdBody = KIT_DYNAMIC_PTR_CAST(CkwsKCDBody,
+	CkwsKCDBodyAdvancedShPtr thisKcdBody;
+	if (thisKcdBody = KIT_DYNAMIC_PTR_CAST(CkwsKCDBodyAdvanced,
 					       thisBodyVector[bodyId])) {
 	  //
 	  // Get the list of ignored outer objects
@@ -283,7 +283,7 @@ namespace hpp {
 
     // ========================================================================
 
-    void Device::computeBodyBoundingBox(const CkwsKCDBodyShPtr& body,
+    void Device::computeBodyBoundingBox(const CkwsKCDBodyAdvancedShPtr& body,
 					double& xMin, double& yMin,
 					double& zMin, double& xMax,
 					double& yMax, double& zMax) const

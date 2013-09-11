@@ -218,8 +218,8 @@ namespace hpp {
       /// \brief Insert a body of type hpp::model::Body before adding geometry
       ///
       /// When the first solid component is added to a joint component,
-      /// an object of class CkwsKCDBody is inserted to the underlying
-      /// CkwsJoint. To replace the CkwsKCDBody by an hpp::model::Body, we
+      /// an object of class CkwsKCDBodyAdvanced is inserted to the underlying
+      /// CkwsJoint. To replace the CkwsKCDBodyAdvanced by an hpp::model::Body, we
       /// insert it beforehand.
       void insertBody();
 
