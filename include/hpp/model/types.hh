@@ -20,7 +20,8 @@
 #ifndef HPP_MODEL_TYPES_HH
 # define HPP_MODEL_TYPES_HH
 
-# define __STDC_LIMIT_MACROS
-# include <stdint.h>
+# ifndef SIZE_MAX
+#  define SIZE_MAX ((size_t)-1)
+# endif // SIZE_MAX
 
 #endif // HPP_MODEL_TYPES_HH
