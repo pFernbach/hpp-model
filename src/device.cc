@@ -16,7 +16,7 @@
 #include <KineoModel/kppSolidComponentRef.h>
 #include <KineoModel/kppSteeringMethodComponent.h>
 
-#include <kwsioConfig.h>
+#include <hpp/kwsio/configuration.hh>
 #include <jrl/mal/matrixabstractlayer.hh>
 #include <hpp/util/debug.hh>
 

@@ -26,7 +26,7 @@
 #include <KineoModel/kppSolidComponentRef.h>
 #include <KineoWorks2/kwsJoint.h>
 
-#include <kwsIO/kwsioMat.h>
+#include <hpp/kwsio/mat.hh>
 
 #include <jrl/mal/matrixabstractlayer.hh>
 #include <abstract-robot-dynamics/joint.hh>
