@@ -1,3 +1,12 @@
+09/26/2013 Release 2.3
+
+    * Update to KiteLab 2.07
+    * Replace Body and CapsuleBody classes by BodyDistance and
+    CapsuleBodyDistance respectively. Their behavior is the same as
+    before, except they do not inherit from CkwsBody anymore.
+    * Body factory classes are also removed.
+    * Update to hpp-kwsio 1.2
+
 12/20/2011 Release 2.1
 
     Compatibility with Kitelab-2.06
