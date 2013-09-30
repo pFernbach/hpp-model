@@ -395,9 +395,8 @@ namespace hpp {
       // Count the number of extra dofs of the CkppDeviceComponent
       // since the first degrees of freedom of kwsDofVector correspond
       // to these extra-dofs.
-      unsigned int rankInCkwsConfig = countExtraDofs(); // deprecated
-      assert (rankInCkwsConfig == 0);
-      rankInCkwsConfig = CkwsDevice::rootJoint ()->customSubspace ()->size ();
+      unsigned int rankInCkwsConfig =
+	CkwsDevice::rootJoint ()->customSubspace ()->size ();
       std::vector< CkppJointComponentShPtr > kppJointVector;
       getJointComponentVector(kppJointVector);
 
@@ -511,9 +510,8 @@ namespace hpp {
 				      std::vector<double>& outKwsDofVector)
     {
       /// Count the number of extra dofs of the CkppDeviceComponent.
-      unsigned int rankInDofValues = countExtraDofs(); // deprecated
-      assert (rankInDofValues == 0);
-      rankInDofValues = CkwsDevice::rootJoint ()->customSubspace ()->size ();
+      unsigned int rankInDofValues =
+	CkwsDevice::rootJoint ()->customSubspace ()->size ();
 
       std::vector< CkppJointComponentShPtr > kppJointVector;
       getJointComponentVector(kppJointVector);
