@@ -24,6 +24,8 @@
 #include <kprParserXML/kprXMLBuildingContext.h>
 #include <kprParserXML/kprXMLWriter.h>
 
+#include <hpp/util/kitelab.hh>
+
 HPP_KIT_PREDEF_CLASS(CkppDeviceComponent);
 
 namespace hpp {
