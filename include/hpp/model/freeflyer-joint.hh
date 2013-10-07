@@ -26,7 +26,7 @@
 
 namespace hpp {
   namespace model {
-    KIT_PREDEF_CLASS(FreeflyerJoint)
+    HPP_KIT_PREDEF_CLASS(FreeflyerJoint);
     ///
     /// \brief Freeflyer joint.
     ///

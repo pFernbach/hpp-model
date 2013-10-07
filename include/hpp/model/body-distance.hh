@@ -30,7 +30,7 @@ INCLUDE
 
 #include "hpp/model/fwd.hh"
 
-KIT_PREDEF_CLASS(CkppSolidComponentRef)
+HPP_KIT_PREDEF_CLASS(CkppSolidComponentRef);
 class CkitMat4;
 class CkcdPoint;
 

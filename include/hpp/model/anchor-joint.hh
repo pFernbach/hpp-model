@@ -26,7 +26,7 @@
 
 namespace hpp {
   namespace model {
-    KIT_PREDEF_CLASS(AnchorJoint)
+    HPP_KIT_PREDEF_CLASS(AnchorJoint);
     ///
     /// \brief Anchor joint.
     ///
