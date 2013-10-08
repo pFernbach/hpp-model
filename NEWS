@@ -1,3 +1,8 @@
+10/08/2013 Release 2.3.1
+
+    * Fix compilation warnings.
+    * Clean-up package.
+
 09/26/2013 Release 2.3
 
     * Update to KiteLab 2.07
