@@ -67,8 +67,8 @@ ADD_REQUIRED_DEPENDENCY("abstract-robot-dynamics >= 1.16")
 ADD_REQUIRED_DEPENDENCY("jrl-dynamics >= 1.19")
 ADD_REQUIRED_DEPENDENCY("hpp-kwsio >= 1.1")
 ADD_REQUIRED_DEPENDENCY("KineoController >= 2.07")
-ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.4")
-ADD_REQUIRED_DEPENDENCY("hpp-geometry >= 1.0.1")
+ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.7")
+ADD_REQUIRED_DEPENDENCY("hpp-geometry >= 1.3")
 
 # Compile documentation
 CONFIGURE_FILE(doc/main.hh.in doc/main.hh)
