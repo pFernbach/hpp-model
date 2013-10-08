@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <typeinfo>
+#include <stdexcept>
 
 #include <boost/tokenizer.hpp>
 
