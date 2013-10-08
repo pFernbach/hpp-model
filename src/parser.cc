@@ -71,7 +71,9 @@ namespace hpp {
       // Read humanoid robot
       status =CkprParserManager::defaultManager()->addXMLTagBuilderMethod
 	<Parser>("HPP_HUMANOID_ROBOT", this, &Parser::buildHumanoidRobot);
-      assert(status == KD_OK);
+      if (status != KD_OK)
+	throw std::runtime_error
+	  ("Could not register HPP_HUMANOID_ROBOT tag");
       hppDout(info, "register HPP_HUMANOID_ROBOT tag");
       // Write freeflyer joint
       CkprParserManager::defaultManager()->addXMLWriterMethod < Parser >
@@ -79,7 +81,9 @@ namespace hpp {
       // Read freeflyer joint
       status =CkprParserManager::defaultManager()->addXMLTagBuilderMethod
 	<Parser>("HPP_FREEFLYER_JOINT", this, &Parser::buildFreeflyerJoint);
-      assert(status == KD_OK);
+      if (status != KD_OK)
+	throw std::runtime_error
+	  ("Could not register HPP_FREEFLYER_JOINT tag");
       hppDout(info, "register HPP_FREEFLYER_JOINT tag");
       // Write rotation joint
       CkprParserManager::defaultManager()->addXMLWriterMethod < Parser >
@@ -88,7 +92,9 @@ namespace hpp {
       status =
 	CkprParserManager::defaultManager()->addXMLTagBuilderMethod < Parser >
 	("HPP_ROTATION_JOINT", this, &Parser::buildRotationJoint);
-      assert(status == KD_OK);
+      if (status != KD_OK)
+	throw std::runtime_error
+	  ("Could not register HPP_ROTATION_JOINT tag");
       hppDout(info, "register HPP_ROTATION_JOINT tag");
       // Write translation joint
       CkprParserManager::defaultManager()->addXMLWriterMethod < Parser >
@@ -97,7 +103,9 @@ namespace hpp {
       status =
 	CkprParserManager::defaultManager()->addXMLTagBuilderMethod < Parser >
 	("HPP_TRANSLATION_JOINT", this, &Parser::buildTranslationJoint);
-      assert(status == KD_OK);
+      if (status != KD_OK)
+	throw std::runtime_error
+	  ("Could not register HPP_TRANSLATION_JOINT tag");
       hppDout(info, "register HPP_TRANSLATION_JOINT tag");
       // Write anchor joint
       CkprParserManager::defaultManager()->addXMLWriterMethod < Parser >
@@ -106,7 +114,9 @@ namespace hpp {
       status =
 	CkprParserManager::defaultManager()->addXMLTagBuilderMethod < Parser >
 	("HPP_ANCHOR_JOINT", this, &Parser::buildAnchorJoint);
-      assert(status == KD_OK);
+      if (status != KD_OK)
+	throw std::runtime_error
+	  ("Could not register HPP_ANCHOR_JOINT tag");
       hppDout(info, "register HPP_ANCHOR_JOINT tag");
     }
 
