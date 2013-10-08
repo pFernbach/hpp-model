@@ -1,3 +1,9 @@
+10/08/2013 Release 2.4.0
+
+    * Parser throws runtime errors if a problem occurs instead of
+      asserts, so that problem is detected even in release mode.
+    * Clean-up package.
+
 10/08/2013 Release 2.3.1
 
     * Fix compilation warnings.
