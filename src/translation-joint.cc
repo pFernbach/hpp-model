@@ -43,6 +43,7 @@ namespace hpp {
 	shPtr.reset();
 	return shPtr;
       }
+      ptr->isVisible (false);
       hppDout(info, "Created translation joint " + name);
       return shPtr;
     }

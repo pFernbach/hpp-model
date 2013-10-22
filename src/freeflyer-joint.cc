@@ -43,6 +43,7 @@ namespace hpp {
 	shPtr.reset();
 	return shPtr;
       }
+      ptr->isVisible (false);
       hppDout(info, "Created freeflyer joint " + name);
       return shPtr;
     }
