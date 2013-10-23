@@ -98,6 +98,7 @@ namespace hpp {
       /// distance computation analysis.
       /// \return true if success, false otherwise.
       /// The object is added to the inner object list of the body.
+      /// The solid component is added to the CkppJointComponent.
       /// \note The body must be attached to a joint.
       bool addInnerObject(const CkppSolidComponentRefShPtr& solidCompRef,
 			  const CkitMat4& position=CkitMat4(),
