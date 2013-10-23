@@ -365,7 +365,7 @@ namespace hpp {
 
     // ========================================================================
 
-    std::vector<BodyDistanceShPtr> Device::bodyDistances () const
+    const std::vector<BodyDistanceShPtr>& Device::bodyDistances () const
     {
       return bodyDistances_;
     }
