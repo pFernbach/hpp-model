@@ -69,6 +69,8 @@ namespace hpp {
     {
     public:
 
+      virtual ~BodyDistance () {}
+
       /// \brief Creation of a body distance
       /// \param body Shared pointer to underlying Kws body.
       /// \param name Name of the new body distance
