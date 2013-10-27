@@ -88,16 +88,16 @@ namespace hpp {
 
       /// \brief Get the number of pairs of object for which distance
       /// is computed
-      unsigned int nbDistPairs () { return BodyDistance::nbDistPairs ()
+      virtual std::size_t nbDistPairs () { return BodyDistance::nbDistPairs ()
 	  + capsuleDistCompPairs_.size (); };
 
       /// \brief Get the number of kcd pairs of object for which
       /// distance is computed
-      unsigned int nbKCDDistPairs () { return BodyDistance::nbDistPairs (); };
+      std::size_t nbKCDDistPairs () { return BodyDistance::nbDistPairs (); };
 
       /// \brief Get the number of pairs of capsules for which
       /// distance is computed
-      unsigned int nbCapsuleDistPairs ()
+      std::size_t nbCapsuleDistPairs ()
       { return capsuleDistCompPairs_.size(); };
 
       /// \brief Compute exact distance and closest points between
@@ -108,10 +108,10 @@ namespace hpp {
       /// \retval outDistance Distance between body and outer objects
       /// \retval outPointCapsuleBodyDistance Closest point on body (in global reference frame)
       /// \retval outPointEnv Closest point in outer object set (in global reference frame)
-      ktStatus distAndPairsOfPoints (unsigned int pairId,
-				     double& outDistance,
-				     CkcdPoint& outPointBody,
-				     CkcdPoint& outPointEnv);
+      virtual ktStatus distAndPairsOfPoints (std::size_t pairId,
+					     double& outDistance,
+					     CkcdPoint& outPointBody,
+					     CkcdPoint& outPointEnv);
 
       /// \brief Compute minimum exact distance and closest points
       /// between body and set of outer KCD objects.
