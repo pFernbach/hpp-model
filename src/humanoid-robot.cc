@@ -284,6 +284,14 @@ namespace hpp {
       if (hppDevice->init(hppDeviceShPtr, name) != KD_OK) {
 	hppDeviceShPtr.reset();
       }
+      CkwsValidatorSetConstShPtr validators
+	(hppDevice->userDirectPathValidators ());
+      std::size_t n = validators->count ();
+      hppDout (info, "Nb direct path validators: " << n);
+      for (std::size_t i=0; i<n; ++i) {
+	CkwsValidatorShPtr validator (validators->at (i));
+	hppDout (info, "Direct path validator: " << validator->name ());
+      }
       return hppDeviceShPtr;
     }
 
