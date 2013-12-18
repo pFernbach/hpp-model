@@ -1,47 +1,44 @@
-/*
- *  Copyright 2007 LAAS-CNRS
- *
- *  Authors: Florent Lamiraux, Luis Delgado
- */
+///
+/// Copyright (c) 2013, 2014 CNRS
+/// Author: Florent Lamiraux
+///
+///
+// This file is part of hpp-model
+// hpp-model is free software: you can redistribute it
+// and/or modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation, either version
+// 3 of the License, or (at your option) any later version.
+//
+// hpp-model is distributed in the hope that it will be
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Lesser Public License for more details.  You should have
+// received a copy of the GNU Lesser General Public License along with
+// hpp-model  If not, see
+// <http://www.gnu.org/licenses/>.
 
-#include <cerrno>
-#include <iostream>
-
-#include <boost/foreach.hpp>
-
-#include <KineoModel/kppFreeFlyerJointComponent.h>
-#include <KineoModel/kppAnchorJointComponent.h>
-#include <KineoModel/kppRotationJointComponent.h>
-#include <KineoModel/kppTranslationJointComponent.h>
-#include <KineoModel/kppSolidComponentRef.h>
-#include <KineoModel/kppSteeringMethodComponent.h>
-
-#include <hpp/kwsio/configuration.hh>
-#include <jrl/mal/matrixabstractlayer.hh>
 #include <hpp/util/debug.hh>
 
-#include "hpp/model/device.hh"
-#include "hpp/model/exception.hh"
-#include "hpp/model/joint.hh"
-#include <hpp/model/body-distance.hh>
+#include <hpp/model/collision-object.hh>
+#include <hpp/model/device.hh>
+#include <hpp/model/fcl-to-eigen.hh>
+#include <hpp/model/object-factory.hh>
 
 namespace hpp {
   namespace model {
 
-    impl::ObjectFactory Device::objectFactory_;
+    static Transform3f I4;
 
-    Device::Device()
-      : impl::DynamicRobot(objectFactory ()),
-	CkppDeviceComponent (),
-	bodyDistances_ (),
-	weakPtr_ ()
+    Device::Device(const std::string& name) :
+	name_ (name), distances_ (), jointByName_ (),
+	jointVector_ (), rootJoint_ (0x0), numberDof_ (0),
+	configSize_ (0), currentConfiguration_ (configSize_),
+	currentVelocity_ (numberDof_), 	currentAcceleration_ (numberDof_),
+	com_ (), jacobianCom_ (3, 0), mass_ (0), upToDate_ (false),
+	computationFlag_ (ALL),	weakPtr_ ()
     {
-      CkitNotificator::defaultNotificator()->subscribe<Device>
-	(CkppComponent::DID_INSERT_CHILD, this,
-	 &Device::componentDidInsertChild);
-      CkitNotificator::defaultNotificator()->subscribe<Device>
-	(CkppComponent::WILL_INSERT_CHILD, this,
-	 &Device::componentWillInsertChild);
+      com_.setZero ();
+      I4.setIdentity ();
     }
 
 
@@ -53,30 +50,13 @@ namespace hpp {
 
     // ========================================================================
 
-    impl::ObjectFactory* Device::objectFactory()
-    {
-      return &Device::objectFactory_;
-    }
-
-    // ========================================================================
-
     DeviceShPtr Device::create(std::string name)
     {
-      Device *hppDevice = new Device();
-      DeviceShPtr hppDeviceShPtr(hppDevice);
+      Device* ptr = new Device (name);
+      DeviceShPtr shPtr (ptr);
 
-      if (hppDevice->init(hppDeviceShPtr, name) != KD_OK) {
-	hppDeviceShPtr.reset();
-      }
-      CkwsValidatorSetConstShPtr validators
-	(hppDevice->directPathValidators ());
-      std::size_t n = validators->count ();
-      hppDout (info, "Nb direct path validators: " << n);
-      for (std::size_t i=0; i<n; ++i) {
-	CkwsValidatorShPtr validator (validators->at (i));
-	hppDout (info, "Direct path validator: " << validator->name ());
-      }
-      return hppDeviceShPtr;
+      ptr->init (shPtr);
+      return shPtr;
     }
 
     // ========================================================================
@@ -84,767 +64,253 @@ namespace hpp {
     DeviceShPtr Device::createCopy(const DeviceShPtr& device)
     {
       Device* ptr = new Device(*device);
-      DeviceShPtr deviceShPtr(ptr);
+      DeviceShPtr shPtr(ptr);
 
-      if(KD_OK != ptr->init(deviceShPtr, device))	{
-	deviceShPtr.reset();
-      }
-
-      return deviceShPtr;
+      ptr->init (shPtr);
+      return shPtr;
     }
 
     // ========================================================================
 
-    CkwsDeviceShPtr Device::clone() const
+    DeviceShPtr Device::clone() const
     {
       return Device::createCopy(weakPtr_.lock());
     }
 
     // ========================================================================
 
-    CkppComponentShPtr Device::cloneComponent() const
+    void Device::init(const DeviceWkPtr& weakPtr)
     {
-      return Device::createCopy(weakPtr_.lock());
+      weakPtr_ = weakPtr;
     }
 
     // ========================================================================
 
-    bool Device::isComponentClonable() const
+    void Device::addOuterObject (const CollisionObjectShPtr &object,
+				 bool collision, bool distance)
     {
-      return true;
-    }
-
-    // ========================================================================
-
-    ktStatus Device::init(const DeviceWkPtr& weakPtr,
-			  const std::string &name)
-    {
-      ktStatus success = CkppDeviceComponent::init(weakPtr, name);
-
-      if(KD_OK == success) {
-	hppDout (info, "CkppDeviceComponent::init succeeded.");
-	weakPtr_ = weakPtr;
-      } else {
-	hppDout(error, "failed to initialize CkppDeviceComponent.");
-      }
-      return success;
-    }
-
-    // ========================================================================
-
-    ktStatus Device::init(const DeviceWkPtr& weakPtr,
-			  const DeviceShPtr& device)
-    {
-      ktStatus  success = CkppDeviceComponent::init(weakPtr, device);
-
-      if(KD_OK == success) {
-	weakPtr_ = weakPtr;
-      }
-
-      return success;
-    }
-
-    // ========================================================================
-
-    bool Device::initialize ()
-    {
-      JointShPtr rootJoint = getRootJoint();
-      initializeKinematicChain(rootJoint);
-      impl::DynamicRobot::rootJoint(*(rootJoint->jrlJoint()));
-      if (!impl::DynamicRobot::initialize()) {
-	throw Exception("Failed to initialize impl::DynamicRobot");
-      }
-      return true;
-    }
-
-    // ========================================================================
-
-    void Device::initializeKinematicChain(JointShPtr joint)
-    {
-      joint->createDynamicPart();
-      for (unsigned int iChild=0; iChild < joint->countChildJoints();
-	   iChild++) {
-	JointShPtr child = joint->childJoint(iChild);
-	initializeKinematicChain(child);
-	joint->jrlJoint()->addChildJoint(*(child->jrlJoint()));
-      }
-    }
-
-    // ========================================================================
-    ktStatus
-    Device::axisAlignedBoundingBox (double& xMin, double& yMin, double& zMin,
-				    double& xMax, double& yMax, double& zMax)
-      const
-    {
-
-      TBodyVector bodyVector;
-      this->getBodyVector(bodyVector);
-      unsigned int j=bodyVector.size();
-
-      xMin=9999999;
-      yMin=9999999;
-      zMin=9999999;
-      xMax=-9999999;
-      yMax=-9999999;
-      zMax=-9999999;
-
-      for(unsigned int i=0; i<j; i++)
-	{
-	  /*Dynamic cast*/
-	  CkwsKCDBodyAdvancedShPtr a;
-	  a=KIT_DYNAMIC_PTR_CAST(CkwsKCDBodyAdvanced, bodyVector[i]);
-	  if(!a)
-	    {
-	      hppDout(error, ":axisAlignedBoundingBox: Error, "
-		      "the CkwsBody not of type CkwsKCDBodyAdvanced");
-	      return KD_ERROR;
-	    }
-	  computeBodyBoundingBox(a,xMin,yMin,zMin,xMax,yMax,zMax);
+      JointVector_t jv = getJointVector ();
+      for (JointVector_t::iterator it = jv.begin (); it != jv.end (); it++) {
+	Joint* joint = *it;
+	Body* body = joint->linkedBody ();
+	if (body) {
+	  body->addOuterObject (object, collision, distance);
 	}
-      return KD_OK;
+      }
     }
 
     // ========================================================================
 
-    ktStatus Device::ignoreDeviceForCollision (DeviceShPtr device )
+    void Device::removeOuterObject (const CollisionObjectShPtr& object,
+				    bool collision, bool distance)
     {
-      ktStatus status = KD_OK ;
+      JointVector_t jv = getJointVector ();
+      for (JointVector_t::iterator it = jv.begin (); it != jv.end (); it++) {
+	Joint* joint = *it;
+	Body* body = joint->linkedBody ();
+	if (body) {
+	  body->removeOuterObject (object, collision, distance);
+	}
+      }
+    }
 
-      //
-      // Get body vector of device
-      //
-      CkwsDevice::TBodyVector deviceBodyVector;
-      device->getBodyVector(deviceBodyVector) ;
+    // ========================================================================
 
-      //
-      // For each body of device,
-      //
-      for (unsigned int bodyId = 0 ;  bodyId < deviceBodyVector.size();
-	   bodyId++)  {
-	CkwsKCDBodyAdvancedShPtr kcdBody;
-	if (kcdBody = KIT_DYNAMIC_PTR_CAST(CkwsKCDBodyAdvanced,
-					   deviceBodyVector[bodyId])) {
-	  //
-	  // get the inner object list of the body
-	  //
-	  std::vector< CkcdObjectShPtr > kcdBodyInnerObjects =
-	    kcdBody->mobileObjects() ;
+      ObjectIterator Device::objectIterator (Request_t type)
+      {
+	return ObjectIterator (*this, type);
+      }
 
-	  //
-	  // and deactivate each object for collision analysis. 
-	  //
-	  for (unsigned int objectId =0 ; objectId < kcdBodyInnerObjects.size() ;
-	       objectId ++) {
-	    CkcdObjectShPtr kcdObject = kcdBodyInnerObjects[objectId] ;
-	    kcdObject->activation (false) ;
+
+    // ========================================================================
+
+      ObjectIterator Device::objectIteratorEnd (Request_t type)
+      {
+	ObjectIterator iterator (*this, type);
+	iterator.setToEnd ();
+	return iterator;
+      }
+
+    // ========================================================================
+
+    void Device::updateDistances ()
+    {
+       JointVector_t joints = getJointVector ();
+       JointVector_t::size_type size = 0;
+       for (JointVector_t::iterator it = joints.begin (); it != joints.end ();
+	    it++) {
+	 Body* body = (*it)->linkedBody ();
+	 if (body) {
+	   size += body->innerObjects (DISTANCE).size () *
+	     body->outerObjects (DISTANCE).size ();
+	 }
+	 distances_.resize (size);
+       }
+    }
+
+    // ========================================================================
+
+    void Device::computeDistances ()
+    {
+      JointVector_t joints = getJointVector ();
+      JointVector_t::size_type offset = 0;
+       for (JointVector_t::iterator it = joints.begin (); it != joints.end ();
+	    it++) {
+	 Body* body = (*it)->linkedBody ();
+	 if (body) {
+	   body->computeDistances (distances_, offset);
+	   assert (offset <= distances_.size ());
+	 }
+       }
+    }
+
+    // ========================================================================
+
+    bool Device::collisionTest () const
+    {
+      for (JointVector_t::const_iterator itJoint = jointVector_.begin ();
+	   itJoint != jointVector_.end (); itJoint++) {
+	Body* body = (*itJoint)->linkedBody ();
+	if (body != 0x0) {
+	  if (body->collisionTest ()) {
+	    return true;
 	  }
 	}
-	else {
-	  hppDout(error, ":ignoreDeviceForCollision : body is not KCD body.");
-	  return KD_ERROR ;
-	}
       }
-
-      return status ;
+      return false;
     }
 
     // ========================================================================
 
-    void Device::computeBodyBoundingBox(const CkwsKCDBodyAdvancedShPtr& body,
-					double& xMin, double& yMin,
-					double& zMin, double& xMax,
-					double& yMax, double& zMax) const
+    void Device::computeForwardKinematics ()
     {
-      std::vector<CkcdObjectShPtr> listObject = body->mobileObjects();
-      unsigned int j= listObject.size();
-      for(unsigned int i=0; i<j; i++)
-	{
-	  ckcdObjectBoundingBox(listObject[i],xMin,yMin,zMin,xMax,yMax,zMax);
+      if (upToDate_) return;
+      computeJointPositions ();
+      if (computationFlag_ | JACOBIAN) {
+	computeJointJacobians ();
+      }
+      if (computationFlag_ | COM) {
+	computePositionCenterOfMass ();
+      }
+      if (computationFlag_ | COM && computationFlag_ | JACOBIAN) {
+	computeJacobianCenterOfMass ();
+      }
+      // Update positions of bodies from position of joints.
+      JointVector_t jv = getJointVector ();
+      for (JointVector_t::iterator itJoint = jv.begin (); itJoint != jv.end ();
+	   itJoint++) {
+	Body* body = (*itJoint)->linkedBody ();
+	if (body) {
+	  const ObjectVector_t& cbv =
+	    body->innerObjects (COLLISION);
+	  for (ObjectVector_t::const_iterator itInner = cbv.begin ();
+	       itInner != cbv.end (); itInner++) {
+	    // Compute global position if inner object
+	    fcl::Transform3f globalPosition =
+	      (*itJoint)->currentTransformation ()*
+	      (*itInner)->positionInJointFrame ();
+	    (*itInner)->fcl ()->setTransform (globalPosition);
+	  }
+	  const ObjectVector_t& dbv =
+	    body->innerObjects (DISTANCE);
+	  for (ObjectVector_t::const_iterator itInner = dbv.begin ();
+	       itInner != dbv.end (); itInner++) {
+	    // Compute global position if inner object
+	    fcl::Transform3f globalPosition =
+	      (*itJoint)->currentTransformation ()*
+	      (*itInner)->positionInJointFrame ();
+	    (*itInner)->fcl ()->setTransform (globalPosition);
+	  }
 	}
+      }
+      upToDate_ = true;
     }
 
     // ========================================================================
 
-    void Device::ckcdObjectBoundingBox(const CkcdObjectShPtr& object,
-				       double& xMin, double& yMin,
-				       double& zMin, double& xMax,
-				       double& yMax, double& zMax) const
+    void Device::registerJoint (Joint* joint)
     {
-      kcdReal x,y,z;
-
-      // If the object has no bounding box, ignore it
-      if (!object->boundingBox()) {
-	return;
-      }
-      object->boundingBox()->getHalfLengths(x, y, z) ;
-
-      /*Matrices absolute et relative*/
-      CkcdMat4 matrixAbsolutePosition;
-      CkcdMat4 matrixRelativePosition;
-      object->getAbsolutePosition(matrixAbsolutePosition);
-      object->boundingBox()->getRelativePosition(matrixRelativePosition);
-
-      /*Creer les points et change position points*/
-      CkcdMat4 matrixChangePosition =
-	matrixAbsolutePosition*matrixRelativePosition;
-
-      CkcdPoint position[8];
-
-      position[0]=matrixChangePosition*CkcdPoint( x, y, z);
-      position[1]=matrixChangePosition*CkcdPoint( x, y,-z);
-      position[2]=matrixChangePosition*CkcdPoint( x,-y, z);
-      position[3]=matrixChangePosition*CkcdPoint(-x, y, z);
-      position[4]=matrixChangePosition*CkcdPoint( x,-y,-z);
-      position[5]=matrixChangePosition*CkcdPoint(-x,-y, z);
-      position[6]=matrixChangePosition*CkcdPoint(-x, y,-z);
-      position[7]=matrixChangePosition*CkcdPoint(-x,-y,-z);
-
-      for(int i=0; i<8; i++)
-	{
-	  if((position[i])[0]<xMin)
-	    {
-	      xMin=(position[i])[0];
-	    }
-	  if((position[i])[1]<yMin)
-	    {
-	      yMin=(position[i])[1];
-	    }
-	  if((position[i])[2]<zMin)
-	    {
-	      zMin=(position[i])[2];
-	    }
-	  if((position[i])[0]>xMax)
-	    {
-	      xMax=(position[i])[0];
-	    }
-	  if((position[i])[1]>yMax)
-	    {
-	      yMax=(position[i])[1];
-	    }
-	  if((position[i])[2]>zMax)
-	    {
-	      zMax=(position[i])[2];
-	    }
-	}
-
+      jointVector_.push_back (joint);
+      joint->rankInConfiguration_ = configSize_;
+      joint->rankInVelocity_ = numberDof_;
+      numberDof_ += joint->numberDof ();
+      configSize_ += joint->configSize ();
+      currentConfiguration_.resize (configSize_);
+      currentVelocity_.resize (numberDof_);
+      currentAcceleration_.resize (numberDof_);
+      currentConfiguration_.setZero ();
+      currentVelocity_.setZero ();
+      currentAcceleration_.setZero ();
+      jointByName_ [joint->name ()] = joint;
+      resizeJacobians ();
+      computeMass ();
     }
 
-    // ========================================================================
-
-    ktStatus Device::addObstacle(const CkcdObjectShPtr& object,
-				 bool distanceComputation)
+    void Device::rootJoint (Joint* joint)
     {
-      // Loop over bodies of robot.
-      BOOST_FOREACH(BodyDistanceShPtr bodyDistance, bodyDistances_)
-	{
-	  bodyDistance->addOuterObject(object, distanceComputation);
-	}
-      return KD_OK;
+      rootJoint_ = joint;
+      registerJoint (joint);
+      joint->setRobot (this);
     }
 
-    // ========================================================================
-
-    void Device::setRootJoint(JointShPtr joint)
+    JointPtr_t Device::rootJoint () const
     {
-      hppDout(info, "Root joint = " << 
-	      KIT_DYNAMIC_PTR_CAST(CkppJointComponent, joint)->name());
-      /*
-	Set joint as Kineo root joint
-      */
-      CkppDeviceComponent::rootJointComponent(joint->kppJoint());
-
-      /*
-	Set joint as robotDynamics root joint
-      */
-      impl::DynamicRobot::rootJoint(*(joint->jrlJoint()));
+      return rootJoint_;
     }
 
-    // ========================================================================
-
-    JointShPtr Device::getRootJoint()
+    const JointVector_t& Device::getJointVector () const
     {
-      /*
-	Get CkppJointComponent root joint
-      */
-      CkppJointComponentShPtr kppJointComponent = rootJointComponent();
-      JointShPtr joint = KIT_DYNAMIC_PTR_CAST(Joint, kppJointComponent);
-      return joint;
+      return jointVector_;
     }
 
-    // ========================================================================
-
-    const std::vector<BodyDistanceShPtr>& Device::bodyDistances () const
+    Joint* Device::getJointByName (const std::string& name)
     {
-      return bodyDistances_;
+      return jointByName_ [name];
     }
 
-    // ========================================================================
-
-    ktStatus Device::addBodyDistance (const BodyDistanceShPtr& bodyDistance)
+    void Device::computeJointPositions ()
     {
-      if (!bodyDistance)
-	{
-	  hppDout (error, "Null pointer to body distance object.");
-	  return KD_ERROR;
-	}
-      else
-	{
-	  bodyDistances_.push_back (bodyDistance);
-	  return KD_OK;
-	}
+      rootJoint_->computePosition (currentConfiguration_, I4);
     }
 
-    // ========================================================================
-
-    bool Device::kwsToJrlDynamicsDofValues(const std::vector<double>&
-					   kwsDofVector,
-					   vectorN& outJrlDynamicsDofVector)
+    void Device::computeJointJacobians ()
     {
-      // Count the number of extra dofs of the CkppDeviceComponent
-      // since the first degrees of freedom of kwsDofVector correspond
-      // to these extra-dofs.
-      unsigned int rankInCkwsConfig =
-	CkwsDevice::rootJoint ()->customSubspace ()->size ();
-      std::vector< CkppJointComponentShPtr > kppJointVector;
-      getJointComponentVector(kppJointVector);
-
-      // Output vectors should be of right size
-      KWS_PRECONDITION(outJrlDynamicsDofVector.size() == numberDof());
-
-      /// Loop over CkppDeviceComponent joints
-      for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size();
-	   iKppJoint++) {
-	CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
-	JointShPtr joint = KIT_DYNAMIC_PTR_CAST(Joint, kppJoint);
-	KIT_ASSERT(joint);
-	/// Get associated CjrlJoint
-	CjrlJoint* jrlJoint = joint->jrlJoint();
-
-	// Do nothing if it is an anchor joint.
-	if (jrlJoint->numberDof () == 0)
-	  continue;
-
-	unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
-
-	hppDout(info, "iKppJoint=" << kppJoint->name()
-		<< " jrlRankInConfig=" << jrlRankInConfig);
-
-#ifdef HPP_DEBUG
-	///Check rank in configuration wrt  dimension.
-	unsigned int jointDim = kppJoint->countDofComponents();
-	if (jrlRankInConfig+jointDim > kwsDofVector.size()) {
-	  hppDout(error, "rank in configuration is "
-		  "more than configuration dimension(rank = "
-		  << jrlRankInConfig << ", dof = " << jointDim << ")."
-		  << std::endl <<
-		  ":kwsToJrlDynamicsDofValues:   vectorN: "
-		  << outJrlDynamicsDofVector);
-	  throw Exception("Error in configuration conversion.");
-	}
-#endif
-	/*
-	  Cast joint into one of the possible types
-	*/
-	if (CkppFreeFlyerJointComponentShPtr jointFF =
-	    KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
-				 kppJoint)) {
-	  // Translations along x, y, z
-	  outJrlDynamicsDofVector[jrlRankInConfig] =
-	    kwsDofVector[rankInCkwsConfig];
-	  outJrlDynamicsDofVector[jrlRankInConfig+1] =
-	    kwsDofVector[rankInCkwsConfig+1];
-	  outJrlDynamicsDofVector[jrlRankInConfig+2] =
-	    kwsDofVector[rankInCkwsConfig+2];
-	  double rx = kwsDofVector[rankInCkwsConfig+3];
-	  double ry = kwsDofVector[rankInCkwsConfig+4];
-	  double rz = kwsDofVector[rankInCkwsConfig+5];
-	  // Convert KineoWorks rotation angles to roll, pitch, yaw
-	  double roll, pitch, yaw;
-	  YawPitchRollToRollPitchYaw(rx, ry, rz, roll, pitch, yaw);
-	  outJrlDynamicsDofVector[jrlRankInConfig+3] = roll;
-	  outJrlDynamicsDofVector[jrlRankInConfig+4] = pitch;
-	  outJrlDynamicsDofVector[jrlRankInConfig+5] = yaw;
-	  hppDout(info, "Joint value: "
-		  << outJrlDynamicsDofVector[jrlRankInConfig]
-		  << ", "
-		  << outJrlDynamicsDofVector[jrlRankInConfig+1] << ", "
-		  << outJrlDynamicsDofVector[jrlRankInConfig+2] << ", "
-		  << outJrlDynamicsDofVector[jrlRankInConfig+3] << ", "
-		  << outJrlDynamicsDofVector[jrlRankInConfig+4] << ", "
-		  << outJrlDynamicsDofVector[jrlRankInConfig+5]);
-	  rankInCkwsConfig += 6;
-	}
-	else if(CkppRotationJointComponentShPtr jointRot =
-		KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
-				     kppJoint)) {
-	  outJrlDynamicsDofVector[jrlRankInConfig] =
-	    kwsDofVector[rankInCkwsConfig];
-	  hppDout(info, "Joint value: " <<
-		  outJrlDynamicsDofVector[jrlRankInConfig]);
-	  rankInCkwsConfig ++;
-	}
-	else if(CkppTranslationJointComponentShPtr jointTrans =
-		KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
-				     kppJoint)) {
-	  outJrlDynamicsDofVector[jrlRankInConfig] =
-	    kwsDofVector[rankInCkwsConfig];
-	  hppDout(info, "Joint value: " <<
-		  outJrlDynamicsDofVector[jrlRankInConfig]);
-	  rankInCkwsConfig ++;
-	}
-	else if(CkppAnchorJointComponentShPtr jointAnchor =
-		KIT_DYNAMIC_PTR_CAST(CkppAnchorJointComponent,
-				     kppJoint)) {
-	  // do nothing
-	}
-	else {
-	  hppDout(error, "unknown type of joint.");
-	  hppDout(error, "  vectorN: " <<
-		  outJrlDynamicsDofVector[jrlRankInConfig]);
-	  throw Exception("unknow joint type");
-	}
-      }
-
-      hppDout(info, "hppSetCurrentConfig: outJrlDynamicsDofVector = "
-	      << outJrlDynamicsDofVector);
-      return true;
-    }
-
-
-    // ========================================================================
-
-    bool
-    Device::jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector,
-				      std::vector<double>& outKwsDofVector)
-    {
-      /// Count the number of extra dofs of the CkppDeviceComponent.
-      unsigned int rankInDofValues =
-	CkwsDevice::rootJoint ()->customSubspace ()->size ();
-
-      std::vector< CkppJointComponentShPtr > kppJointVector;
-      getJointComponentVector(kppJointVector);
-
-      /// Output vectors should be of right size
-      KWS_PRECONDITION(outKwsDofVector.size() == countDofs());
-
-      /// Loop over CkppDeviceComponent joints
-      for (unsigned int iKppJoint=0; iKppJoint < kppJointVector.size();
-	   iKppJoint++) {
-	CkppJointComponentShPtr kppJoint = kppJointVector[iKppJoint];
-#ifdef HPP_DEBUG
-	unsigned int jointDim = kppJoint->countDofComponents();
-#endif
-	JointShPtr joint = KIT_DYNAMIC_PTR_CAST(Joint, kppJoint);
-	KIT_ASSERT(joint);
-	/// Get associated CjrlJoint
-	CjrlJoint* jrlJoint = joint->jrlJoint();
-
-	// Do nothing if it is an anchor joint.
-	if (jrlJoint->numberDof () == 0)
-	  continue;
-
-	unsigned int jrlRankInConfig = jrlJoint->rankInConfiguration();
-
-	hppDout(info, ":jrlDynamicsToKwsDofValues: iKppJoint="
-		<< kppJoint->name()
-		<< " jrlRankInConfig= " << jrlRankInConfig);
-
-#ifdef HPP_DEBUG
-	/// Check rank in configuration wrt  dimension.
-	if (jointDim > 0 &&
-	    jrlRankInConfig+jointDim > inJrlDynamicsDofVector.size()) {
-	  hppDout(error, "rank in configuration is more than configuration "
-		  "dimension(rank = "
-		  << jrlRankInConfig << ", dof = " << jointDim << ").");
-	  throw Exception("rank in configuration is more than configuration");
-	}
-#endif
-	/*
-	  Cast joint into one of the possible types
-	*/
-	if (CkppFreeFlyerJointComponentShPtr jointFF =
-	    KIT_DYNAMIC_PTR_CAST(CkppFreeFlyerJointComponent,
-				 kppJoint)) {
-	  // Translations along x, y, z
-	  outKwsDofVector[rankInDofValues  ] =
-	    inJrlDynamicsDofVector[jrlRankInConfig  ];
-	  outKwsDofVector[rankInDofValues+1] =
-	    inJrlDynamicsDofVector[jrlRankInConfig+1];
-	  outKwsDofVector[rankInDofValues+2] =
-	    inJrlDynamicsDofVector[jrlRankInConfig+2];
-
-	  double roll = inJrlDynamicsDofVector[jrlRankInConfig+3];
-	  double pitch = inJrlDynamicsDofVector[jrlRankInConfig+4];
-	  double yaw = inJrlDynamicsDofVector[jrlRankInConfig+5];
-
-	  // Convert KineoWorks rotation angles to roll, pitch, yaw
-	  double rx, ry, rz;
-	  RollPitchYawToYawPitchRoll(roll, pitch, yaw, rx, ry, rz);
-
-	  outKwsDofVector[rankInDofValues+3] = rx;
-	  outKwsDofVector[rankInDofValues+4] = ry;
-	  outKwsDofVector[rankInDofValues+5] = rz;
-
-	  rankInDofValues+= 6;
-	}
-	else if(CkppRotationJointComponentShPtr jointRot =
-		KIT_DYNAMIC_PTR_CAST(CkppRotationJointComponent,
-				     kppJoint)) {
-	  outKwsDofVector[rankInDofValues] =
-	    inJrlDynamicsDofVector[jrlRankInConfig];
-	  rankInDofValues++;
-	}
-	else if(CkppTranslationJointComponentShPtr jointTrans =
-		KIT_DYNAMIC_PTR_CAST(CkppTranslationJointComponent,
-				     kppJoint)) {
-	  outKwsDofVector[rankInDofValues] =
-	    inJrlDynamicsDofVector[jrlRankInConfig];
-	  rankInDofValues++;
-	}
-	else if(CkppAnchorJointComponentShPtr jointAnchor =
-		KIT_DYNAMIC_PTR_CAST(CkppAnchorJointComponent, kppJoint)){
-	  // do nothing
-	}
-	else {
-	  hppDout(error, "unknown type of joint.");
-	  hppDout(error, "  vectorN: " <<
-		  inJrlDynamicsDofVector);
-	  throw Exception("unknow joint type");
-	}
-      }
-      return true;
-    }
-
-    // ========================================================================
-
-    bool Device::hppSetCurrentConfig(const CkwsConfig& config,
-				     EwhichPart updateWhat)
-    {
-      bool updateGeom = (updateWhat == GEOMETRIC || updateWhat == BOTH);
-      bool updateDynamic = (updateWhat == DYNAMIC || updateWhat == BOTH);
-
-      if (updateGeom) {
-	hppDout(info, "updating geometric part: config = " << config);
-
-
-	if (CkppDeviceComponent::setCurrentConfig(config) != KD_OK) {
-	  hppDout(error, "failed to set configuration of geometric part.");
-	  throw("failed to set configuration of geometric part.");
-	}
-      }
-      if (updateDynamic) {
-	// Allocate a vector for CjrldynamicRobot configuration.
-	// Dimension of vector is size of dynamic part of robot.
-	MAL_VECTOR_DIM(jrlConfig, double, numberDof());
-	std::vector<double> kwsDofVector;
-	config.getDofValues(kwsDofVector);
-	kwsToJrlDynamicsDofValues(kwsDofVector, jrlConfig);
-
-	if (!currentConfiguration(jrlConfig)) {
-	  hppDout(error, "failed to set configuration of dynamic part.");
-	  throw Exception("failed to set configuration of dynamic part.");
-	}
-	if (!computeForwardKinematics()) {
-	  hppDout(error, "failed to compute forward kinematics.");
-	  throw Exception("failed to compute forward kinematics.");
-	}
-      }
-      return true;
-    }
-
-    // ========================================================================
-
-    bool Device::hppSetCurrentConfig(const vectorN& config,
-				     EwhichPart updateWhat)
-    {
-      bool updateGeom = (updateWhat == GEOMETRIC || updateWhat == BOTH);
-      bool updateDynamic = (updateWhat == DYNAMIC || updateWhat == BOTH);
-
-      if (updateDynamic) {
-	hppDout(info, "updating dynamic part: config = " << config);
-	if (!currentConfiguration(config)) {
-	  throw Exception("failed to set configuration of dynamic part.");
-	}
-	if (!computeForwardKinematics()) {
-	  throw Exception("failed to compute forward kinematics.");
-	}
-      }
-      if (updateGeom) {
-	std::vector<double> dofValues(countDofs());
-	this->getCurrentDofValues(dofValues);
-	jrlDynamicsToKwsDofValues(config, dofValues);
-
-	if (CkppDeviceComponent::setCurrentDofValues(dofValues) != KD_OK) {
-	  throw("failed to set configuration of geometric part.");
-	}
-      }
-      return true;
-    }
-
-    void
-    Device::RollPitchYawToYawPitchRoll(const double& inRx, const double& inRy,
-				       const double& inRz, double& outRx,
-				       double& outRy, double& outRz)
-    {
-      const double cRx=cos(inRx);
-      const double sRx=sin(inRx);
-      const double cRy=cos(inRy);
-      const double sRy=sin(inRy);
-      const double cRz=cos(inRz);
-      const double sRz=sin(inRz);
-      const double r00 = cRy*cRz;
-      const double r01 = sRx*sRy*cRz - cRx*sRz;
-      double r02 = cRx*sRy*cRz + sRx*sRz;
-      const double r10 = cRy*sRz;
-      const double r11 = sRx*sRy*sRz + cRx*cRz;
-      const double r12 = cRx*sRy*sRz - sRx*cRz;
-      const double r22 = cRx*cRy;
-
-      // make sure that r02 is in [-1,1]
-      if (r02 < -1.)
-	r02 = -1.;
-      else if (r02 > 1.)
-	r02 = 1.;
-
-      errno=0;
-      outRy = asin(r02);
-      // Check that asin call was successful.
-      assert(errno == 0);
-
-      double cosOutRy = cos(outRy);
-
-      if(fabs(cosOutRy) > 1e-6) {
-	double cosOutRx =  r22 / cosOutRy;
-	double sinOutRx = -r12 / cosOutRy;
-
-	outRx = atan2(sinOutRx, cosOutRx);
-
-	double cosOutRz =  r00 / cosOutRy;
-	double sinOutRz = -r01 / cosOutRy;
-	outRz = atan2(sinOutRz, cosOutRz);
-      }
-      else {
-	outRx = 0.;
-
-	double cosOutRz = r11;
-	double sinOutRz = r10;
-	outRz = atan2(sinOutRz, cosOutRz);
+      rootJoint_->computeJacobian ();
+      for (JointVector_t::const_iterator it = jointVector_.begin ();
+	   it != jointVector_.end (); it++) {
+	hppDout (info, "Joint " << (*it)->name ());
+	hppDout (info, (*it)->currentTransformation ());
+	hppDout (info, (*it)->jacobian ());
       }
     }
 
-    void
-    Device::YawPitchRollToRollPitchYaw(const double& inRx, const double& inRy,
-				       const double& inRz, double& outRx,
-				       double& outRy, double& outRz)
+    void Device::computeMass ()
     {
-      const double cRx = cos(inRx);
-      const double sRx = sin(inRx);
-      const double cRy = cos(inRy);
-      const double sRy = sin(inRy);
-      const double cRz  =cos(inRz);
-      const double sRz = sin(inRz);
-      const double r00 = cRz * cRy;
-      const double r01 = -sRz * cRy;
-      const double r10 = cRz * sRy * sRx + sRz * cRx;
-      const double r11 = cRz * cRx - sRz * sRy * sRx;
-      double r20 = sRz * sRx - cRz * sRy * cRx;
-      const double r21 = sRz * sRy * cRx + cRz * sRx;
-      const double r22 = cRx * cRy;
-
-      // make sure all values are in [-1,1]
-      // as trigonometric functions would
-      // fail when given values such as 1.00000001
-      if (r20 < -1.)
-	r20 = -1.;
-      else if (r20 > 1.)
-	r20 = 1.;
-
-      errno=0;
-      outRy = -asin(r20);
-      // Check that asin call was successful.
-      assert(errno == 0);
-
-      double cosOutRy = cos(outRy);
-
-      if (fabs(cosOutRy) > 1e-6) {
-	double sinOutRx = r21 / cosOutRy;
-	double cosOutRx = r22 / cosOutRy;
-	outRx = atan2(sinOutRx, cosOutRx);
-
-	double cosOutRz = r00 / cosOutRy;
-	double sinOutRz = r10 / cosOutRy;
-	outRz = atan2(sinOutRz, cosOutRz);
-      } else {
-	outRx = 0.;
-
-	double cosOutRz = r11;
-	double sinOutRz = -r01;
-	outRz = atan2(sinOutRz, cosOutRz);
+      mass_ = rootJoint_->computeMass ();
+    }
+    void Device::computePositionCenterOfMass ()
+    {
+      rootJoint_->computeMassTimesCenterOfMass ();
+      com_ = (1/mass_) * rootJoint_->massCom_;
+    }
+    
+    void Device::computeJacobianCenterOfMass ()
+    {
+      for (JointVector_t::iterator it = jointVector_.begin ();
+	   it != jointVector_.end (); it++) {
+	(*it)->writeComSubjacobian (jacobianCom_, mass ());
       }
     }
 
-    // ======================================================================
-
-    void Device::
-    componentWillInsertChild(const CkitNotificationConstShPtr& notification)
+    void Device::resizeJacobians ()
     {
-      JointShPtr parentJoint, childJoint;
-      CkppSolidComponentShPtr childSolid;
-      CkppSolidComponentRefShPtr childSolidRef;
-      DeviceShPtr device;
-
-      CkppComponentShPtr parent(notification->objectShPtr<CkppComponent>());
-      CkppComponentShPtr child(notification->shPtrValue<CkppComponent>
-			       (CkppComponent::CHILD_KEY));
-      // Detect insertion of a solid component
-      if ((parentJoint = KIT_DYNAMIC_PTR_CAST(Joint, parent)) &&
-	  (childSolid = KIT_DYNAMIC_PTR_CAST(CkppSolidComponent, child))) {
-	parentJoint->insertBody();
-	hppDout(info, "WILL_INSERT_SOLID: parent joint = "
-		<< parent->name() << ", solid component = " << child->name());
-      }
-      // Detect insertion of a reference to a solid component
-      else if ((parentJoint = KIT_DYNAMIC_PTR_CAST(Joint, parent)) &&
-	       (childSolidRef = KIT_DYNAMIC_PTR_CAST(CkppSolidComponentRef,
-						     child))) {
-	parentJoint->insertBody();
-	hppDout(info, "WILL_INSERT_SOLID_REF: parent joint = "
-		<< parent->name() << ", solid component ref = "
-		<< child->name());
-      } 
-      else if (childJoint = KIT_DYNAMIC_PTR_CAST(Joint, child)) {
-	// detect insertion of root joint
-	if (device = KIT_DYNAMIC_PTR_CAST(Device, parent)) {
-	  device->impl::DynamicRobot::rootJoint(*(childJoint->jrlJoint()));
-	  hppDout(info, "WILL_INSERT_JOINT: parent device = "
-		  << parent->name() << ", joint = " << child->name());
-	} 
-	// Detect insertion of a child joint to a joint
-	else if (parentJoint = KIT_DYNAMIC_PTR_CAST(Joint, parent)) {
-	  hppDout(info, "WILL_INSERT_JOINT: parent joint = "
-		  << parent->name() << ", child joint = " << child->name());
-	  insertDynamicPart(parentJoint, childJoint);
-	}
+      jacobianCom_.resize (3, numberDof_);
+      for (JointVector_t::iterator itJoint = jointVector_.begin ();
+	   itJoint != jointVector_.end () ; itJoint++) {
+	(*itJoint)->jacobian_.resize (6, numberDof_);
+	(*itJoint)->jacobian_.setZero ();
       }
     }
-
-    // ======================================================================
-
-    void Device::
-    componentDidInsertChild(const CkitNotificationConstShPtr&)
-    {
-    }
-
-    // ======================================================================
-
-    void Device::insertDynamicPart(JointShPtr parent, JointShPtr child)
-    {
-      hppDout(info, "");
-      if (parent->jrlJoint()) {
-	parent->jrlJoint()->addChildJoint(*(child->jrlJoint()));
-      }
-    }
-
 
   } // namespace model
 } // namespace hpp
@@ -853,29 +319,24 @@ std::ostream& operator<<(std::ostream& os, hpp::model::Device& device)
 {
   os << "Device: " << device.name() << std::endl;
   os << std::endl;
-  os << "  Current configuration: " << device.currentConfiguration()
+  os << " Current configuration: " << device.currentConfiguration ()
      << std::endl;
-  os << "  Steering method component: "
-     << device.steeringMethodComponent ()->name () << std::endl;
   os << std::endl;
-  os << std::endl;
-  os << "  Writing kinematic chain" << std::endl;
+  os << " Writing kinematic chain" << std::endl;
 
   //
   // Go through joints and output each joint
   //
-  hpp::model::JointShPtr hppJoint = device.getRootJoint();
+  hpp::model::Joint* joint = device.rootJoint();
 
-  if (hppJoint) {
-    os << *hppJoint << std::endl;
+  if (joint) {
+    os << *joint << std::endl;
   }
   // Get position of center of mass
-  MAL_S3_VECTOR(com, double);
-  com = device.positionCenterOfMass();
+  hpp::model::vector3_t com = device.positionCenterOfMass ();
 
   //debug
-  os <<"total mass "<<device.mass() <<", COM: " << MAL_S3_VECTOR_ACCESS(com, 0)
-     <<", "<< MAL_S3_VECTOR_ACCESS(com, 1) <<", "<< MAL_S3_VECTOR_ACCESS(com, 2)
-     <<std::endl;
+  os << "total mass " << device.mass() << ", COM: "
+     << com [0] <<", "<< com [1] << ", " << com [2] <<std::endl;
   return os;
 }

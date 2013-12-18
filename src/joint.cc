@@ -1,6 +1,6 @@
 ///
-/// Copyright (c) 2011 CNRS
-/// Authors: Florent Lamiraux
+/// Copyright (c) 2013, 2014 CNRS
+/// Author: Florent Lamiraux
 ///
 ///
 // This file is part of hpp-model
@@ -17,436 +17,423 @@
 // hpp-model  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include <iostream>
-#include <sstream>
-#include <string>
-
-#include <KineoModel/kppDoubleProperty.h>
-#include <KineoModel/kppJointComponent.h>
-#include <KineoModel/kppSolidComponentRef.h>
-#include <KineoWorks2/kwsJoint.h>
-
-#include <hpp/kwsio/mat.hh>
-
-#include <jrl/mal/matrixabstractlayer.hh>
-#include <abstract-robot-dynamics/joint.hh>
+#include <fcl/math/vec_3f.h>
 #include <hpp/util/debug.hh>
+#include <hpp/model/body.hh>
+#include <hpp/model/collision-object.hh>
+#include <hpp/model/device.hh>
+#include <hpp/model/fcl-to-eigen.hh>
+#include <hpp/model/joint.hh>
+#include <hpp/model/joint-configuration.hh>
 
-#include "hpp/model/joint.hh"
-#include "hpp/model/device.hh"
-#include "hpp/model/exception.hh"
+#include "children-iterator.hh"
 
 namespace hpp {
   namespace model {
-    std::map <CjrlJoint*, JointShPtr> Joint::jointMap_;
-    // Mass
-    const CkppProperty::TPropertyID
-    Joint::MASS_ID(CkppProperty::makeID());
-    const std::string Joint::MASS_STRING_ID("MASS");
-    const CkppProperty::TPropertyID
 
-    // Center of mass
-    // X coordinate
-    Joint::COM_X_ID(CkppProperty::makeID());
-    const std::string Joint::COM_X_STRING_ID("COM_X");
-    // Y coordinate
-    const CkppProperty::TPropertyID
-    Joint::COM_Y_ID(CkppProperty::makeID());
-    const std::string Joint::COM_Y_STRING_ID("COM_Y");
-    // Z coordinate
-    const CkppProperty::TPropertyID
-    Joint::COM_Z_ID(CkppProperty::makeID());
-    const std::string Joint::COM_Z_STRING_ID("COM_Z");
-
-    // Inertia matrix
-    // XX coefficient
-    const CkppProperty::TPropertyID
-    Joint::INERTIA_MATRIX_XX_ID(CkppProperty::makeID());
-    const std::string
-    Joint::INERTIA_MATRIX_XX_STRING_ID("INERTIA_MATRIX_XX");
-    // YY coefficient
-    const CkppProperty::TPropertyID
-    Joint::INERTIA_MATRIX_YY_ID(CkppProperty::makeID());
-    const std::string
-    Joint::INERTIA_MATRIX_YY_STRING_ID("INERTIA_MATRIX_YY");
-    // ZZ coefficient
-    const CkppProperty::TPropertyID
-    Joint::INERTIA_MATRIX_ZZ_ID(CkppProperty::makeID());
-    const std::string
-    Joint::INERTIA_MATRIX_ZZ_STRING_ID("INERTIA_MATRIX_ZZ");
-    // XY coefficient
-    const CkppProperty::TPropertyID
-    Joint::INERTIA_MATRIX_XY_ID(CkppProperty::makeID());
-    const std::string
-    Joint::INERTIA_MATRIX_XY_STRING_ID("INERTIA_MATRIX_XY");
-    // XZ coefficient
-    const CkppProperty::TPropertyID
-    Joint::INERTIA_MATRIX_XZ_ID(CkppProperty::makeID());
-    const std::string
-    Joint::INERTIA_MATRIX_XZ_STRING_ID("INERTIA_MATRIX_XZ");
-    // YZ coefficient
-    const CkppProperty::TPropertyID
-    Joint::INERTIA_MATRIX_YZ_ID(CkppProperty::makeID());
-    const std::string
-    Joint::INERTIA_MATRIX_YZ_STRING_ID("INERTIA_MATRIX_YZ");
-
-    CkppJointComponentShPtr Joint::kppJoint() const
+    Joint::Joint (const Transform3f& initialPosition,
+		  std::size_t configSize, std::size_t numberDof) :
+      configuration_ (0x0), currentTransformation_ (initialPosition),
+      positionInParentFrame_ (), T3f_ (), mass_ (0), massCom_ (),
+      configSize_ (configSize), numberDof_ (numberDof),
+      initialPosition_ (initialPosition),
+      body_ (0x0), robot_ (0x0),
+      name_ (), children_ (), parent_ (0x0), rankInConfiguration_ (-1),
+      jacobian_ (), rankInParent_ (0)
     {
-      return KIT_DYNAMIC_PTR_CAST(CkppJointComponent, weakPtr_.lock());
+      positionInParentFrame_.setIdentity ();
+      T3f_.setIdentity ();
+      massCom_.setValue (0);
     }
 
-    CjrlJoint* Joint::jrlJoint()
+    Joint::~Joint ()
     {
-      return dynamicJoint_;
+      delete body_;
     }
 
-    const CjrlJoint* Joint::jrlJoint() const
+    const Transform3f& Joint::initialPosition () const
     {
-      return dynamicJoint_;
+      return initialPosition_;
     }
 
-    Joint::Joint(CjrlJoint* joint) : dynamicJoint_(joint)
+    const Transform3f& Joint::currentTransformation () const
     {
+      return currentTransformation_;
     }
 
-    Joint::~Joint() 
+    void Joint::addChildJoint (Joint* joint)
     {
-      hppDout(info, "hpp::model::Joint::~Joint(): this = "
-	      << this << std::endl);
-    }
-
-    JointShPtr Joint::parentJoint() const
-    {
-      JointShPtr parent =
-	KIT_DYNAMIC_PTR_CAST(Joint, kppJoint()->kwsJoint()->parentJoint());
-      if (!parent) {
-	std::ostringstream oss;
-	oss << "Joint " << kppJoint()->name() << " has no parent.";
-	throw Exception(oss.str());
+      if (!robot_) {
+	throw std::runtime_error
+	  ("Cannot insert child joint to a joint not belonging to a device.");
       }
-      return parent;
+      joint->robot_ = robot_;
+      robot_->registerJoint (joint);
+      joint->rankInParent_ = children_.size ();
+      children_.push_back (joint);
+      joint->parent_ = this;
+      // Mjoint/parent = Mparent^{-1} Mjoint
+#if 0
+      fcl::Matrix3f Rp (currentTransformation_.getRotation ());
+      fcl::Matrix3f Rpt (Rp.transpose ());
+      fcl::Vec3f tp (currentTransformation_.getTranslation ());
+      fcl::Matrix3f Rj (joint->currentTransformation_.getRotation ());
+      fcl::Matrix3f Rjt (Rj.transpose ());
+      fcl::Vec3f tj (joint->currentTransformation_.getTranslation ());
+      joint->positionInParentFrame_ =
+	fcl::Transform3f (Rpt * Rj, Rpt * (tj - tp));
+#else
+      fcl::Transform3f Mp = currentTransformation_;
+      fcl::Transform3f Mj = joint->currentTransformation_;
+      joint->positionInParentFrame_ = Mp.inverse () * Mj;
+#endif
     }
 
-    JointShPtr Joint::childJoint(unsigned int rank) const
+    void Joint::isBounded (std::size_t rank, bool bounded)
     {
-      JointShPtr child = KIT_DYNAMIC_PTR_CAST
-	(Joint, kppJoint()->kwsJoint()->childJoint(rank));
-
-      if (!child) {
-	std::ostringstream oss;
-	oss << "Joint " << kppJoint()->name() << " has no child at rank "
-	    << rank << ".";
-	throw Exception(oss.str());
-      }
-      return child;
+      configuration_->isBounded (rank, bounded);
     }
 
-    void Joint::addChildJoint(JointShPtr childJoint)
+    bool Joint::isBounded (std::size_t rank) const
     {
-      if (kppJoint()->addChildJointComponent(childJoint->kppJoint()) != KD_OK) {
-	std::ostringstream oss;
-	oss << "Failed to add a child joint to CkppFreeFlyerJointComponent "
-	    << kppJoint()->name() << ".";
-	throw Exception(oss.str());
-      }
-      if (!jrlJoint()->addChildJoint(*(childJoint->jrlJoint()))) {
-	std::ostringstream oss;
-	oss << "Failed to add " << childJoint->kppJoint()->name()
-	    << " as child joint to dynamicJRLJapan::Joint "
-	    << kppJoint()->name() << ".";
-	throw Exception(oss.str());
+      return configuration_->isBounded (rank);
+    }
+
+    double Joint::lowerBound (std::size_t rank) const
+    {
+      return configuration_->lowerBound (rank);
+    }
+
+    double Joint::upperBound (std::size_t rank) const
+    {
+      return configuration_->upperBound (rank);
+    }
+
+    void Joint::lowerBound (std::size_t rank, double lower)
+    {
+      configuration_->lowerBound (rank, lower);
+    }
+
+    void Joint::upperBound (std::size_t rank, double upper)
+    {
+      configuration_->upperBound (rank, upper);
+    }
+
+    Body* Joint::linkedBody () const
+    {
+      return body_;
+    }
+
+    void Joint::setLinkedBody (Body* body) {
+      body_ = body;
+      body->joint (this);
+      if (robot_) {
+	robot_->computeMass ();
       }
     }
 
-    unsigned int Joint::countChildJoints() const
+    void Joint::computePosition (const Configuration_t& configuration,
+				 const Transform3f& parentConfig)
     {
-      return kppJoint()->countChildJointComponents();
-    }
-
-    void Joint::isBounded(unsigned int dofRank, bool bounded)
-    {
-      kppJoint()->kwsJoint()->dof(dofRank)->isBounded(bounded);
-    }
-
-    bool Joint::isBounded(unsigned int inDofRank) const
-    {
-      return kppJoint()->kwsJoint()->dof(inDofRank)->isBounded();
-    }
-
-
-    double Joint::lowerBound(unsigned int dofRank) const
-    {
-      return kppJoint()->kwsJoint()->dof(dofRank)->vmin();
-    }
-
-    double Joint::upperBound(unsigned int dofRank) const
-    {
-      return kppJoint()->kwsJoint()->dof(dofRank)->vmax();
-    }
-
-    void Joint::lowerBound(unsigned int dofRank, double lowerBound)
-    {
-      // KPP side
-      if (kppJoint()->kwsJoint()->dof(dofRank)->vmin(lowerBound) != KD_OK) {
-	std::ostringstream oss;
-	oss << "Failed to set lower bound of CkwsJoint "
-	    << kppJoint()->name() << ": dof rank: " << dofRank << ".";
-	throw Exception(oss.str());
+      computeMotion (configuration, parentConfig);
+      hppDout (info, "Joint " << name_);
+      hppDout (info, "Joint position " << currentTransformation_);
+      for (std::vector <JointPtr_t>::iterator itJoint = children_.begin ();
+	   itJoint != children_.end (); itJoint++) {
+	(*itJoint)->computePosition (configuration, currentTransformation_);
       }
-      // CjrlJoint side
-      jrlJoint()->lowerBound(dofRank, lowerBound);
     }
 
-    void Joint::upperBound(unsigned int dofRank, double upperBound)
+    void Joint::computeJacobian ()
     {
-      // KPP side
-      if (kppJoint()->kwsJoint()->dof(dofRank)->vmax(upperBound) != KD_OK) {
-	std::ostringstream oss;
-	oss << "Failed to set upper bound of CkwsJoint "
-	    << kppJoint()->name() << ": dof rank: " << dofRank << ".";
-	throw Exception(oss.str());
-      }
-      // CjrlJoint side
-      jrlJoint()->upperBound(dofRank, upperBound);
-    }
-
-    void Joint::bounds(unsigned int dofRank, const double& lowerBound,
-		       const double& upperBound)
-    {
-      // KPP side
-      if (kppJoint()->kwsJoint()->dof(dofRank)->
-	  bounds(lowerBound, upperBound) != KD_OK) {
-	std::ostringstream oss;
-	oss << "Failed to set bounds of CkwsJoint "
-	    << kppJoint()->name() << ": dof rank: " << dofRank << ".";
-	throw Exception(oss.str());
-      }
-      // CjrlJoint side
-      jrlJoint()->lowerBound(dofRank, lowerBound);
-      jrlJoint()->upperBound(dofRank, upperBound);
-    }
-
-    void Joint::velocityBounds(unsigned int dofRank,
-			       const double& lowerVelocityBound,
-			       const double& upperVelocityBound)
-    {
-      // KPP side
-      // CjrlJoint side
-      jrlJoint()->lowerVelocityBound(dofRank, lowerVelocityBound);
-      jrlJoint()->upperVelocityBound(dofRank, upperVelocityBound);
-    }
-
-    void Joint::torqueBounds(unsigned int dofRank,
-			     const double& lowerTorqueBound,
-			     const double& upperTorqueBound)
-    {
-      // KPP side
-      // CjrlJoint side
-      jrlJoint()->lowerTorqueBound(dofRank, lowerTorqueBound);
-      jrlJoint()->upperTorqueBound(dofRank, upperTorqueBound);
-    }
-
-    ktStatus Joint::init(const JointWkPtr& weakPtr)
-    {
-      weakPtr_ = weakPtr;
-      CkppJointComponentShPtr component = kppJoint();
-      mass_ = CkppDoubleProperty::create("MASS", component,
-					 MASS_ID , MASS_STRING_ID);
-      if (!mass_) return KD_ERROR;
-
-      comX_ = CkppDoubleProperty::create("COM_X", component,
-					 COM_X_ID, COM_X_STRING_ID);
-      if (!comX_) return KD_ERROR;
-
-      comY_ = CkppDoubleProperty::create("COM_Y", component,
-					 COM_Y_ID, COM_Y_STRING_ID);
-      if (!comY_) return KD_ERROR;
-
-      comZ_ = CkppDoubleProperty::create("COM_Z", component,
-					 COM_Z_ID, COM_Z_STRING_ID);
-      if (!comZ_) return KD_ERROR;
-
-      inertiaMatrixXX_ =
-	CkppDoubleProperty::create("INERTIA_MATRIX_XX", component,
-				   INERTIA_MATRIX_XX_ID,
-				   INERTIA_MATRIX_XX_STRING_ID);
-      if (!inertiaMatrixXX_) return KD_ERROR;
-
-      inertiaMatrixYY_ =
-	CkppDoubleProperty::create("INERTIA_MATRIX_YY", component,
-				   INERTIA_MATRIX_YY_ID,
-				   INERTIA_MATRIX_YY_STRING_ID);
-      if (!inertiaMatrixYY_) return KD_ERROR;
-
-      inertiaMatrixZZ_ =
-	CkppDoubleProperty::create("INERTIA_MATRIX_ZZ", component,
-				   INERTIA_MATRIX_ZZ_ID,
-				   INERTIA_MATRIX_ZZ_STRING_ID);
-      if (!inertiaMatrixZZ_) return KD_ERROR;
-
-      inertiaMatrixXY_ =
-	CkppDoubleProperty::create("INERTIA_MATRIX_XY", component,
-				   INERTIA_MATRIX_XY_ID,
-				   INERTIA_MATRIX_XY_STRING_ID);
-      if (!inertiaMatrixXY_) return KD_ERROR;
-
-      inertiaMatrixXZ_ =
-	CkppDoubleProperty::create("INERTIA_MATRIX_XZ", component,
-				   INERTIA_MATRIX_XZ_ID,
-				   INERTIA_MATRIX_XZ_STRING_ID);
-      if (!inertiaMatrixXZ_) return KD_ERROR;
-
-      inertiaMatrixYZ_ =
-	CkppDoubleProperty::create("INERTIA_MATRIX_YZ", component,
-				   INERTIA_MATRIX_YZ_ID,
-				   INERTIA_MATRIX_YZ_STRING_ID);
-      if (!inertiaMatrixYZ_) return KD_ERROR;
-
-      if (dynamicJoint_) {
-	jointMap_[dynamicJoint_] = weakPtr_.lock();
-	hppDout(info, "jointMap_[" << dynamicJoint_ << "] = " <<
-		jointMap_[dynamicJoint_]);
-      }
-      return KD_OK;
-    }
-
-    void Joint::
-    fillPropertyVector(std::vector<CkppPropertyShPtr>& outPropertyVector) const
-    {
-      outPropertyVector.push_back(mass_);
-      outPropertyVector.push_back(comX_);
-      outPropertyVector.push_back(comY_);
-      outPropertyVector.push_back(comZ_);
-      outPropertyVector.push_back(inertiaMatrixXX_);
-      outPropertyVector.push_back(inertiaMatrixYY_);
-      outPropertyVector.push_back(inertiaMatrixZZ_);
-      outPropertyVector.push_back(inertiaMatrixXY_);
-      outPropertyVector.push_back(inertiaMatrixXZ_);
-      outPropertyVector.push_back(inertiaMatrixYZ_);
-    }
-
-    // ======================================================================
-
-    matrix4d Joint::abstractMatrixFromCkitMat4(const CkitMat4& matrix)
-    {
-      hppDout(info, matrix);
-      MAL_S4x4_MATRIX(abstractMatrix, double);
-      for (unsigned int iRow=0; iRow<4; iRow++) {
-	for (unsigned int iCol=0; iCol<4; iCol++) {
-	  MAL_S4x4_MATRIX_ACCESS_I_J(abstractMatrix, iRow, iCol) =
-	    matrix(iRow, iCol);
+      for (ChildrenIterator it1 (this); !it1.end (); ++it1) {
+	for (ChildrenIterator it2 (*it1); !it2.end (); ++it2) {
+	  (*it1)->writeSubJacobian (*it2);
 	}
       }
-      hppDout(info, abstractMatrix);
-      return abstractMatrix;
     }
 
-    // ======================================================================
-
-    CkitMat4 Joint::CkitMat4MatrixFromAbstract(const matrix4d& matrix)
+    double Joint::computeMass ()
     {
-      CkitMat4 kitMat4;
-      for (unsigned int iRow=0; iRow<4; iRow++) {
-	for (unsigned int iCol=0; iCol<4; iCol++) {
-	  kitMat4(iRow, iCol) = MAL_S4x4_MATRIX_ACCESS_I_J(matrix, iRow, iCol);
+      mass_ = 0;
+      if (body_) {
+	mass_ = body_->mass ();
+      }
+      for (std::vector <JointPtr_t>::iterator it =  children_.begin ();
+	   it != children_.end (); it++) {
+	mass_ += (*it)->computeMass ();
+      }
+      return mass_;
+    }
+
+    void Joint::computeMassTimesCenterOfMass ()
+    {
+      massCom_.setValue (0);
+      if (body_) {
+	massCom_ = currentTransformation_.transform
+	  (body_->localCenterOfMass ()) * body_->mass ();
+      }
+      for (std::vector <JointPtr_t>::iterator it =  children_.begin ();
+	   it != children_.end (); it++) {
+	(*it)->computeMassTimesCenterOfMass ();
+	massCom_ += (*it)->massCom_;
+      }
+    }
+
+    JointAnchor::JointAnchor (const Transform3f& initialPosition) :
+      Joint (initialPosition, 0, 0)
+    {
+      configuration_ = new AnchorJointConfig;
+    }
+
+    JointAnchor::~JointAnchor ()
+    {
+      delete configuration_;
+    }
+
+    void JointAnchor::computeMotion (const Configuration_t&,
+				     const Transform3f& parentConfig)
+    {
+      currentTransformation_ = parentConfig * positionInParentFrame_;
+    }
+
+    void JointAnchor::writeSubJacobian (const JointPtr_t&)
+    {
+    }
+
+    void JointAnchor::writeComSubjacobian (ComJacobian_t&,
+					   const double&)
+    {
+    }
+
+    JointSO3::JointSO3 (const Transform3f& initialPosition) :
+      Joint (initialPosition, 4, 3)
+    {
+      configuration_ = new SO3JointConfig;
+    }
+
+    JointSO3::~JointSO3 ()
+    {
+      delete configuration_;
+    }
+
+    void JointSO3::computeMotion (const Configuration_t& configuration,
+				  const Transform3f& parentConfig)
+    {
+      fcl::Quaternion3f p (configuration [rankInConfiguration ()],
+			   configuration [rankInConfiguration () + 1],
+			   configuration [rankInConfiguration () + 2],
+			   configuration [rankInConfiguration () + 3]);
+      T3f_.setQuatRotation (p);
+      hppDout (info, "parentConfig = " << parentConfig);
+      hppDout (info, "positionInParentFrame_ = " << positionInParentFrame_);
+      hppDout (info, "T3f_ = " << T3f_);
+      currentTransformation_ = parentConfig * positionInParentFrame_ * T3f_;
+      hppDout (info, "currentTransformation_ = " << currentTransformation_);
+    }
+    static void cross (const fcl::Vec3f& x, JointJacobian_t& J, size_type row,
+		       size_type col)
+    {
+      J (row + 0, col + 1) = -x [2]; J (row + 1, col + 0) = x [2];
+      J (row + 0, col + 2) = x [1]; J (row + 2, col + 0) = -x [1];
+      J (row + 1, col + 2) = -x [0]; J (row + 2, col + 1) = x [0];
+    }
+
+    static void cross (const fcl::Vec3f& x, ComJacobian_t& J, size_type row,
+		       size_type col)
+    {
+      J (row + 0, col + 1) = -x [2]; J (row + 1, col + 0) = x [2];
+      J (row + 0, col + 2) = x [1]; J (row + 2, col + 0) = -x [1];
+      J (row + 1, col + 2) = -x [0]; J (row + 2, col + 1) = x [0];
+    }
+
+    void JointSO3::writeSubJacobian (const JointPtr_t& child)
+    {
+      std::size_t col = rankInVelocity ();
+      // Set diagonal terms to 1
+      child->jacobian () (3,col) = child->jacobian () (4,col+1) =
+	child->jacobian () (5,col+2) = 1;
+      hppDout (info, "currentTransformation_.getTranslation ()" <<
+	       currentTransformation_.getTranslation ());
+      hppDout (info, "child->currentTransformation ().getTranslation ()" <<
+	       child->currentTransformation ().getTranslation ());
+      cross (currentTransformation_.getTranslation () -
+	     child->currentTransformation ().getTranslation (),
+	     child->jacobian (), 0, col);
+    }
+
+    void JointSO3::writeComSubjacobian (ComJacobian_t& jacobian,
+					const double& totalMass)
+    {
+      const fcl::Vec3f& center (currentTransformation_.getTranslation ());
+      com_ = massCom_ * (1/mass_);
+      size_type col = rankInVelocity ();
+      cross ((mass_/totalMass)*(center-com_), jacobian, (size_type) 0, col);
+    }
+
+    JointRotation::JointRotation (const Transform3f& initialPosition) :
+      Joint (initialPosition, 1, 1), R_ ()
+    {
+      configuration_ = new RotationJointConfig;
+      R_.setIdentity ();
+    }
+
+    JointRotation::~JointRotation ()
+    {
+      delete configuration_;
+    }
+
+    void JointRotation::computeMotion (const Configuration_t& configuration,
+				       const Transform3f& parentConfig)
+    {
+      angle_ = configuration [rankInConfiguration ()];
+      R_ (1,1) = cos (angle_); R_ (1,2) = -sin (angle_);
+      R_ (2,1) = sin (angle_); R_ (2,2) = cos (angle_);
+      T3f_.setRotation (R_);
+      hppDout (info, "parentConfig = " << parentConfig);
+      hppDout (info, "positionInParentFrame_ = " << positionInParentFrame_);
+      hppDout (info, "T3f_ = " << T3f_);
+      currentTransformation_ = parentConfig * positionInParentFrame_ * T3f_;
+      hppDout (info, "currentTransformation_ = " << currentTransformation_);
+    }
+
+    void JointRotation::writeSubJacobian (const JointPtr_t& child)
+    {
+      size_type col = rankInVelocity ();
+      // Get rotation axis
+      axis_ = currentTransformation_.getRotation ().getColumn (0);
+      O2O1_ = currentTransformation_.getTranslation () -
+	child->currentTransformation ().getTranslation ();
+      cross_ = O2O1_.cross (axis_);
+      child->jacobian () (0, col) = cross_ [0];
+      child->jacobian () (1, col) = cross_ [1];
+      child->jacobian () (2, col) = cross_ [2];
+      child->jacobian () (3, col) = axis_ [0];
+      child->jacobian () (4, col) = axis_ [1];
+      child->jacobian () (5, col) = axis_ [2];
+    }
+
+    void JointRotation::writeComSubjacobian (ComJacobian_t& jacobian,
+					     const double& totalMass)
+    {
+      size_type col = rankInVelocity ();
+      axis_ = currentTransformation_.getRotation ().getColumn (0);
+      com_ = massCom_ * (1/mass_);
+      const fcl::Vec3f& center (currentTransformation_.getTranslation ());
+      O2O1_ = center - com_;
+      cross_ = (mass_/totalMass) * O2O1_.cross (axis_);
+      jacobian (0, col) = cross_ [0];
+      jacobian (1, col) = cross_ [1];
+      jacobian (2, col) = cross_ [2];
+    }
+
+    JointTranslation::JointTranslation (const Transform3f& initialPosition) :
+      Joint (initialPosition, 1, 1), t_ ()
+    {
+      configuration_ = new TranslationJointConfig;
+      t_.setValue (0);
+    }
+
+    JointTranslation::~JointTranslation ()
+    {
+      delete configuration_;
+    }
+
+    void JointTranslation::computeMotion
+    (const Configuration_t& configuration, const Transform3f& parentConfig)
+    {
+      t_ [0] = configuration [rankInConfiguration ()];
+      T3f_.setTranslation (t_);
+      currentTransformation_ = parentConfig * positionInParentFrame_ * T3f_;
+    }
+
+    void JointTranslation::writeSubJacobian (const JointPtr_t& child)
+    {
+      std::size_t col = rankInVelocity ();
+      // Get translation axis
+      axis_ = currentTransformation_.getRotation ().getColumn (0);
+      child->jacobian () (0, col) = axis_ [0];
+      child->jacobian () (1, col) = axis_ [1];
+      child->jacobian () (2, col) = axis_ [2];
+    }
+
+    void JointTranslation::writeComSubjacobian (ComJacobian_t& jacobian,
+						const double& totalMass)
+    {
+      std::size_t col = rankInVelocity ();
+      // Get translation axis
+      axis_ = currentTransformation_.getRotation ().getColumn (0);
+      jacobian (0, col) = (mass_/totalMass) * axis_ [0];
+      jacobian (1, col) = (mass_/totalMass) * axis_ [1];
+      jacobian (2, col) = (mass_/totalMass) * axis_ [2];
+    }
+
+    std::ostream& Joint::display (std::ostream& os) const
+    {
+      os << "Joint: " << name () << std::endl;
+      if (configSize () != 0)
+	os << "Rank in configuration: "
+	   << rankInConfiguration()
+	   << std::endl;
+      else
+	os << "Anchor joint" << std::endl;
+      os << "Current transformation:" << std::endl;
+      os << currentTransformation() << std:: endl;
+      os << std::endl;
+      os << "children: ";
+      for (hpp::model::JointVector_t::const_iterator it =
+	     children_.begin (); it != children_.end (); it++) {
+	os << " ," << (*it)->name ();
+      }
+      os << std::endl;
+      hpp::model::Body* body = linkedBody();
+      if (body) {
+	os << "Attached body:" << std::endl;
+	os << "Mass of the attached body: " << body->mass()
+	   << std::endl;
+	os << "Local center of mass:" << body->localCenterOfMass()
+	   << std::endl;
+	os << "Inertia matrix:" << std::endl;
+	os << body->inertiaMatrix() << std::endl;
+	os << "geometric objects" << std::endl;
+	const hpp::model::ObjectVector_t& colObjects =
+	  body->innerObjects (hpp::model::COLLISION);
+	for (hpp::model::ObjectVector_t::const_iterator it =
+	       colObjects.begin (); it != colObjects.end (); it++) {
+	  os << "name: " << (*it)->name () << std::endl;
+	  os << "position :" << std::endl;
+	  const fcl::Transform3f& transform ((*it)->fcl ()->getTransform ());
+	  os << transform;
 	}
+      } else {
+	os << "No body" << std::endl;
       }
-      return kitMat4;
-    }
-
-    // ======================================================================
-
-    JointShPtr Joint::fromJrlJoint(CjrlJoint* joint)
-    {
-      return jointMap_[joint];
-    }
-
-
-    // ======================================================================
-
-    void Joint::insertBody()
-    {
-      JointShPtr joint = weakPtr_.lock();
-      const std::string name = KIT_DYNAMIC_PTR_CAST(CkppComponent, joint)
-	->name();
-
-      if (jrlJoint() && !jrlJoint()->linkedBody()) {
-	CjrlBody* jrlBody = Device::objectFactory_.createBody();
-	// Set mass
-	jrlBody->mass(mass_->value());
-	// Set local center of mass
-	vector3d com;
-	com[0] = comX_->value();
-	com[1] = comY_->value();
-	com[2] = comZ_->value();
-	jrlBody->localCenterOfMass(com);
-	// Set inertia matrix
-	matrix3d inertia;
-	inertia(0,0) = inertiaMatrixXX_->value();
-	inertia(1,1) = inertiaMatrixYY_->value();
-	inertia(2,2) = inertiaMatrixZZ_->value();
-	inertia(0,1) = inertia(1,0) = inertiaMatrixXY_->value();
-	inertia(0,2) = inertia(2,0) = inertiaMatrixXZ_->value();
-	inertia(1,2) = inertia(2,1) = inertiaMatrixYZ_->value();
-	jrlBody->inertiaMatrix(inertia);
-	jrlJoint()->setLinkedBody(*jrlBody);
+      for (unsigned int iChild=0; iChild < numberChildJoints ();
+	   iChild++) {
+	hpp::model::Joint* child = childJoint (iChild);
+	os << *(child) << std::endl;
+	os <<std::endl;
       }
+      return os;
     }
 
-    // ======================================================================
-
-    void Joint::createDynamicPart()
-    {
-      if (jointFactory_) {
-	CkitMat4 initialPos = kppJoint()->kwsJoint()->initialPosition();
-	dynamicJoint_ =
-	  jointFactory_(&Device::objectFactory_,
-			Joint::abstractMatrixFromCkitMat4(initialPos));
-	jointMap_[dynamicJoint_] = weakPtr_.lock();
-	hppDout(info, "jointMap_[" << dynamicJoint_ << "] = " <<
-		jointMap_[dynamicJoint_]);
-	insertBody();
-      }
-    }
   } // namespace model
 } // namespace hpp
 
-std::ostream& operator<<(std::ostream& os, const hpp::model::Joint& joint)
+std::ostream& operator<< (std::ostream& os , const fcl::Transform3f& trans)
 {
-  os << "Joint: " << joint.kppJoint()->name() << std::endl;
-  if (joint.jrlJoint()->numberDof () != 0)
-    os << "Rank in configuration dynamic part: "
-       << joint.jrlJoint()->rankInConfiguration()
-       << std::endl;
-  else
-    os << "Anchor joint" << std::endl;
-  os << "Current transformation dynamic part:" << std::endl;
-  os << joint.jrlJoint()->currentTransformation() << std:: endl;
-  os << std::endl;
-  os << "Current transformation geometric part:" << std::endl;
-  os << joint.kppJoint()->kwsJoint()->currentPosition() << std:: endl;
-
-  const CjrlJoint* jrlJoint = joint.jrlJoint();
-  if (jrlJoint) {
-    CjrlBody* hppBody = jrlJoint->linkedBody();
-    if (hppBody) {
-      os << "Attached body:" << std::endl;
-      os << "Mass of the attached body: " << hppBody->mass() << std::endl;
-      os << "Local center of mass:" << hppBody->localCenterOfMass()
-	 << std::endl;
-      os << "Inertia matrix:" << std::endl;
-      os << hppBody->inertiaMatrix() << std::endl;
-    } else {
-      os << "No attached body" << std::endl;
-    }
-  } else {
-    os << "No dynamic part" << std::endl;
-  }
-  for (unsigned int iChild=0; iChild < joint.countChildJoints();
-       iChild++) {
-    os << *(joint.childJoint(iChild)) << std::endl;
-    os <<std::endl;
-  }
-
+  const fcl::Matrix3f& R (trans.getRotation ());
+  const fcl::Vec3f& t (trans.getTranslation ());
+  const fcl::Quaternion3f& q (trans.getQuatRotation ());
+  os << "rotation matrix: " << R << std::endl;
+  os << "rotation quaternion: " << "(" << q.getW () << ", "
+     << q.getX () << ", " << q.getY () << ", " << q.getZ () << ")"
+     << std::endl;
+  os << "translation: " << t << std::endl;
   return os;
+}
+
+std::ostream& operator<< (std::ostream& os, const hpp::model::Joint& joint)
+{
+  return joint.display (os);
 }

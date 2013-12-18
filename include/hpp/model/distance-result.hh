@@ -1,6 +1,6 @@
 ///
-/// Copyright (c) 2013 CNRS
-/// Authors: Antonio El Khoury
+/// Copyright (c) 2013, 2014 CNRS
+/// Author: Florent Lamiraux
 ///
 ///
 // This file is part of hpp-model
@@ -17,11 +17,20 @@
 // hpp-model  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#ifndef HPP_MODEL_TYPES_HH
-# define HPP_MODEL_TYPES_HH
+#ifndef HPP_MODEL_DISTANCE_RESULT_HH
+# define HPP_MODEL_DISTANCE_RESULT_HH
 
-# ifndef SIZE_MAX
-#  define SIZE_MAX ((size_t)-1)
-# endif // SIZE_MAX
+# include <fcl/collision_data.h>
+# include <hpp/model/config.hh>
+# include <hpp/model/fwd.hh>
 
-#endif // HPP_MODEL_TYPES_HH
+namespace hpp {
+  namespace model {
+    struct HPP_MODEL_DLLAPI DistanceResult {
+      fcl::DistanceResult fcl;
+      CollisionObjectShPtr innerObject;
+      CollisionObjectShPtr outerObject;
+    }; // struct DistanceResult
+  } // namespace model
+} // namespace hpp
+#endif // HPP_MODEL_DISTANCE_RESULT_HH

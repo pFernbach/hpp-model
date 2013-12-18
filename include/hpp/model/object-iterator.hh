@@ -1,6 +1,6 @@
 ///
-/// Copyright (c) 2011 CNRS
-/// Authors: Florent Lamiraux
+/// Copyright (c) 2013, 2014 CNRS
+/// Author: Florent Lamiraux
 ///
 ///
 // This file is part of hpp-model
@@ -17,27 +17,33 @@
 // hpp-model  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#ifndef HPP_MODEL_EXCEPTION_HH
-#define HPP_MODEL_EXCEPTION_HH
+#ifndef HPP_MODEL_OBJECT_ITERATOR_HH
+#define HPP_MODEL_OBJECT_ITERATOR_HH
 
-#include <string>
+# include <vector>
+# include <hpp/model/config.hh>
+# include <hpp/model/fwd.hh>
 
 namespace hpp {
   namespace model {
-    /// \brief Exceptions thrown by this package.
-    class Exception : public std::exception
-    {
+    class HPP_MODEL_DLLAPI ObjectIterator {
     public:
-      virtual ~Exception() throw () {};
-      Exception (const std::string& message) : message_(message) {}
-      virtual const char* what () const throw ()
-      {
-	return message_.c_str ();
-      }
+      ObjectIterator (Device& device, Request_t type);
+      const CollisionObjectShPtr& operator* ();
+      bool operator== (const ObjectIterator& other) const;
+      bool operator!= (const ObjectIterator& other) const;
+      void operator++ ();
+      void setToEnd ();
     private:
-      std::string message_;
-    }; // class Exception
+      Device& device_;
+      Request_t type_;
+      JointVector_t joints_;
+      JointVector_t::iterator jointIt_;
+      ObjectVector_t objects_;
+      ObjectVector_t::iterator objIt_;
+
+    }; // class ObjectIterator
   } // namespace model
 } // namespace hpp
 
-#endif // HPP_MODEL_EXCEPTION_HH
+#endif // HPP_MODEL_OBJECT_ITERATOR_HH

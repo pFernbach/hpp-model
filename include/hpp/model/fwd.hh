@@ -1,6 +1,6 @@
 ///
-/// Copyright (c) 2011 CNRS
-/// Authors: Florent Lamiraux
+/// Copyright (c) 2011, 2012, 2013, 2014 CNRS
+/// Author: Florent Lamiraux
 ///
 ///
 // This file is part of hpp-model
@@ -20,17 +20,51 @@
 #ifndef HPP_MODEL_FWD_HH
 # define HPP_MODEL_FWD_HH
 
-# include <hpp/util/kitelab.hh>
+# include <vector>
+# include <map>
+# include <Eigen/Core>
+# include <hpp/util/pointer.hh>
+# include <fcl/math/matrix_3f.h>
+
+namespace fcl {
+  class Transform3f;
+}
 
 namespace hpp {
   namespace model {
-    HPP_KIT_PREDEF_CLASS(Device);
-    HPP_KIT_PREDEF_CLASS(Exception);
-    HPP_KIT_PREDEF_CLASS(FreeflyerJoint);
-    HPP_KIT_PREDEF_CLASS(HumanoidRobot);
-    HPP_KIT_PREDEF_CLASS(Joint);
-    HPP_KIT_PREDEF_CLASS(BodyDistance);
-    HPP_KIT_PREDEF_CLASS(CapsuleBodyDistance);
+    HPP_PREDEF_CLASS (Body);
+    HPP_PREDEF_CLASS (CollisionObject);
+    HPP_PREDEF_CLASS (Device);
+    HPP_PREDEF_CLASS (DistanceResult);
+    HPP_PREDEF_CLASS (HumanoidRobot);
+    HPP_PREDEF_CLASS (Joint);
+    HPP_PREDEF_CLASS (JointConfiguration);
+    HPP_PREDEF_CLASS (ObjectFactory);
+    HPP_PREDEF_CLASS (ObjectIterator);
+    enum Request_t {COLLISION, DISTANCE};
+    typedef std::vector <CollisionObjectShPtr> ObjectVector_t;
+    typedef DeviceShPtr DevicePtr_t;
+    typedef std::vector <DistanceResult> DistanceResults_t;
+    typedef HumanoidRobotShPtr HumanoidRobotPtr_t;
+    typedef Joint* JointPtr_t;
+    typedef std::map <std::string, Joint*> JointByName_t;
+    typedef std::vector <Joint*> JointVector_t;
+    typedef Eigen::Matrix <double, Eigen::Dynamic, 1> vector_t;
+    typedef vector_t Configuration_t;
+    typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> matrix_t;
+    typedef matrix_t::Index size_type;
+#if 0
+    typedef Eigen::Matrix <double, 3,3> matrix3_t;
+    typedef Eigen::Matrix <double, 3,1> vector3_t;
+#else
+    typedef fcl::Matrix3f matrix3_t;
+    typedef fcl::Vec3f vector3_t;
+#endif
+    typedef Eigen::Matrix <double, 6, Eigen::Dynamic> JointJacobian_t;
+    typedef Eigen::Matrix <double, 3, Eigen::Dynamic> ComJacobian_t;
+    typedef Eigen::Block <JointJacobian_t, 3, Eigen::Dynamic>
+    HalfJointJacobian_t;
+    typedef fcl::Transform3f Transform3f;
   } // namespace model
 } // namespace hpp
 #endif //HPP_MODEL_FWD_HH

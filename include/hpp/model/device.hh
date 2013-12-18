@@ -1,6 +1,6 @@
 ///
-/// Copyright (c) 2011 CNRS
-/// Authors: Florent Lamiraux
+/// Copyright (c) 2013, 2014 CNRS
+/// Author: Florent Lamiraux
 ///
 ///
 // This file is part of hpp-model
@@ -20,334 +20,259 @@
 #ifndef HPP_MODEL_DEVICE_HH
 #define HPP_MODEL_DEVICE_HH
 
-#include <iostream>
-#include <map>
-#include <vector>
+# include <iostream>
+# include <vector>
 
-#include "KineoWorks2/kwsInterface.h"
-#include "KineoUtility/kitInterface.h"
-#include "KineoModel/kppDeviceComponent.h"
-
-#include "kcd2/kcdInterface.h"
-#include "kwsKcd2/kwsKCDBody.h"
-
-#include "hpp/model/robot-dynamics-impl.hh"
-#include "hpp/model/fwd.hh"
+# include <hpp/model/fwd.hh>
+# include <hpp/model/config.hh>
+# include <hpp/model/distance-result.hh>
+# include <hpp/model/object-iterator.hh>
+# include <hpp/model/config.hh>
 
 namespace hpp {
   namespace model {
-
     /// \brief Robot with geometric and dynamic model
-
-    /// The dynamic model is implemented through robot dynamics
-    /// abstract interface, by impl::DynamicRobot which is an
-    /// implementation of CjrlDynamicRobot, while the geometric model
-    /// is implemented by CkppDeviceComponent (See KPP-SDK
-    /// documentation).
 
     /// The creation of the device is done by Device::create(const
     /// std::string name).  This function returns a shared pointer
     /// to the newly created object.  \sa Smart pointers
     /// documentation:
     /// http://www.boost.org/libs/smart_ptr/smart_ptr.htm
-
-    /// Due to the composite nature of Device, configuration
-    /// vectors might differ between the geometric and the dynamic
-    /// parts. For this reason, two functions
-    /// Device::hppSetCurrentConfig and two functions
-    /// Device::hppGetCurrentConfig are are implemented.
-
-    class Device : public virtual impl::DynamicRobot,
-		   public CkppDeviceComponent
+    class HPP_MODEL_DLLAPI Device
     {
+      friend class Body;
+      friend class Joint;
     public:
-      /// \brief Specify which part of the device is concerned
-      typedef enum EwhichPart {
-	GEOMETRIC,
-	DYNAMIC,
-	BOTH
-      } EwhichPart;
-
-      static impl::ObjectFactory objectFactory_;
-
+      /// Flags to select computation
+      /// To optimize computation time, computations performed by method
+      /// computeForwardKinematics can be selected by calling method
+      /// controlComputation.
+      enum Computation_t {
+	JACOBIAN = 0x1,
+	VELOCITY = 0x2,
+	ACCELERATION = 0x4,
+	COM = 0x8,
+	ALL = 0Xffff
+      };
       /// \name Construction, copy and destruction
-      /// @{
+      /// \{
       virtual ~Device();
 
       /// \brief Clone as a CkwsDevice
-      CkwsDeviceShPtr clone() const;
+      DeviceShPtr clone() const;
 
-      /// \brief Clone as a CkppComponent
-      CkppComponentShPtr cloneComponent() const;
+      /// \}
 
-      /// \brief Whether component is clonable.
-      /// \return true
-      bool isComponentClonable() const;
-
-      ///
-      /// @}
-      ///
-
-      ///
-      /// \name Joints
-      /// @{
-
-      /// \brief Define the root joint
-      void setRootJoint(JointShPtr joint);
-
-      /// \brief Get the root joint
-      JointShPtr getRootJoint();
-
-      /// \brief Get body distance vector.
-      const std::vector<BodyDistanceShPtr>& bodyDistances () const;
-
-      /// \brief Push back body distance object in body distance vector.
-      ktStatus addBodyDistance (const BodyDistanceShPtr& bodyDistance);
-
-      ///
-      /// @}
-      ///
-
-      ///
-      /// \name Configurations
-      /// @{
-
-      ///
-      /// \brief Convert a KineoWorks config into a jrlDynamicRobot config
-
-      /// \param kwsDofVector vector of degrees of freedom of CkwsConfig
-      /// \retval outJrlDynamicsDofVector vector of degrees of freedom of jrlDynamicRobot config
-      /// \pre outJrlDynamicsDofVector.size() == numberDof()
-
-      /// \note KineoWorks configurations are represented as dof
-      /// values instead of CkwsConfig since objects of this latter
-      /// type are subject to the constraints of the device they
-      /// belong to.
-      /// \return true if success, false if error.
-      bool kwsToJrlDynamicsDofValues(const std::vector<double>& kwsDofVector,
-				     vectorN& outJrlDynamicsDofVector);
-
-      /// \brief Convert a jrlDynamicRobot config into a KineoWorks config
-      /// \param inJrlDynamicsDofVector vector of degrees of freedom of jrlDynamicRobot config
-      /// \retval outKwsDofVector vector of degrees of freedom of CkwsConfig
-      /// \note KineoWorks configurations are represented as dof
-      /// values instead of CkwsConfig since objects of this latter
-      /// type are subject to the constraints of the device they
-      /// belong to.
-      /// \return true if success, false if error.
-      bool jrlDynamicsToKwsDofValues(const vectorN& inJrlDynamicsDofVector,
-				     std::vector<double>& outKwsDofVector);
-
-      /** \brief Conversion of rotation
-
-	  Convert 3D-rotation from standard (Roll, Pitch, Yaw) coordinates to Kineo (Yaw, Pitch, Roll) coordinates
-	  \f{eqnarray*}
-	  R_{rpy}(inRx,inRy,inRz)&=&
-	  \left(\begin{array}{ccc}
-	  \cos(inRy)\ \cos(inRz) & \sin(inRx)\ \sin(inRy)\ \cos(inRz) - \cos(inRx)\ \sin(inRz) & \cos(inRx)\ \sin(inRy)\ \cos(inRz) + \sin(inRx)\ \sin(inRz) \\
-	  \cos(inRy)\ \sin(inRz) & \sin(inRx)\ \sin(inRy)\ \sin(inRz) + \cos(inRx)\ \cos(inRz) & \cos(inRx)\ \sin(inRy)\ \sin(inRz) - \sin(inRx)\ \cos(inRz) \\
-	  -\sin(inRy) & \sin(inRx)\ \cos(inRy) & \cos(inRx)\ \cos(inRy)
-	  \end{array}\right) \\
-	  \\
-	  &=&
-	  \left( \begin {array}{ccc} \cos \left( {\it outRz} \right) \cos \left( {\it outRy} \right) &-\sin \left( {\it outRz} \right) \cos
-	  \left( {\it outRy} \right) &\sin \left( {\it outRy} \right) \\\noalign{\medskip}\cos \left( {\it outRz} \right) \sin \left( {\it outRy}
-	  \right) \sin \left( {\it outRx} \right) +\sin \left( {\it outRz} \right) \cos \left( {\it outRx} \right) &\cos \left( {\it outRz}
-	  \right) \cos \left( {\it outRx} \right) -\sin \left( {\it outRz} \right) \sin \left( {\it outRy} \right) \sin \left( {\it outRx} \right)
-	  &-\cos \left( {\it outRy} \right) \sin \left( {\it outRx} \right) \\\noalign{\medskip}\sin \left( {\it outRz} \right) \sin \left( {\it
-	  outRx} \right) -\cos \left( {\it outRz} \right) \sin \left( {\it outRy} \right) \cos \left( {\it outRx} \right) &\sin \left( {\it outRz}
-	  \right) \sin \left( {\it outRy} \right) \cos \left( {\it outRx} \right) +\cos \left( {\it outRz} \right) \sin \left( {\it outRx} \right)
-	  &\cos \left( {\it outRy} \right) \cos \left( {\it outRx} \right) \end {array} \right)\\
-	  \\
-	  &=&
-	  R_{ypr}(outRx, outRy, outRz)\\
-	  \\
-	  &&-\pi < outRx \leq \pi\\
-	  &&-\pi/2 <outRy \leq \pi/2 \\
-	  &&-\pi < outRz \leq \pi\\
-	  \f} */
-      void RollPitchYawToYawPitchRoll(const double& inRx, const double& inRy,
-				      const double& inRz,
-				      double& outRx, double& outRy,
-				      double& outRz);
-
-      /** \brief Conversion of rotation
-	  Convert 3D-rotation from Kineo (Yaw, Pitch, Roll) coordinates to standard (Roll, Pitch, Yaw) coordinates
-	  \f{eqnarray*}
-	  R_{ypr}(inRx,inRy,inRz)&=&
-	  \left( \begin {array}{ccc} \cos \left( {\it inRz} \right) \cos \left( {\it inRy} \right) &-\sin \left( {\it inRz} \right) \cos
-	  \left( {\it inRy} \right) &\sin \left( {\it inRy} \right) \\\noalign{\medskip}\cos \left( {\it inRz} \right) \sin \left( {\it inRy}
-	  \right) \sin \left( {\it inRx} \right) +\sin \left( {\it inRz} \right) \cos \left( {\it inRx} \right) &\cos \left( {\it inRz}
-	  \right) \cos \left( {\it inRx} \right) -\sin \left( {\it inRz} \right) \sin \left( {\it inRy} \right) \sin \left( {\it inRx} \right)
-	  &-\cos \left( {\it inRy} \right) \sin \left( {\it inRx} \right) \\\noalign{\medskip}\sin \left( {\it inRz} \right) \sin \left( {\it
-	  inRx} \right) -\cos \left( {\it inRz} \right) \sin \left( {\it inRy} \right) \cos \left( {\it inRx} \right) &\sin \left( {\it inRz}
-	  \right) \sin \left( {\it inRy} \right) \cos \left( {\it inRx} \right) +\cos \left( {\it inRz} \right) \sin \left( {\it inRx} \right)
-	  &\cos \left( {\it inRy} \right) \cos \left( {\it inRx} \right) \end {array} \right)\\
-	  \\
-	  &=&
-	  \left(\begin{array}{ccc}
-	  \cos(outRy)\ \cos(outRz) & \sin(outRx)\ \sin(outRy)\ \cos(outRz) - \cos(outRx)\ \sin(outRz) & \cos(outRx)\ \sin(outRy)\ \cos(outRz) + \sin(outRx)\ \sin(outRz) \\
-	  \cos(outRy)\ \sin(outRz) & \sin(outRx)\ \sin(outRy)\ \sin(outRz) + \cos(outRx)\ \cos(outRz) & \cos(outRx)\ \sin(outRy)\ \sin(outRz) - \sin(outRx)\ \cos(outRz) \\
-	  -\sin(outRy) & \sin(outRx)\ \cos(outRy) & \cos(outRx)\ \cos(outRy)
-	  \end{array}\right) \\
-	  \\
-	  &=&
-	  R_{rpy}(outRx, outRy, outRz)\\
-	  \\
-	  &&-\pi < outRx \leq \pi\\
-	  &&-\pi/2 <outRy \leq \pi/2 \\
-	  &&-\pi < outRz \leq \pi\\
-	  \f} */
-      void YawPitchRollToRollPitchYaw(const double& inRx, const double& inRy,
-				      const double& inRz,
-				      double& outRx, double& outRy,
-				      double& outRz);
-
-      /// \brief Put the robot in a given configuration
-
-      /// \param config The configuration
-      /// \param updateWhat Specify which part of the robot (geometric, dynamic or both) should be update)
-
-      /// \return true if success, false otherwise.
-
-      /// \note In CkwsConfig, the order of the joint
-      /// degrees-of-freedom follow KineoWorks convention.  The
-      /// configuration of the dynamic part (impl::DynamicRobot) is
-      /// thus computed accordingly.
-      bool hppSetCurrentConfig(const CkwsConfig& config,
-			       EwhichPart updateWhat=BOTH);
-
-      /// \brief Put the robot in a given configuration
-
-      /// \param config The configuration
-      /// \param updateWhat Specify which part of the robot (geometric, dynamic or both) should be update)
-  
-      /// \return true if success, false otherwise.
-  
-      /// CkppDeviceComponent extra-dofs are set to 0.
-  
-      /// \note In vectorN, the order of the joint degrees-of-freedom
-      /// follow impl::DynamicRobot convention. The configuration of
-      /// the geometric part (CkppDeviceComponent) is thus computed
-      /// accordingly.
-      bool hppSetCurrentConfig(const vectorN& config,
-			       EwhichPart updateWhat=BOTH);
-
-      ///
-      /// @}
-      ///
-
-      ///
-      /// \name Collision checking and distance computations
-      /// @{
-      ///
-      /// \brief Set collision checking in such a way that given device is ignored by this one.
-      /// \param device The device to be ignored.
-      ktStatus ignoreDeviceForCollision (DeviceShPtr device) ;
-
-      /// \brief Add obstacle to the list.
-      /// \param object a new object.
-      /// \param distanceComputation whether this object should be taken into
-      /// account for distance computation for all bodies.
-      ktStatus addObstacle(const CkcdObjectShPtr& object,
-			   bool distanceComputation=false);
-
-      ///
-      /// @}
-      ///
-
-      ///
-      /// \name Bounding box
-      /// @{
-      ///
-      /// \brief Compute the bounding box of the robot in current configuration.
-      ///
-      ktStatus axisAlignedBoundingBox (double& xMin, double& yMin, double& zMin,
-				       double& xMax, double& yMax, double& zMax)
-	const;
-
-      ///
-      /// @}
-      ///
-
-      /// \brief Called whenever a child component is inserted
-      /// This function enables the object to update information provided
-      /// through properties when joints are inserted to the robot.
-      void componentDidInsertChild
-      (const CkitNotificationConstShPtr& notification);
-
-      /// \brief Called before a child component is inserted
-      /// This function enables the object to update information provided
-      /// through properties when joints are inserted to the robot.
-      void componentWillInsertChild
-      (const CkitNotificationConstShPtr& notification);
-
-      /// \brief Initialize kinematic chain
-      /// If dynamic part of joints have not been created, create them.
-      /// In any case, call parent implementation.
-      /// \note When reading a kxml file, the position of joints is not
-      /// known at construction. For this reason, the dynamic part of each
-      /// joint is created later by this function.
-      virtual bool initialize ();
+      /// Get name of device
+      const std::string& name () {return name_;}
 
       /// \brief Creation of a new device
       /// \return a shared pointer to the new device
       /// \param name Name of the device (is passed to CkkpDeviceComponent)
-      static DeviceShPtr create(std::string name);
+      static DeviceShPtr create (std::string name);
 
       ///
       /// \brief Copy of a device
       /// \return A shared pointer to new device.
       /// \param device Device to be copied.
-      static DeviceShPtr createCopy(const DeviceShPtr& device);
+      static DeviceShPtr createCopy (const DeviceShPtr& device);
 
-      /// \brief Access to the object factory for the dynamic part.
-      static impl::ObjectFactory* objectFactory();
+      /// \name Joints
+      /// \{
 
+      /// Set the root of the kinematic chain
+      void rootJoint (Joint* joint);
+
+      /// Get root joint
+      JointPtr_t rootJoint () const;
+
+      /// Register joint in internal containers
+      void registerJoint (Joint* joint);
+
+      /// Get vector of joints
+      const JointVector_t& getJointVector () const;
+
+      /// Get joint by name
+      Joint* getJointByName (const std::string& name);
+
+      /// Size of configuration vectors
+      const std::size_t& configSize () const
+      {
+	return configSize_;
+      }
+
+      /// Size of velocity vectors
+      const std::size_t& numberDof () const
+      {
+	return numberDof_;
+      }
+
+      /// \}
+
+      /// \name Current state
+      /// \{
+
+      /// Get current configuration
+      const Configuration_t& currentConfiguration () const
+      {
+	return currentConfiguration_;
+      }
+      /// Set current configuration
+      void currentConfiguration (const vector_t& configuration)
+      {
+	if (configuration != currentConfiguration_) {
+	  upToDate_ = false;
+	  currentConfiguration_ = configuration;
+	}
+      }
+      /// Get current velocity
+      const vector_t& currentVelocity () const
+      {
+	return currentVelocity_;
+      }
+
+      /// Set current velocity
+      void currentVelocity (const vector_t& velocity)
+      {
+	upToDate_ = false;
+	currentVelocity_ = velocity;
+      }
+
+      /// Get current acceleration
+      const vector_t& currentAcceleration () const
+      {
+	return currentAcceleration_;
+      }
+
+      /// Set current acceleration
+      void currentAcceleration (const vector_t& acceleration)
+      {
+	upToDate_ = false;
+	currentAcceleration_ = acceleration;
+      }
+      /// \}
+
+      /// \name Mass and center of mass
+      /// \{
+
+      /// Get mass of robot
+      const double& mass () const
+      {
+	return mass_;
+      }
+      /// Get position of center of mass
+      const vector3_t& positionCenterOfMass () const
+      {
+	return com_;
+      }
+      /// Get Jacobian of center of mass with respect to configuration
+      const ComJacobian_t& jacobianCenterOfMass () const
+      {
+	return jacobianCom_;
+      }
+      
+      /// \}
+
+      /// \name Collision and distance computation
+      /// \{
+
+      /// Add an object for collision or distance computation
+      ///
+      /// \param object object to add. Position of object is expressed in
+      /// world frame.
+      /// \param collision whether this object should be considered for
+      ///        collision
+      /// \param distance  whether this object should be considered for
+      ///        distance computation
+      virtual void addOuterObject (const CollisionObjectShPtr &object,
+				   bool collision, bool distance);
+
+      /// Remove an object for collision or distance computation
+      ///
+      /// \param object object to remove
+      /// \param collision whether this object should be removed from
+      ///        list of collision objects
+      /// \param distance  whether this object should be removed from
+      ///        list of distance computation objects
+      /// \note If object is not in body, do nothing
+      virtual void removeOuterObject (const CollisionObjectShPtr& object,
+				      bool collision, bool distance);
+
+      /// Iterator over inner objects of the device
+      /// \param type Collision or distance
+      ObjectIterator objectIterator (Request_t type);
+      /// Iterator end
+      ObjectIterator objectIteratorEnd (Request_t type);
+      
+      /// Test collision of current configuration
+      /// \warning Users should call computeForwardKinematics first.
+      bool collisionTest () const;
+
+      /// Compute distances between pairs of objects stored in bodies
+      void computeDistances ();
+
+      /// Get result of distance computations
+      const DistanceResults_t&
+	distanceResults () const {return distances_;};
+      /// \}
+
+      /// \name Forward kinematics
+      /// \{
+
+      /// Select computation
+      /// Optimize computation time by selecting only necessary values in
+      /// method computeForwardKinematics.
+      void controlComputation (const Computation_t& flag)
+      {
+	computationFlag_ = flag;
+	upToDate_ = false;
+      }
+      /// Get computation flag
+      Computation_t computationFlag () const
+      {
+	return computationFlag_;
+      }
+       /// Compute forward kinematics
+      virtual void computeForwardKinematics ();
+      /// \}
     protected:
       /// \brief Constructor
-      /// \param objFactory factory necessary to build a CjrlDynamicRobot.
-      Device(CjrlRobotDynamicsObjectFactory *objFactory);
-
-      Device();
+      Device(const std::string& name);
 
       ///
       /// \brief Initialization.
       ///
-      ktStatus init(const DeviceWkPtr& weakPtr, const std::string& name);
-
-      ///
-      /// \brief Initialization with shared pointer.
-      ///
-      ktStatus init(const DeviceWkPtr& weakPtr, const DeviceShPtr& device);
-
-      /// \brief Insert child dynamic part in parent dynamic part.
-      /// \input parent Parent joint,
-      /// \input child Child joint.
-      /// This method is called whenever a Joint object is inserted as child
-      /// component of another Joint object.
-      void insertDynamicPart(JointShPtr parent, JointShPtr child);
+      void init(const DeviceWkPtr& weakPtr);
 
     private:
-
-      /// \brief Vector of body distances.
-      std::vector<BodyDistanceShPtr> bodyDistances_;
-
-      /// \brief Store weak pointer to object.
+      /// Recompute number of distance pairs
+      void updateDistances ();
+      void computeJointPositions ();
+      void computeJointJacobians ();
+      void computeMass ();
+      void computePositionCenterOfMass ();
+      void computeJacobianCenterOfMass ();
+      void resizeJacobians ();
+      std::string name_;
+      DistanceResults_t distances_;
+      JointByName_t jointByName_;
+      JointVector_t jointVector_;
+      JointPtr_t rootJoint_;
+      std::size_t numberDof_;
+      std::size_t configSize_;
+      Configuration_t currentConfiguration_;
+      vector_t currentVelocity_;
+      vector_t currentAcceleration_;
+      vector3_t com_;
+      ComJacobian_t jacobianCom_;
+      double mass_;
+      bool upToDate_;
+      Computation_t computationFlag_;
       DeviceWkPtr weakPtr_;
-
-      void computeBodyBoundingBox(const CkwsKCDBodyAdvancedShPtr& body, double& xMin,
-				  double& yMin, double& zMin, double& xMax,
-				  double& yMax, double& zMax) const;
-
-      void ckcdObjectBoundingBox(const CkcdObjectShPtr& object, double& xMin,
-				 double& yMin, double& zMin, double& xMax,
-				 double& yMax, double& zMax) const;
-
-      void initializeKinematicChain(JointShPtr joint);
     }; // class Device
   } // namespace model
 } // namespace hpp
-std::ostream& operator<<(std::ostream& os, hpp::model::Device& inHppDevice);
+
+std::ostream& operator<<(std::ostream& os, hpp::model::Device& device);
 
 #endif // HPP_MODEL_DEVICE_HH

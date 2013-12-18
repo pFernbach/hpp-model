@@ -1,6 +1,6 @@
 ///
-/// Copyright (c) 2011 CNRS
-/// Authors: Florent Lamiraux
+/// Copyright (c) 2013, 2014 CNRS
+/// Author: Florent Lamiraux
 ///
 ///
 // This file is part of hpp-model
@@ -17,285 +17,253 @@
 // hpp-model  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#ifndef HPP_MODEL_JOINT_HH
+# define HPP_MODEL_JOINT_HH
 
-#ifndef HPP_MODEL_JOINT_COMMON_HH
-#define HPP_MODEL_JOINT_COMMON_HH
-
-#include <boost/function.hpp>
-
-#include <jrl/mal/matrixabstractlayer.hh>
-#include <KineoModel/kppProperty.h>
-#include <KineoModel/kppJointComponent.h>
-
-#include "hpp/model/robot-dynamics-impl.hh"
-#include "hpp/model/fwd.hh"
-
-HPP_KIT_PREDEF_CLASS(CkppDoubleProperty);
-HPP_KIT_PREDEF_CLASS(CkwsJoint);
-HPP_KIT_PREDEF_CLASS(CjrlJoint);
+# include <cstddef>
+# include <fcl/math/transform.h>
+# include <hpp/model/config.hh>
+# include <hpp/model/fwd.hh>
 
 namespace hpp {
   namespace model {
-    /// \brief Joint with dynamic and geometric properties
-    /// Implementations of this class should derive from
-    /// \li a CkppDeviceComponent implementation
-    /// and provide a pointer to a CjrlJoint object implementing the dynamic
-    /// part of the joint.
-    ///
-    /// There are two ways of building joints in a kinematic chain.
-    /// \li The first way consists in calling function create of a
-    /// joint implementation, and providing the position of the joint
-    /// in space. See for instance
-    /// (hpp::model::FreeflyerJoint::create(const std::string &name, const
-    /// CkitMat4 &initialPosition)).
-    /// \li The second way consists in reading a kxml file using Kitelab
-    /// parser. In this case, joints are created without initial position. The
-    /// initial position of the joint is provided later on. This raises an
-    /// issue since it is not possible through CjrlJoint to change the
-    /// initial position of the joint. For this reason, method "create" without
-    /// initial position does not construct the CjrlJoint object, but rather
-    /// should provide a function to create it later on (see source code of
-    /// hpp::model::FreeflyerJoint::create(const std::string &name) and
-    /// hpp::model::FreeflyerJoint::FreeflyerJoint()) for an example.
-
-    class Joint
-    {
+    class HPP_MODEL_DLLAPI Joint {
     public:
-      virtual ~Joint();
-      ///
-      /// \name Conversion between KineoWorks and Mal homogeneous Matrices
+      Joint (const Transform3f& initialPosition, std::size_t configSize,
+	     std::size_t numberDof);
+      virtual ~Joint ();
+      /// \name Name
       /// @{
-
-      ///
-      /// \brief Conversion from KineoWorks to Matrix Abstraction Layer
-      ///
-      static matrix4d abstractMatrixFromCkitMat4(const CkitMat4& matrix);
-
-      ///
-      /// \brief Conversion from Matrix Abstraction Layer to KineoWorks
-      ///
-      static CkitMat4 CkitMat4MatrixFromAbstract(const matrix4d& matrix);
-
-      /// \brief Get a shared pointer to joint from dynamic part
-      static JointShPtr fromJrlJoint(CjrlJoint* joint);
-
-      ///
-      ///@}
-      ///
-
-      ///
-      /// \name Access to parent classes
-      /// @{
-
-      ///
-      /// \brief Get shared pointer to CkppJointComponent part
-      ///
-      CkppJointComponentShPtr kppJoint() const;
-
-      ///
-      /// \brief Access to dynamic part of the joint.
-      ///
-      CjrlJoint* jrlJoint();
-
-      ///
-      /// \brief Const access to dynamic part of the joint.
-      ///
-      const CjrlJoint* jrlJoint() const;
-
-      ///
+      /// Set name
+      virtual inline void name(const std::string& name)
+      {
+	name_ = name;
+      }
+      /// Get name
+      virtual inline const std::string& name() const
+      {
+	return name_;
+      }
       /// @}
-      ///
 
-      ///
+      /// \name Position
+      /// @{
+      /// Joint initial position (when robot is in zero configuration)
+      const Transform3f& initialPosition () const;
+      /// Joint transformation
+      const Transform3f& currentTransformation () const;
+      ///@}
+      /// Return number of degrees of freedom
+      const std::size_t& numberDof () const
+      {
+	return numberDof_;
+      }
+      /// Return number of degrees of freedom
+      const std::size_t& configSize () const
+      {
+	return configSize_;
+      }
+      /// Return rank of the joint in the configuration vector
+      const std::size_t& rankInConfiguration () const
+      {
+	return rankInConfiguration_;
+      }
+      /// Return rank of the joint in the velocity vector
+      std::size_t rankInVelocity () const
+      {
+	return rankInVelocity_;
+      }
+
       /// \name Kinematic chain
       /// @{
-      ///
-      /// \brief Get the parent joint
-      ///
-      virtual JointShPtr parentJoint() const;
+      /// Get a pointer to the parent joint (if any).
+      JointPtr_t parentJoint () const
+      {
+	return parent_;
+      }
+      /// Add child joint
+      void addChildJoint (JointPtr_t joint);
 
-      ///
-      /// \brief Get the child joint at given rank
-      ///
-      virtual JointShPtr childJoint(unsigned int rank) const;
+      /// Number of child joints
+      std::size_t numberChildJoints () const
+      {
+	return children_.size ();
+      }
+      /// Get child joint
+      JointPtr_t childJoint (std::size_t rank) const
+      {
+	return children_ [rank];
+      }
 
+      /// Get the rank of this joint in the robot configuration vector.
       ///
-      /// \brief Add a child to the joint
-      ///
-      virtual void addChildJoint(JointShPtr joint);
+      ///@}
 
-      ///
-      /// \brief Get number of child joints
-      ///
-      virtual unsigned int countChildJoints() const;
-      ///
-      /// @}
-      ///
-
-      ///
-      /// \name Bounds of the degrees of freedom
+      /// \name Bounds
       /// @{
-
-      ///
-      /// \brief Determine whether the degree of freedom of the joint is bounded
-      ///
-      /// \param dofRank Rank of the degree of freedom that is bounded
-      /// \param bounded Whether the degree of freedom is bounded
-      ///
-      void isBounded(unsigned int dofRank, bool bounded);
-
-      ///
-      /// \brief Return whether the degree of freedom of the joint is bounded
-      ///
-      /// \param dofRank Rank of the degree of freedom that is bounded
-      ///
-      bool isBounded(unsigned int dofRank) const;
-
-      ///
-      /// \brief Get the lower bound of a given degree of freedom of the joint.
-      ///
-      /// \param dofRank Id of the dof in the joint
-      ///
-      virtual double lowerBound(unsigned int dofRank) const;
-
-      ///
-      /// \brief Get the upper bound of a given degree of freedom of the joint.
-      ///
-      ///\param dofRank Id of the dof in the joint
-      ///
-      virtual double upperBound(unsigned int dofRank) const;
-
-      ///
-      /// \brief Set the lower bound of a given degree of freedom of the joint.
-      ///
-      /// \param dofRank Id of the dof in the joint
-      ///
-      virtual void lowerBound(unsigned int dofRank, double lowerBound);
-
-      ///
-      /// \brief Set the upper bound of a given degree of freedom of the joint.
-      ///
-      /// \param dofRank Id of the dof in the joint
-      ///
-      virtual void upperBound(unsigned int dofRank, double upperBound);
-
-      ///
-      /// \brief Set the bounds of the degrees of freedom of the joint
-      ///
-      /// \param dofRank Rank of the degree of freedom that is bounded
-      ///
-      /// \param upperBound upper bound of this degree of freedom
-      void bounds(unsigned int dofRank, const double& lowerBound,
-		  const double& upperBound);
-
-      ///
-      /// \brief Set the velocity bounds of the degrees of freedom of the joint
-      ///
-      /// \param dofRank Rank of the degree of freedom that is bounded
-      ///
-      /// \param upperVelocityBound upper velocity bound of this deg. of freedom
-      void velocityBounds(unsigned int dofRank,
-			  const double& lowerVelocityBound,
-			  const double& upperVelocityBound);
-
-      ///
-      /// \brief Set the torque bounds of the degrees of freedom of the joint
-      ///
-      /// \param dofRank Rank of the degree of freedom that is bounded
-      ///
-      /// \param upperTorqueBound upper torque bound of this deg. of freedom
-      void torqueBounds(unsigned int dofRank,
-			const double& lowerTorqueBound,
-			const double& upperTorqueBound);
-
-      ///
+      /// Set whether given degree of freedom is bounded
+      void isBounded (std::size_t rank, bool bounded);
+      /// Get whether given degree of freedom is bounded
+      bool isBounded (std::size_t rank) const;
+      /// Get lower bound of given degree of freedom
+      double lowerBound (std::size_t rank) const;
+      /// Get upper bound of given degree of freedom
+      double upperBound (std::size_t rank) const;
+      /// Set lower bound of given degree of freedom
+      void lowerBound (std::size_t rank, double lowerBound);
+      /// Set upper bound of given degree of freedom
+      void upperBound (std::size_t rank, double upperBound);
       /// @}
-      ///
-      ///
-      /// \name Attached body
+
+      /// \name Jacobian
+      /// \{
+
+      /// Get const reference to Jacobian
+      const JointJacobian_t& jacobian () const
+      {
+	return jacobian_;
+      }
+      /// Get non const reference to Jacobian
+      JointJacobian_t& jacobian ()
+      {
+	return jacobian_;
+      }
+      /// \}
+      /// Access to configuration space
+      JointConfiguration* configuration () const {return configuration_;}
+      /// Set robot owning the kinematic chain
+      void setRobot (Device* device) {robot_ = device;}
+      /// Access robot owning the object
+      Device* getRobot () { return robot_;}
+      /// \name Body linked to the joint
       /// @{
-
-      /// \brief Insert a body of type hpp::model::Body before adding geometry
-      ///
-      /// When the first solid component is added to a joint component,
-      /// an object of class CkwsKCDBodyAdvanced is inserted to the underlying
-      /// CkwsJoint. To replace the CkwsKCDBodyAdvanced by an hpp::model::Body, we
-      /// insert it beforehand.
-      void insertBody();
-
-      ///
+      /// Get linked body
+      Body* linkedBody () const;
+      /// Get linked body
+      void setLinkedBody (Body* body);
       /// @}
-      ///
 
-      /// Create dynamic part of joint if creation has been delayed
-      void createDynamicPart();
-
-      ///
-      /// \name CkppComponent properties
-      /// @{
-      ///
-
-      void fillPropertyVector(std::vector<CkppPropertyShPtr>& outPropertyVector)
-	const;
-      // Mass
-      static const CkppProperty::TPropertyID MASS_ID;
-      static const std::string MASS_STRING_ID;
-
-      // Local center of mass
-      static const CkppProperty::TPropertyID COM_X_ID;
-      static const std::string COM_X_STRING_ID;
-      static const CkppProperty::TPropertyID COM_Y_ID;
-      static const std::string COM_Y_STRING_ID;
-      static const CkppProperty::TPropertyID COM_Z_ID;
-      static const std::string COM_Z_STRING_ID;
-
-      // Inertia matrix
-      static const CkppProperty::TPropertyID INERTIA_MATRIX_XX_ID;
-      static const std::string INERTIA_MATRIX_XX_STRING_ID;
-      static const CkppProperty::TPropertyID INERTIA_MATRIX_YY_ID;
-      static const std::string INERTIA_MATRIX_YY_STRING_ID;
-      static const CkppProperty::TPropertyID INERTIA_MATRIX_ZZ_ID;
-      static const std::string INERTIA_MATRIX_ZZ_STRING_ID;
-      static const CkppProperty::TPropertyID INERTIA_MATRIX_XY_ID;
-      static const std::string INERTIA_MATRIX_XY_STRING_ID;
-      static const CkppProperty::TPropertyID INERTIA_MATRIX_XZ_ID;
-      static const std::string INERTIA_MATRIX_XZ_STRING_ID;
-      static const CkppProperty::TPropertyID INERTIA_MATRIX_YZ_ID;
-      static const std::string INERTIA_MATRIX_YZ_STRING_ID;
-
-    private:
-
-      CkppDoublePropertyShPtr mass_;
-      CkppDoublePropertyShPtr comX_;
-      CkppDoublePropertyShPtr comY_;
-      CkppDoublePropertyShPtr comZ_;
-      CkppDoublePropertyShPtr inertiaMatrixXX_;
-      CkppDoublePropertyShPtr inertiaMatrixYY_;
-      CkppDoublePropertyShPtr inertiaMatrixZZ_;
-      CkppDoublePropertyShPtr inertiaMatrixXY_;
-      CkppDoublePropertyShPtr inertiaMatrixXZ_;
-      CkppDoublePropertyShPtr inertiaMatrixYZ_;
-
-      ///
-      /// @}
-      ///
-
+      /// Display joint
+      virtual std::ostream& display (std::ostream& os) const;
     protected:
-      Joint(CjrlJoint* joint);
-      /// \brief Create properties and store weak pointer
-      ktStatus init(const JointWkPtr& weakPtr);
-      /// Pointer to factory method creating dynamic part of joint
-      boost::function < CjrlJoint* (impl::ObjectFactory*,
-				    const matrix4d& positionMatrix) >
-      jointFactory_;
+      JointConfiguration* configuration_;
+      Transform3f currentTransformation_;
+      Transform3f positionInParentFrame_;
+      Transform3f T3f_;
+      /// Mass of this and all descendants
+      double mass_;
+      /// Mass time center of mass of this and all descendants
+      fcl::Vec3f massCom_;
+   private:
+      void computePosition (const Configuration_t& configuration,
+			    const Transform3f& parentConfig);
 
-    private:
-      JointWkPtr weakPtr_;
-      CjrlJoint* dynamicJoint_;
-      static std::map <CjrlJoint*, JointShPtr> jointMap_;
+      virtual void computeMotion (const Configuration_t& configuration,
+				  const Transform3f& parentConfig) = 0;
+
+      /// Write a block of Jacobian
+      ///
+      /// child: joint the motion of which is generated by the degrees of
+      ///      freedom of this
+      ///
+      /// child should be a descendant of this.
+      /// This method writes in the jacobian of child the motion generated by
+      /// this at the current position of child. If index is the rank of this
+      /// in the velocity vector, the method fills colums from index to index +
+      /// this joint number of degrees of freedom.
+      virtual void writeSubJacobian (const JointPtr_t& child) = 0;
+      void computeJacobian ();
+      /// Compute mass of this and all descendants
+      double computeMass ();
+      /// Compute the product m * com
+      ///
+      /// \li m is the mass of the joint and all descendants,
+      /// \li com is the center of mass of the joint and all descendants.
+      void computeMassTimesCenterOfMass ();
+      virtual void writeComSubjacobian (ComJacobian_t& jacobian,
+					const double& totalMass) = 0;
+      std::size_t configSize_;
+      std::size_t numberDof_;
+      Transform3f initialPosition_;
+      Body* body_;
+      Device* robot_;
+      std::string name_;
+      std::vector <JointPtr_t> children_;
+      JointPtr_t parent_;
+      std::size_t rankInConfiguration_;
+      std::size_t rankInVelocity_;
+      JointJacobian_t jacobian_;
+      std::size_t rankInParent_;
+      friend class Device;
+      friend class ChildrenIterator;
     }; // class Joint
+
+    class HPP_MODEL_DLLAPI JointAnchor : public Joint
+    {
+    public:
+      JointAnchor (const Transform3f& initialPosition);
+      virtual ~JointAnchor ();
+      virtual void computeMotion (const Configuration_t& configuration,
+				    const Transform3f& parentConfig);
+    private:
+      virtual void writeSubJacobian (const JointPtr_t& child);
+      virtual void writeComSubjacobian (ComJacobian_t& jacobian,
+					const double& totalMass);
+    }; // class JointAnchor
+
+    class HPP_MODEL_DLLAPI JointSO3 : public Joint
+    {
+    public:
+      JointSO3 (const Transform3f& initialPosition);
+      virtual void computeMotion (const Configuration_t& configuration,
+				    const Transform3f& parentConfig);
+      virtual ~JointSO3 ();
+    private:
+      virtual void writeSubJacobian (const JointPtr_t& child);
+      virtual void writeComSubjacobian (ComJacobian_t& jacobian,
+					const double& totalMass);
+      mutable fcl::Vec3f com_;
+    }; // class JointSO3
+
+    class HPP_MODEL_DLLAPI JointRotation : public Joint
+    {
+    public:
+      JointRotation (const Transform3f& initialPosition);
+      virtual void computeMotion (const Configuration_t& configuration,
+				    const Transform3f& parentConfig);
+      virtual ~JointRotation ();
+    private:
+      virtual void writeSubJacobian (const JointPtr_t& child);
+      virtual void writeComSubjacobian (ComJacobian_t& jacobian,
+					const double& totalMass);
+      fcl::Matrix3f R_;
+      mutable double angle_;
+      mutable fcl::Vec3f axis_;
+      mutable fcl::Vec3f O2O1_;
+      mutable fcl::Vec3f cross_;
+      mutable fcl::Vec3f com_;
+    }; // class JointRotation
+
+    class HPP_MODEL_DLLAPI JointTranslation : public Joint
+    {
+    public:
+      JointTranslation (const Transform3f& initialPosition);
+      virtual void computeMotion (const Configuration_t& configuration,
+				    const Transform3f& parentConfig);
+      virtual ~JointTranslation ();
+    private:
+      virtual void writeSubJacobian (const JointPtr_t& child);
+      virtual void writeComSubjacobian (ComJacobian_t& jacobian,
+					const double& totalMass);
+      fcl::Vec3f t_;
+      mutable fcl::Vec3f axis_;
+      mutable fcl::Vec3f com_;
+    }; // class JointTranslation
+
   } // namespace model
 } // namespace hpp
-std::ostream& operator<<(std::ostream& os, const hpp::model::Joint& joint);
 
-#endif // HPP_MODEL_JOINT_COMMON_HH
+std::ostream& operator<< (std::ostream& os , const fcl::Transform3f& trans);
+std::ostream& operator<< (std::ostream& os, const hpp::model::Joint& joint);
+
+#endif // HPP_MODEL_JOINT_HH

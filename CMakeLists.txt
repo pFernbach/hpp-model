@@ -1,6 +1,6 @@
 #
 # Copyright (c) 2011 CNRS
-# Authors: Florent Lamiraux
+# Author: Florent Lamiraux
 #
 #
 # This file is part of hpp-model
@@ -22,8 +22,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(CXX_DISABLE_WERROR TRUE)
 INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/boost.cmake)
+INCLUDE(cmake/eigen.cmake)
 INCLUDE(cmake/cpack.cmake)
-INCLUDE(cmake/kineo.cmake)
 
 SET(PROJECT_NAME hpp-model)
 SET(PROJECT_DESCRIPTION
@@ -44,31 +44,27 @@ ENDIF()
 
 # Declare headers
 SET(${PROJECT_NAME}_HEADERS
-  include/hpp/model/anchor-joint.hh
-  include/hpp/model/body-distance.hh
-  include/hpp/model/capsule-body-distance.hh
+  include/hpp/model/body.hh
+  include/hpp/model/collision-object.hh
+  include/hpp/model/configuration.hh
   include/hpp/model/device.hh
-  include/hpp/model/exception.hh
-  include/hpp/model/freeflyer-joint.hh
+  include/hpp/model/distance-result.hh
+  include/hpp/model/fcl-to-eigen.hh
   include/hpp/model/fwd.hh
   include/hpp/model/humanoid-robot.hh
   include/hpp/model/joint.hh
-  include/hpp/model/parser.hh
-  include/hpp/model/robot-dynamics-impl.hh
-  include/hpp/model/rotation-joint.hh
-  include/hpp/model/specific-humanoid-robot.hh
-  include/hpp/model/translation-joint.hh
-  include/hpp/model/types.hh
+  include/hpp/model/joint-configuration.hh
+  include/hpp/model/object-factory.hh
+  include/hpp/model/object-iterator.hh
   )
 
 # Declare dependencies
 SEARCH_FOR_BOOST()
-ADD_REQUIRED_DEPENDENCY("abstract-robot-dynamics >= 1.16")
-ADD_REQUIRED_DEPENDENCY("jrl-dynamics >= 1.19")
-ADD_REQUIRED_DEPENDENCY("hpp-kwsio >= 1.1")
-ADD_REQUIRED_DEPENDENCY("KineoController >= 2.07")
+
+ADD_REQUIRED_DEPENDENCY("eigen3 >= 3.2")
+ADD_REQUIRED_DEPENDENCY("jrl-mathtools >= 1.5")
 ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.7")
-ADD_REQUIRED_DEPENDENCY("hpp-geometry >= 1.3")
+ADD_REQUIRED_DEPENDENCY("fcl >= 0.2.9")
 
 # Compile documentation
 CONFIGURE_FILE(doc/main.hh.in doc/main.hh)

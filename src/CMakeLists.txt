@@ -1,6 +1,6 @@
 #
 # Copyright (c) 2011 CNRS
-# Authors: Florent Lamiraux
+# Author: Florent Lamiraux
 #
 #
 # This file is part of hpp-model
@@ -19,38 +19,21 @@
 
 SET(LIBRARY_NAME ${PROJECT_NAME})
 
-EXEC_PROGRAM("${PKG_CONFIG_EXECUTABLE}" ARGS
-  "--variable=moduledir" KineoController
-  OUTPUT_VARIABLE "KINEO_MODULE_DIR")
-EXEC_PROGRAM("${PKG_CONFIG_EXECUTABLE}" ARGS
-  "--variable=debug_suffix" KineoController
-  OUTPUT_VARIABLE "KINEO_DEBUG_SUFFIX")
-STRING(REGEX REPLACE "\n" "" KINEO_DEBUG_SUFFIX "${KINEO_DEBUG_SUFFIX}")
-STRING(REGEX REPLACE "\n" "" KINEO_MODULE_DIR "${KINEO_MODULE_DIR}")
-
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-
-CONFIG_FILES(module-dir.hh)
-
 ADD_LIBRARY(${LIBRARY_NAME}
   SHARED
-  anchor-joint.cc
-  body-distance.cc
-  capsule-body-distance.cc
+  body.cc
+  children-iterator.hh
+  collision-object.cc
   device.cc
-  freeflyer-joint.cc
   humanoid-robot.cc
   joint.cc
-  parser.cc
-  rotation-joint.cc
-  translation-joint.cc
+  joint-configuration.cc
+  object-iterator.cc
   )
 
-SET_TARGET_PROPERTIES(${LIBRARY_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION})
-
-PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} jrl-dynamics)
-PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-kwsio)
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-util)
-PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-geometry)
+PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} fcl)
+PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} jrl-mathtools)
+PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} eigen3)
 
 INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION lib)

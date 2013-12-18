@@ -1,6 +1,6 @@
 #
 # Copyright (c) 2011 CNRS
-# Authors: Florent Lamiraux
+# Author: Florent Lamiraux
 #
 #
 # This file is part of hpp-model
