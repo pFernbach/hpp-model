@@ -27,6 +27,9 @@
 
 namespace hpp {
   namespace model {
+    /// Object Factory
+    ///
+    /// Create instances of objects.
     class HPP_MODEL_DLLAPI ObjectFactory
     {
     public:

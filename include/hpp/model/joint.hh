@@ -27,6 +27,24 @@
 
 namespace hpp {
   namespace model {
+    /// Robot joint
+    ///
+    /// A joint maps an input vector to a transformation of SE(3) from the
+    /// parent frame to the joint frame.
+    /// 
+    /// The input vector is provided through the configuration vector of the
+    /// robot the joint belongs to. The joint input vector is composed of the
+    /// components of the robot configuration starting at
+    /// Joint::rankInConfiguration.
+    ///
+    /// The joint input vector represents a element of a Lie group, either
+    /// \li a vector space for JointTranslation, and bounded JointRotation,
+    /// \li the unit circle for non-bounded JointRotation joints,
+    /// \li an element of SO(3) for JointSO3, represented by a unit quaternion.
+    ///
+    /// Operations specific to joints (uniform sampling of input space, straight
+    /// interpolation, distance, ...) are performed by a JointConfiguration
+    /// instance that has the same class hierarchy as Joint.
     class HPP_MODEL_DLLAPI Joint {
     public:
       Joint (const Transform3f& initialPosition, std::size_t configSize,
@@ -198,6 +216,11 @@ namespace hpp {
       friend class ChildrenIterator;
     }; // class Joint
 
+    /// Anchor Joint
+    ///
+    /// An anchor joint has no degree of freedom. It is usually used as an
+    /// intermediate frame in a kinematic chain, or as a root joint for a
+    /// multi-robot kinematic chain.
     class HPP_MODEL_DLLAPI JointAnchor : public Joint
     {
     public:
@@ -211,6 +234,9 @@ namespace hpp {
 					const double& totalMass);
     }; // class JointAnchor
 
+    /// Spherical Joint
+    ///
+    /// map a unit quaternion as input vector to a rotation of SO(3).
     class HPP_MODEL_DLLAPI JointSO3 : public Joint
     {
     public:
@@ -225,6 +251,10 @@ namespace hpp {
       mutable fcl::Vec3f com_;
     }; // class JointSO3
 
+    /// Rotation Joint
+    ///
+    /// Map an angle as one-dimensional input vector to a rotation around a
+    /// fixed axis in parent frame.
     class HPP_MODEL_DLLAPI JointRotation : public Joint
     {
     public:
@@ -244,6 +274,10 @@ namespace hpp {
       mutable fcl::Vec3f com_;
     }; // class JointRotation
 
+    /// Translation Joint
+    ///
+    /// Map a length as one-dimensional input vector to a translation along a
+    /// fixed axis in parent frame.
     class HPP_MODEL_DLLAPI JointTranslation : public Joint
     {
     public:

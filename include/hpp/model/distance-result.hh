@@ -26,6 +26,7 @@
 
 namespace hpp {
   namespace model {
+    /// Result of distance computation between two CollisionObject.
     struct HPP_MODEL_DLLAPI DistanceResult {
       fcl::DistanceResult fcl;
       CollisionObjectShPtr innerObject;

@@ -29,7 +29,7 @@ namespace hpp {
   namespace model {
     using fcl::Transform3f;
 
-    /// Geometry associated to a joint
+    /// Geometry associated to a Joint
     ///
     /// A body is a geometry container attached to a joint.
     /// The body contains objects (CollisionObject) that move with the joint and

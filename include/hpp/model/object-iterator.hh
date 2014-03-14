@@ -26,6 +26,7 @@
 
 namespace hpp {
   namespace model {
+    /// Iterator over all inner objects of a Device.
     class HPP_MODEL_DLLAPI ObjectIterator {
     public:
       ObjectIterator (Device& device, Request_t type);

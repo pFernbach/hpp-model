@@ -26,10 +26,10 @@
 
 namespace hpp {
   namespace model {
-    /// Configuration of a joint
+    /// Configuration of a Joint
     ///
     /// Depending on joint type, the configuration of the joint belongs to
-    /// manifolds with different structures.
+    /// Lie groups with different structures.
     /// This abstract class sspecifies some methods that are specific to the
     /// joint configuration space, mainly
     /// \li straight interpolation
@@ -139,6 +139,7 @@ namespace hpp {
       std::vector <double> upperBounds_;
     }; // class JointConfiguration
 
+    /// Configuration of a JointAnchor
     class HPP_MODEL_DLLAPI AnchorJointConfig : public JointConfiguration
     {
     public:
@@ -168,6 +169,7 @@ namespace hpp {
 				    Configuration_t& result) const;
     }; // class AnchorJointConfig
 
+    /// Configuration of a JointSO3
     class HPP_MODEL_DLLAPI SO3JointConfig : public JointConfiguration
     {
     public:
@@ -218,6 +220,7 @@ namespace hpp {
 				    Configuration_t& result) const;
     }; // class SO3JointConfig
 
+    /// Configuration of a JointRotation
     class HPP_MODEL_DLLAPI RotationJointConfig : public JointConfiguration
     {
     public:
@@ -272,6 +275,7 @@ namespace hpp {
 				    Configuration_t& result) const;
     }; // class RotationJointConfig
 
+    /// Configuration of a JointTranslation
     class HPP_MODEL_DLLAPI TranslationJointConfig : public JointConfiguration
     {
     public:

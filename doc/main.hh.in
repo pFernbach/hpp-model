@@ -3,18 +3,22 @@
 ///
 /// \section sec_intro_hppDevice Introduction
 ///
-/// This package is an extension of jrl-dynamics implementing
-/// kinematic and dynamic computations for a kinematic chain.
-/// jrl-dynamics implements
-/// <a href="@ABSTRACT_ROBOT_DYNAMICS_DOXYGENDOCDIR@/index.html">robot
-/// dynamics</a> abstract interfaces, while this package adds a
-/// dependency to flexible collision library in order to handle
-/// collision checking with a model of environment.
+/// This package implements forward kinematics for a kinematic chain.
+/// The kinematic chain is a tree of hpp::model::Joint that belongs to a
+/// hpp::model::Device.
 ///
-/// \section sec_hppDevice_organization_classes Organization of the classes
+/// The position of each joint depends on the current configuration of the
+/// device.
 ///
-/// The position of robot links is handled by class hpp::model::Body
-/// that contains fcl objects and that performs collision tests and
-/// distance computations.
+/// A hpp::model::Body can be attached to each joint. hpp::model::Body carry
+/// \li geometric hpp::model::CollisionObject that can collide each other,
+/// \li mass and inertia.
 ///
-/// Objects of types hpp::model::Body are created by a local object factory.
+/// A hpp::model::HumanoidRobot is a device with accessors to specific joints
+/// like
+/// \li left and right ankles,
+/// \li left and right wrists,
+/// \li gaze joint (that moves the cameras),
+/// \li chest,
+/// \li waist.
+

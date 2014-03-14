@@ -32,7 +32,10 @@ namespace fcl {
 
 namespace hpp {
   namespace model {
-    /// Specialization if fcl::CollisionObject to add a name to objects
+    /// Specialization of fcl::CollisionObject to add a name to objects
+    ///
+    /// Objects moved by a robot joint. They can collide each other and
+    /// distance computation can be computed between them.
     class HPP_MODEL_DLLAPI CollisionObject {
     public:
       explicit CollisionObject (fcl::CollisionObjectShPtr object,
