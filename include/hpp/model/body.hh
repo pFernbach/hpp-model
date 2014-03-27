@@ -71,7 +71,7 @@ namespace hpp {
       /// \param distance  whether this object should be considered for
       ///        distance computation
       /// \note If object is already in body, do nothing.
-      virtual void addInnerObject (const CollisionObjectShPtr& object,
+      virtual void addInnerObject (const CollisionObjectPtr_t& object,
 				   bool collision, bool distance);
       /// Remove an object to the body
       ///
@@ -81,7 +81,7 @@ namespace hpp {
       /// \param distance  whether this object should be removed from
       ///        list of distance computation objects
       /// \note If object is not in body, do nothing
-      virtual void removeInnerObject (const CollisionObjectShPtr& object,
+      virtual void removeInnerObject (const CollisionObjectPtr_t& object,
 				      bool collision, bool distance);
       /// Access to inner objects
       /// \param type Collision or distance
@@ -100,7 +100,7 @@ namespace hpp {
       /// \param distance  whether this object should be considered for
       ///        distance computation
       /// \note If object is already in body, do nothing.
-      virtual void addOuterObject (const CollisionObjectShPtr& object,
+      virtual void addOuterObject (const CollisionObjectPtr_t& object,
 				   bool collision, bool distance);
       /// Remove an obstacle to the body
       ///
@@ -110,7 +110,7 @@ namespace hpp {
       /// \param distance  whether this object should be removed from
       ///        list of distance computation objects
       /// \note If object is not in body, do nothing
-      virtual void removeOuterObject (const CollisionObjectShPtr& object,
+      virtual void removeOuterObject (const CollisionObjectPtr_t& object,
 				      bool collision, bool distance);
       /// Access to outer objects
       /// \param type Collision or distance

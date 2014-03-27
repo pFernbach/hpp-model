@@ -23,7 +23,7 @@
 
 namespace hpp {
   namespace model {
-    CollisionObject::CollisionObject (fcl::CollisionGeometryShPtr geometry,
+    CollisionObject::CollisionObject (fcl::CollisionGeometryPtr_t geometry,
 				      const Transform3f& position,
 				      const std::string& name) :
       object_ (new fcl::CollisionObject (geometry, position)),

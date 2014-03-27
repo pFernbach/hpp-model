@@ -27,6 +27,11 @@
 # include <fcl/math/matrix_3f.h>
 
 namespace fcl {
+  class CollisionObject;
+  typedef boost::shared_ptr <CollisionObject> CollisionObjectPtr_t;
+  typedef boost::shared_ptr < const CollisionObject> CollisionObjectConstPtr_t;
+  class CollisionGeometry;
+  typedef boost::shared_ptr <CollisionGeometry> CollisionGeometryPtr_t;
   class Transform3f;
 }
 
@@ -42,10 +47,11 @@ namespace hpp {
     HPP_PREDEF_CLASS (ObjectFactory);
     HPP_PREDEF_CLASS (ObjectIterator);
     enum Request_t {COLLISION, DISTANCE};
-    typedef std::vector <CollisionObjectShPtr> ObjectVector_t;
-    typedef DeviceShPtr DevicePtr_t;
+    typedef boost::shared_ptr <CollisionObject> CollisionObjectPtr_t;
+    typedef std::vector <CollisionObjectPtr_t> ObjectVector_t;
+    typedef boost::shared_ptr <Device> DevicePtr_t;
     typedef std::vector <DistanceResult> DistanceResults_t;
-    typedef HumanoidRobotShPtr HumanoidRobotPtr_t;
+    typedef boost::shared_ptr <HumanoidRobot> HumanoidRobotPtr_t;
     typedef Joint* JointPtr_t;
     typedef std::map <std::string, Joint*> JointByName_t;
     typedef std::vector <Joint*> JointVector_t;

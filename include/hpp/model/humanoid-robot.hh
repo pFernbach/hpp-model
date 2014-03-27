@@ -39,7 +39,7 @@ namespace hpp {
       virtual ~HumanoidRobot ();
 
       /// \brief Clone as a CkwsDevice
-      HumanoidRobotShPtr clone () const;
+      HumanoidRobotPtr_t clone () const;
 
       ///
       /// @}
@@ -48,7 +48,7 @@ namespace hpp {
       /// \brief Creation of a new device
       /// \return a shared pointer to the new device
       /// \param name Name of the device (is passed to CkkpDeviceComponent)
-      static HumanoidRobotShPtr create (const std::string& name);
+      static HumanoidRobotPtr_t create (const std::string& name);
 
       /// \brief Get Joint corresponding to the waist.
       JointPtr_t waist() const;

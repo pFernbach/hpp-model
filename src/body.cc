@@ -33,11 +33,11 @@ namespace hpp {
   namespace model {
     static ObjectVector_t::iterator
     findObject (ObjectVector_t& vector,
-		const fcl::CollisionObjectConstShPtr& object)
+		const fcl::CollisionObjectConstPtr_t& object)
     {
       ObjectVector_t::iterator it;
       for (it = vector.begin (); it != vector.end (); it++) {
-	const CollisionObjectShPtr& local = *it;
+	const CollisionObjectPtr_t& local = *it;
 	if (local->fcl ()->collisionGeometry () ==
 	    object->collisionGeometry ()) return it;
       }
@@ -53,7 +53,7 @@ namespace hpp {
 
     //-----------------------------------------------------------------------
 
-    void Body::addInnerObject (const CollisionObjectShPtr& object,
+    void Body::addInnerObject (const CollisionObjectPtr_t& object,
 			       bool collision, bool distance)
     {
       if (collision) {
@@ -87,7 +87,7 @@ namespace hpp {
 
     //-----------------------------------------------------------------------
 
-    void Body::addOuterObject (const CollisionObjectShPtr& object,
+    void Body::addOuterObject (const CollisionObjectPtr_t& object,
 			       bool collision, bool distance)
     {
       if (collision) {
@@ -115,7 +115,7 @@ namespace hpp {
 
     //-----------------------------------------------------------------------
 
-    void Body::removeInnerObject (const CollisionObjectShPtr& object,
+    void Body::removeInnerObject (const CollisionObjectPtr_t& object,
 				  bool collision, bool distance)
     {
       if (collision) {
@@ -134,7 +134,7 @@ namespace hpp {
 
     //-----------------------------------------------------------------------
 
-    void Body::removeOuterObject (const CollisionObjectShPtr& object,
+    void Body::removeOuterObject (const CollisionObjectPtr_t& object,
 				  bool collision, bool distance)
     {
       if (collision) {

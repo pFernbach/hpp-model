@@ -36,13 +36,13 @@ namespace hpp {
 
     // ========================================================================
 
-    HumanoidRobotShPtr HumanoidRobot::create (const std::string& name)
+    HumanoidRobotPtr_t HumanoidRobot::create (const std::string& name)
     {
       HumanoidRobot *hppHumanoidRobot = new HumanoidRobot (name);
-      HumanoidRobotShPtr hppHumanoidRobotShPtr (hppHumanoidRobot);
+      HumanoidRobotPtr_t hppHumanoidRobotPtr_t (hppHumanoidRobot);
 
-      hppHumanoidRobot->init (hppHumanoidRobotShPtr);
-      return hppHumanoidRobotShPtr;
+      hppHumanoidRobot->init (hppHumanoidRobotPtr_t);
+      return hppHumanoidRobotPtr_t;
     }
 
     // ========================================================================

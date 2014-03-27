@@ -39,7 +39,7 @@ namespace hpp {
       }
     }
 
-    const CollisionObjectShPtr& ObjectIterator::operator* ()
+    const CollisionObjectPtr_t& ObjectIterator::operator* ()
     {
       return *objIt_;
     }

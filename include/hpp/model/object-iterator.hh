@@ -30,7 +30,7 @@ namespace hpp {
     class HPP_MODEL_DLLAPI ObjectIterator {
     public:
       ObjectIterator (Device& device, Request_t type);
-      const CollisionObjectShPtr& operator* ();
+      const CollisionObjectPtr_t& operator* ();
       bool operator== (const ObjectIterator& other) const;
       bool operator!= (const ObjectIterator& other) const;
       void operator++ ();

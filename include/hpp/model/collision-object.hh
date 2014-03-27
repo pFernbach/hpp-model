@@ -38,18 +38,18 @@ namespace hpp {
     /// distance computation can be computed between them.
     class HPP_MODEL_DLLAPI CollisionObject {
     public:
-      explicit CollisionObject (fcl::CollisionObjectShPtr object,
+      explicit CollisionObject (fcl::CollisionObjectPtr_t object,
 				const std::string& name) :
 	object_ (object), joint_ (0), name_ (name)
       {
 	positionInJointFrame_.setIdentity ();
       }
-      explicit CollisionObject (fcl::CollisionGeometryShPtr geometry,
+      explicit CollisionObject (fcl::CollisionGeometryPtr_t geometry,
 				const Transform3f& position,
 				const std::string& name);
       const std::string& name () const {return name_;}
       /// Access to fcl object
-      fcl::CollisionObjectShPtr fcl () const {return object_;}
+      fcl::CollisionObjectPtr_t fcl () const {return object_;}
       const Joint* joint () const {return joint_;}
       void joint (const Joint* joint);
       const fcl::Transform3f& positionInJointFrame () const
@@ -60,7 +60,7 @@ namespace hpp {
       /// \note If object is attached to a joint, throw exception.
       void move (const Transform3f& position);
     private:
-      fcl::CollisionObjectShPtr object_;
+      fcl::CollisionObjectPtr_t object_;
       fcl::Transform3f positionInJointFrame_;
       const Joint* joint_;
       std::string name_;

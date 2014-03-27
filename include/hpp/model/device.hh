@@ -59,7 +59,7 @@ namespace hpp {
       virtual ~Device();
 
       /// \brief Clone as a CkwsDevice
-      DeviceShPtr clone() const;
+      DevicePtr_t clone() const;
 
       /// \}
 
@@ -69,13 +69,13 @@ namespace hpp {
       /// \brief Creation of a new device
       /// \return a shared pointer to the new device
       /// \param name Name of the device (is passed to CkkpDeviceComponent)
-      static DeviceShPtr create (std::string name);
+      static DevicePtr_t create (std::string name);
 
       ///
       /// \brief Copy of a device
       /// \return A shared pointer to new device.
       /// \param device Device to be copied.
-      static DeviceShPtr createCopy (const DeviceShPtr& device);
+      static DevicePtr_t createCopy (const DevicePtr_t& device);
 
       /// \name Joints
       /// \{
@@ -184,7 +184,7 @@ namespace hpp {
       ///        collision
       /// \param distance  whether this object should be considered for
       ///        distance computation
-      virtual void addOuterObject (const CollisionObjectShPtr &object,
+      virtual void addOuterObject (const CollisionObjectPtr_t &object,
 				   bool collision, bool distance);
 
       /// Remove an object for collision or distance computation
@@ -195,7 +195,7 @@ namespace hpp {
       /// \param distance  whether this object should be removed from
       ///        list of distance computation objects
       /// \note If object is not in body, do nothing
-      virtual void removeOuterObject (const CollisionObjectShPtr& object,
+      virtual void removeOuterObject (const CollisionObjectPtr_t& object,
 				      bool collision, bool distance);
 
       /// Iterator over inner objects of the device

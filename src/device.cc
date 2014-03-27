@@ -50,10 +50,10 @@ namespace hpp {
 
     // ========================================================================
 
-    DeviceShPtr Device::create(std::string name)
+    DevicePtr_t Device::create(std::string name)
     {
       Device* ptr = new Device (name);
-      DeviceShPtr shPtr (ptr);
+      DevicePtr_t shPtr (ptr);
 
       ptr->init (shPtr);
       return shPtr;
@@ -61,10 +61,10 @@ namespace hpp {
 
     // ========================================================================
 
-    DeviceShPtr Device::createCopy(const DeviceShPtr& device)
+    DevicePtr_t Device::createCopy(const DevicePtr_t& device)
     {
       Device* ptr = new Device(*device);
-      DeviceShPtr shPtr(ptr);
+      DevicePtr_t shPtr(ptr);
 
       ptr->init (shPtr);
       return shPtr;
@@ -72,7 +72,7 @@ namespace hpp {
 
     // ========================================================================
 
-    DeviceShPtr Device::clone() const
+    DevicePtr_t Device::clone() const
     {
       return Device::createCopy(weakPtr_.lock());
     }
@@ -86,7 +86,7 @@ namespace hpp {
 
     // ========================================================================
 
-    void Device::addOuterObject (const CollisionObjectShPtr &object,
+    void Device::addOuterObject (const CollisionObjectPtr_t &object,
 				 bool collision, bool distance)
     {
       JointVector_t jv = getJointVector ();
@@ -101,7 +101,7 @@ namespace hpp {
 
     // ========================================================================
 
-    void Device::removeOuterObject (const CollisionObjectShPtr& object,
+    void Device::removeOuterObject (const CollisionObjectPtr_t& object,
 				    bool collision, bool distance)
     {
       JointVector_t jv = getJointVector ();
