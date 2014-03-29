@@ -173,10 +173,10 @@ namespace hpp {
       /// Mass time center of mass of this and all descendants
       fcl::Vec3f massCom_;
    private:
-      void computePosition (const Configuration_t& configuration,
+      void computePosition (ConfigurationIn_t configuration,
 			    const Transform3f& parentConfig);
 
-      virtual void computeMotion (const Configuration_t& configuration,
+      virtual void computeMotion (ConfigurationIn_t configuration,
 				  const Transform3f& parentConfig) = 0;
 
       /// Write a block of Jacobian
@@ -227,7 +227,7 @@ namespace hpp {
     public:
       JointAnchor (const Transform3f& initialPosition);
       virtual ~JointAnchor ();
-      virtual void computeMotion (const Configuration_t& configuration,
+      virtual void computeMotion (ConfigurationIn_t configuration,
 				    const Transform3f& parentConfig);
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
@@ -242,7 +242,7 @@ namespace hpp {
     {
     public:
       JointSO3 (const Transform3f& initialPosition);
-      virtual void computeMotion (const Configuration_t& configuration,
+      virtual void computeMotion (ConfigurationIn_t configuration,
 				    const Transform3f& parentConfig);
       virtual ~JointSO3 ();
     private:
@@ -260,7 +260,7 @@ namespace hpp {
     {
     public:
       JointRotation (const Transform3f& initialPosition);
-      virtual void computeMotion (const Configuration_t& configuration,
+      virtual void computeMotion (ConfigurationIn_t configuration,
 				    const Transform3f& parentConfig);
       virtual ~JointRotation ();
     private:
@@ -283,7 +283,7 @@ namespace hpp {
     {
     public:
       JointTranslation (const Transform3f& initialPosition);
-      virtual void computeMotion (const Configuration_t& configuration,
+      virtual void computeMotion (ConfigurationIn_t configuration,
 				    const Transform3f& parentConfig);
       virtual ~JointTranslation ();
     private:

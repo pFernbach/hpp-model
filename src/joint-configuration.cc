@@ -108,39 +108,39 @@ namespace hpp {
     {
     }
 
-    void AnchorJointConfig::interpolate (const Configuration_t&,
-					 const Configuration_t&,
+    void AnchorJointConfig::interpolate (ConfigurationIn_t,
+					 ConfigurationIn_t,
 					 const double&,
 					 const std::size_t&,
-					 Configuration_t&)
+					 ConfigurationOut_t)
     {
     }
 
-    double AnchorJointConfig::distance (const Configuration_t&,
-					const Configuration_t&,
+    double AnchorJointConfig::distance (ConfigurationIn_t,
+					ConfigurationIn_t,
 					const std::size_t&) const
     {
       return 0;
     }
 
-    void AnchorJointConfig::integrate (const Configuration_t&,
-				       const vector_t&,
+    void AnchorJointConfig::integrate (ConfigurationIn_t,
+				       vectorIn_t,
 				       const std::size_t&,
 				       const std::size_t&,
-				       Configuration_t&) const
+				       ConfigurationOut_t) const
     {
     }
 
-    void AnchorJointConfig::difference (const Configuration_t&,
-					const Configuration_t&,
+    void AnchorJointConfig::difference (ConfigurationIn_t,
+					ConfigurationIn_t,
 					const std::size_t&,
 					const std::size_t&,
-					vector_t&) const
+					vectorOut_t) const
     {
     }
 
     void AnchorJointConfig::uniformlySample (const std::size_t&,
-					     Configuration_t&) const
+					     ConfigurationOut_t) const
     {
     }
 
@@ -150,8 +150,8 @@ namespace hpp {
     /// \param index index of joint configuration in robot configuration vector
     /// \param unit quaternion corresponding to both joint configuration
     /// \return angle between both joint configuration
-    static double angleBetweenQuaternions (const Configuration_t& q1,
-					   const Configuration_t& q2,
+    static double angleBetweenQuaternions (ConfigurationIn_t q1,
+					   ConfigurationIn_t q2,
 					   const std::size_t& index)
     {
       double innerprod = q1.segment (index, 4).dot (q2.segment (index, 4));
@@ -162,11 +162,11 @@ namespace hpp {
       return theta;
     }
 
-    void SO3JointConfig::interpolate (const Configuration_t& q1,
-				      const Configuration_t& q2,
+    void SO3JointConfig::interpolate (ConfigurationIn_t q1,
+				      ConfigurationIn_t q2,
 				      const double& u,
 				      const std::size_t& index,
-				      Configuration_t& result)
+				      ConfigurationOut_t result)
     {
       // Linearly interpolate translation part
       result [index] = (1-u) * q1 [index] + u * q2 [index];
@@ -185,8 +185,8 @@ namespace hpp {
       }
     }
 
-    double SO3JointConfig::distance (const Configuration_t& q1,
-				     const Configuration_t& q2,
+    double SO3JointConfig::distance (ConfigurationIn_t q1,
+				     ConfigurationIn_t q2,
 				     const std::size_t& index) const
     {
       double theta = angleBetweenQuaternions (q1, q2, index);
@@ -194,11 +194,11 @@ namespace hpp {
       return theta;
     }
 
-    void SO3JointConfig::integrate (const Configuration_t& q,
-				    const vector_t& v,
+    void SO3JointConfig::integrate (ConfigurationIn_t q,
+				    vectorIn_t v,
 				    const std::size_t& indexConfig,
 				    const std::size_t& indexVelocity,
-				    Configuration_t& result) const
+				    ConfigurationOut_t result) const
     {
       vector3_t omega (v [indexVelocity + 0], v [indexVelocity + 1],
 		       v [indexVelocity + 2]);
@@ -228,11 +228,11 @@ namespace hpp {
       result [indexConfig + 3] = res.getZ ();
     }
 
-    void SO3JointConfig::difference (const Configuration_t& q1,
-				     const Configuration_t& q2,
+    void SO3JointConfig::difference (ConfigurationIn_t q1,
+				     ConfigurationIn_t q2,
 				     const std::size_t& indexConfig,
 				     const std::size_t& indexVelocity,
-				     vector_t& result) const
+				     vectorOut_t result) const
     {
       // Compute rotation vector between q2 and q1.
       Quaternion_t p1 (q1 [indexConfig + 0], q1 [indexConfig + 1],
@@ -248,7 +248,7 @@ namespace hpp {
     }
 
     void SO3JointConfig::uniformlySample (const std::size_t& index,
-					  Configuration_t& result) const
+					  ConfigurationOut_t result) const
     {
       double u1 = (double)rand() / RAND_MAX;
       double u2 = (double)rand() / RAND_MAX;
@@ -259,29 +259,29 @@ namespace hpp {
       result [index+3] = sqrt (u1) * cos(2*M_PI*u3);
     }
 
-    void TranslationJointConfig::interpolate (const Configuration_t& q1,
-					      const Configuration_t& q2,
+    void TranslationJointConfig::interpolate (ConfigurationIn_t q1,
+					      ConfigurationIn_t q2,
 					      const double& u,
 					      const std::size_t& index,
-					      Configuration_t& result)
+					      ConfigurationOut_t result)
     {
       result [index] = (1-u) * q1 [index] + u * q2 [index];
       hppDout (info, "index = " << index);
       hppDout (info, "result [index] = " << result [index]);
     }
 
-    double TranslationJointConfig::distance (const Configuration_t& q1,
-					     const Configuration_t& q2,
+    double TranslationJointConfig::distance (ConfigurationIn_t q1,
+					     ConfigurationIn_t q2,
 					     const std::size_t& index) const
     {
       return fabs (q2 [index] - q1 [index]);
     }
 
-    void TranslationJointConfig::integrate (const Configuration_t& q,
-					    const vector_t& v,
+    void TranslationJointConfig::integrate (ConfigurationIn_t q,
+					    vectorIn_t v,
 					    const std::size_t& indexConfig,
 					    const std::size_t& indexVelocity,
-					    Configuration_t& result) const
+					    ConfigurationOut_t result) const
     {
       assert (indexConfig < result.size ());
       result [indexConfig] = q [indexConfig] + v [indexVelocity];
@@ -294,17 +294,17 @@ namespace hpp {
       }
     }
 
-    void TranslationJointConfig::difference (const Configuration_t& q1,
-					     const Configuration_t& q2,
+    void TranslationJointConfig::difference (ConfigurationIn_t q1,
+					     ConfigurationIn_t q2,
 					     const std::size_t& indexConfig,
 					     const std::size_t& indexVelocity,
-					     vector_t& result) const
+					     vectorOut_t result) const
     {
       result [indexVelocity] = q1 [indexConfig] - q2 [indexConfig];
     }
 
     void TranslationJointConfig::uniformlySample (const std::size_t& index,
-						  Configuration_t& result) const
+						  ConfigurationOut_t result) const
     {
       if (!isBounded (0)) {
 	std::ostringstream iss
@@ -319,11 +319,11 @@ namespace hpp {
       }
     }
 
-    void RotationJointConfig::interpolate (const Configuration_t& q1,
-					   const Configuration_t& q2,
+    void RotationJointConfig::interpolate (ConfigurationIn_t q1,
+					   ConfigurationIn_t q2,
 					   const double& u,
 					   const std::size_t& index,
-					   Configuration_t& result)
+					   ConfigurationOut_t result)
     {
       if (isBounded (0)) {
 	// linearly interpolate
@@ -338,8 +338,8 @@ namespace hpp {
       hppDout (info, "result [index] = " << result [index]);
     }
 
-    double RotationJointConfig::distance (const Configuration_t& q1,
-					  const Configuration_t& q2,
+    double RotationJointConfig::distance (ConfigurationIn_t q1,
+					  ConfigurationIn_t q2,
 					  const std::size_t& index) const
     {
       if (isBounded (0)) {
@@ -353,11 +353,11 @@ namespace hpp {
       }
     }
 
-    void RotationJointConfig::integrate (const Configuration_t& q,
-					 const vector_t& v,
+    void RotationJointConfig::integrate (ConfigurationIn_t q,
+					 vectorIn_t v,
 					 const std::size_t& indexConfig,
 					 const std::size_t& indexVelocity,
-					 Configuration_t& result) const
+					 ConfigurationOut_t result) const
     {
       using jrlMathTools::Angle;
       double omega = v [indexVelocity];
@@ -371,11 +371,11 @@ namespace hpp {
       }
     }
 
-    void RotationJointConfig::difference (const Configuration_t& q1,
-					  const Configuration_t& q2,
+    void RotationJointConfig::difference (ConfigurationIn_t q1,
+					  ConfigurationIn_t q2,
 					  const std::size_t& indexConfig,
 					  const std::size_t& indexVelocity,
-					  vector_t& result) const
+					  vectorOut_t result) const
     {
       using jrlMathTools::Angle;
       if (isBounded (0)) {
@@ -387,7 +387,7 @@ namespace hpp {
     }
 
     void RotationJointConfig::uniformlySample (const std::size_t& index,
-					       Configuration_t& result) const
+					       ConfigurationOut_t result) const
     {
       if (!isBounded (0)) {
 	result [index] = -M_PI + 2* M_PI * rand ()/RAND_MAX;

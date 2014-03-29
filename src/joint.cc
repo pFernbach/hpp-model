@@ -121,7 +121,7 @@ namespace hpp {
       }
     }
 
-    void Joint::computePosition (const Configuration_t& configuration,
+    void Joint::computePosition (ConfigurationIn_t configuration,
 				 const Transform3f& parentConfig)
     {
       computeMotion (configuration, parentConfig);
@@ -180,7 +180,7 @@ namespace hpp {
       delete configuration_;
     }
 
-    void JointAnchor::computeMotion (const Configuration_t&,
+    void JointAnchor::computeMotion (ConfigurationIn_t,
 				     const Transform3f& parentConfig)
     {
       currentTransformation_ = parentConfig * positionInParentFrame_;
@@ -206,7 +206,7 @@ namespace hpp {
       delete configuration_;
     }
 
-    void JointSO3::computeMotion (const Configuration_t& configuration,
+    void JointSO3::computeMotion (ConfigurationIn_t configuration,
 				  const Transform3f& parentConfig)
     {
       fcl::Quaternion3f p (configuration [rankInConfiguration ()],
@@ -272,7 +272,7 @@ namespace hpp {
       delete configuration_;
     }
 
-    void JointRotation::computeMotion (const Configuration_t& configuration,
+    void JointRotation::computeMotion (ConfigurationIn_t configuration,
 				       const Transform3f& parentConfig)
     {
       angle_ = configuration [rankInConfiguration ()];
@@ -329,7 +329,7 @@ namespace hpp {
     }
 
     void JointTranslation::computeMotion
-    (const Configuration_t& configuration, const Transform3f& parentConfig)
+    (ConfigurationIn_t configuration, const Transform3f& parentConfig)
     {
       t_ [0] = configuration [rankInConfiguration ()];
       T3f_.setTranslation (t_);

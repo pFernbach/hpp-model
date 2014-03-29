@@ -43,7 +43,7 @@ inline hpp::model::matrix_t operator* (const hpp::model::matrix_t& m1,
 namespace hpp {
   namespace model {
     inline void toEigen (const hpp::model::vector3_t& v,
-			 hpp::model::vector_t& res)
+			 hpp::model::vectorOut_t res)
     {
       res [0] = v [0]; res [1] = v [1]; res [2] = v [2];
     }

@@ -57,8 +57,10 @@ namespace hpp {
     typedef std::vector <Joint*> JointVector_t;
     typedef Eigen::Matrix <double, Eigen::Dynamic, 1> vector_t;
     typedef vector_t Configuration_t;
-    typedef Eigen::Ref <Configuration_t> ConfigurationIn_t;
-    typedef Eigen::Ref <vector_t> vectorIn_t;
+    typedef Eigen::Ref <const Configuration_t> ConfigurationIn_t;
+    typedef Eigen::Ref <Configuration_t> ConfigurationOut_t;
+    typedef Eigen::Ref <const vector_t> vectorIn_t;
+    typedef Eigen::Ref <vector_t> vectorOut_t;
     typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> matrix_t;
     typedef matrix_t::Index size_type;
     typedef fcl::Matrix3f matrix3_t;
