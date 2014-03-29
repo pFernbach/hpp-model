@@ -118,7 +118,7 @@ namespace hpp {
 	return currentConfiguration_;
       }
       /// Set current configuration
-      void currentConfiguration (const vector_t& configuration)
+      virtual void currentConfiguration (const ConfigurationIn_t& configuration)
       {
 	if (configuration != currentConfiguration_) {
 	  upToDate_ = false;
@@ -132,7 +132,7 @@ namespace hpp {
       }
 
       /// Set current velocity
-      void currentVelocity (const vector_t& velocity)
+      void currentVelocity (const vectorIn_t& velocity)
       {
 	upToDate_ = false;
 	currentVelocity_ = velocity;
@@ -145,7 +145,7 @@ namespace hpp {
       }
 
       /// Set current acceleration
-      void currentAcceleration (const vector_t& acceleration)
+      void currentAcceleration (const vectorIn_t& acceleration)
       {
 	upToDate_ = false;
 	currentAcceleration_ = acceleration;

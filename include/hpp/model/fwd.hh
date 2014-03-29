@@ -57,15 +57,12 @@ namespace hpp {
     typedef std::vector <Joint*> JointVector_t;
     typedef Eigen::Matrix <double, Eigen::Dynamic, 1> vector_t;
     typedef vector_t Configuration_t;
+    typedef Eigen::Ref <Configuration_t> ConfigurationIn_t;
+    typedef Eigen::Ref <vector_t> vectorIn_t;
     typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> matrix_t;
     typedef matrix_t::Index size_type;
-#if 0
-    typedef Eigen::Matrix <double, 3,3> matrix3_t;
-    typedef Eigen::Matrix <double, 3,1> vector3_t;
-#else
     typedef fcl::Matrix3f matrix3_t;
     typedef fcl::Vec3f vector3_t;
-#endif
     typedef Eigen::Matrix <double, 6, Eigen::Dynamic> JointJacobian_t;
     typedef Eigen::Matrix <double, 3, Eigen::Dynamic> ComJacobian_t;
     typedef Eigen::Block <JointJacobian_t, 3, Eigen::Dynamic>

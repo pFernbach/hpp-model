@@ -211,6 +211,7 @@ namespace hpp {
       std::size_t rankInConfiguration_;
       std::size_t rankInVelocity_;
       JointJacobian_t jacobian_;
+      /// Rank of the joint in vector of children of parent joint.
       std::size_t rankInParent_;
       friend class Device;
       friend class ChildrenIterator;

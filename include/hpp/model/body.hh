@@ -137,15 +137,6 @@ namespace hpp {
 	return localCom_;
       }
 
-#if 0
-      /// Set postion of center of mass in joint reference frame.
-      inline  void localCenterOfMass (const vector3_t& localCenterOfMass)
-      {
-	localCom_ [0] = localCenterOfMass [0];
-	localCom_ [1] = localCenterOfMass [1];
-	localCom_ [2] = localCenterOfMass [2];
-      }
-#endif
       /// Set postion of center of mass in joint reference frame.
       inline  void localCenterOfMass (const fcl::Vec3f& localCenterOfMass)
       {

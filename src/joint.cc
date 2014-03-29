@@ -73,20 +73,9 @@ namespace hpp {
       children_.push_back (joint);
       joint->parent_ = this;
       // Mjoint/parent = Mparent^{-1} Mjoint
-#if 0
-      fcl::Matrix3f Rp (currentTransformation_.getRotation ());
-      fcl::Matrix3f Rpt (Rp.transpose ());
-      fcl::Vec3f tp (currentTransformation_.getTranslation ());
-      fcl::Matrix3f Rj (joint->currentTransformation_.getRotation ());
-      fcl::Matrix3f Rjt (Rj.transpose ());
-      fcl::Vec3f tj (joint->currentTransformation_.getTranslation ());
-      joint->positionInParentFrame_ =
-	fcl::Transform3f (Rpt * Rj, Rpt * (tj - tp));
-#else
       fcl::Transform3f Mp = currentTransformation_;
       fcl::Transform3f Mj = joint->currentTransformation_;
       joint->positionInParentFrame_ = Mp.inverse () * Mj;
-#endif
     }
 
     void Joint::isBounded (std::size_t rank, bool bounded)
