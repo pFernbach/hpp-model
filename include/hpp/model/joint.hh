@@ -150,9 +150,9 @@ namespace hpp {
       /// Access to configuration space
       JointConfiguration* configuration () const {return configuration_;}
       /// Set robot owning the kinematic chain
-      void setRobot (const DevicePtr_t& device) {robot_ = device;}
+      void robot (const DevicePtr_t& device) {robot_ = device;}
       /// Access robot owning the object
-      DevicePtr_t getRobot () { return robot_.lock ();}
+      DevicePtr_t robot () { return robot_.lock ();}
       /// \name Body linked to the joint
       /// @{
       /// Get linked body

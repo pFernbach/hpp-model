@@ -76,11 +76,11 @@ namespace hpp {
 	  }
 	  object->joint (joint ());
 	  distanceInnerObjects_.push_back (object);
-	  if (!joint ()->getRobot ()) {
+	  if (!joint ()->robot ()) {
 	    throw std::runtime_error ("Body should be connected to a robot "
 				      "before inserting inner objects.");
 	  }
-	  joint ()->getRobot ()->updateDistances ();
+	  joint ()->robot ()->updateDistances ();
 	}
       }
     }
@@ -104,11 +104,11 @@ namespace hpp {
 	  hppDout (info, "adding " << object->name () << " to body "
 		   << this->name_ << " for distance");
 	  distanceOuterObjects_.push_back (object);
-	  if (!joint ()->getRobot ()) {
+	  if (!joint ()->robot ()) {
 	    throw std::runtime_error ("Body should be connected to a robot "
 				      "before inserting outer objects.");
 	  }
-	  joint ()->getRobot ()->updateDistances ();
+	  joint ()->robot ()->updateDistances ();
 	}
       }
     }

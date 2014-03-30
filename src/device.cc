@@ -250,7 +250,7 @@ namespace hpp {
     {
       rootJoint_ = joint;
       registerJoint (joint);
-      joint->setRobot (weakPtr_.lock ());
+      joint->robot (weakPtr_.lock ());
     }
 
     JointPtr_t Device::rootJoint () const
