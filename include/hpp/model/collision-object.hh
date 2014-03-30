@@ -62,7 +62,7 @@ namespace hpp {
     private:
       fcl::CollisionObjectPtr_t object_;
       fcl::Transform3f positionInJointFrame_;
-      const JointPtr_t joint_;
+      JointPtr_t joint_;
       std::string name_;
     }; // class CollisionObject
   } // namespace model
