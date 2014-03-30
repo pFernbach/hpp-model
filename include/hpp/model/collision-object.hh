@@ -50,7 +50,7 @@ namespace hpp {
       const std::string& name () const {return name_;}
       /// Access to fcl object
       fcl::CollisionObjectPtr_t fcl () const {return object_;}
-      const JointPtr_t joint () const {return joint_;}
+      const JointPtr_t& joint () const {return joint_;}
       void joint (const JointPtr_t joint);
       const fcl::Transform3f& positionInJointFrame () const
       {
