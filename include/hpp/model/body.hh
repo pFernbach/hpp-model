@@ -41,8 +41,17 @@ namespace hpp {
     class HPP_MODEL_DLLAPI Body
     {
     public:
+      /// \name Construction and copy and destruction
+      /// @{
+      /// Constructor
       Body ();
+      /// Copy constructor
+      Body (const Body& body);
+      /// Clone body and attach to new joint
+      BodyPtr_t clone (const JointPtr_t& joint) const;
       virtual ~Body () {}
+      /// @}
+
       /// \name Name
       /// \{
 
@@ -52,7 +61,7 @@ namespace hpp {
       std::string name () const { return name_;}
       /// \}
 
-      /// Get to joint holding the body
+      /// Get joint holding the body
       JointPtr_t joint () const
       {
 	return joint_;

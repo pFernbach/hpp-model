@@ -23,13 +23,36 @@
 
 namespace hpp {
   namespace model {
-    CollisionObject::CollisionObject (fcl::CollisionGeometryPtr_t geometry,
-				      const Transform3f& position,
-				      const std::string& name) :
-      object_ (new fcl::CollisionObject (geometry, position)),
-      joint_ (0), name_ (name)
+
+    CollisionObjectPtr_t
+    CollisionObject::create (fcl::CollisionObjectPtr_t object,
+			     const std::string& name)
     {
-      positionInJointFrame_.setIdentity ();
+      CollisionObject* ptr = new CollisionObject (object, name);
+      CollisionObjectPtr_t shPtr (ptr);
+      ptr->init (shPtr);
+      return shPtr;
+    }
+
+    CollisionObjectPtr_t
+    CollisionObject::create (fcl::CollisionGeometryPtr_t geometry,
+			     const Transform3f& position,
+			     const std::string& name)
+    {
+      CollisionObject* ptr = new CollisionObject (geometry, position, name);
+      CollisionObjectPtr_t shPtr (ptr);
+      ptr->init (shPtr);
+      return shPtr;
+    }
+
+
+    CollisionObjectPtr_t CollisionObject::clone (const JointPtr_t& joint) const
+    {
+      CollisionObject* ptr = new CollisionObject (*this);
+      CollisionObjectPtr_t shPtr (ptr);
+      ptr->init (shPtr);
+      ptr->joint_ = joint;
+      return shPtr;
     }
 
     // -----------------------------------------------------------------------
@@ -42,6 +65,8 @@ namespace hpp {
       positionInJointFrame_ = jointPosition.inverse () *
 	object_->getTransform ();
     }
+
+    // -----------------------------------------------------------------------
 
     void CollisionObject::move (const Transform3f& position)
     {

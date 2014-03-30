@@ -46,6 +46,16 @@ namespace hpp {
       massCom_.setValue (0);
     }
 
+    Joint::Joint (const Joint& joint) :
+      configuration_ (joint.configuration_),
+      positionInParentFrame_ (joint.positionInParentFrame_),
+      configSize_ (joint.configSize_), numberDof_ (joint.numberDof_),
+      body_ (joint.body_->clone (this)), robot_ (), name_ (joint.name_),
+      children_ (), parent_ (), rankInConfiguration_ (-1), rankInVelocity_ (-1),
+      rankInParent_ (-1)
+    {
+    }
+
     Joint::~Joint ()
     {
       delete body_;
@@ -177,6 +187,16 @@ namespace hpp {
       configuration_ = new AnchorJointConfig;
     }
 
+    JointAnchor::JointAnchor (const JointAnchor& joint) :
+      Joint (joint)
+    {
+    }
+
+    JointPtr_t JointAnchor::clone () const
+    {
+      return new JointAnchor (*this);
+    }
+
     JointAnchor::~JointAnchor ()
     {
       delete configuration_;
@@ -201,6 +221,16 @@ namespace hpp {
       Joint (initialPosition, 4, 3)
     {
       configuration_ = new SO3JointConfig;
+    }
+
+    JointSO3::JointSO3 (const JointSO3& joint) :
+      Joint (joint)
+    {
+    }
+
+    JointPtr_t JointSO3::clone () const
+    {
+      return new JointSO3 (*this);
     }
 
     JointSO3::~JointSO3 ()
@@ -269,6 +299,17 @@ namespace hpp {
       R_.setIdentity ();
     }
 
+    JointRotation::JointRotation (const JointRotation& joint) :
+      Joint (joint), R_ ()
+    {
+      R_.setIdentity ();
+    }
+
+    JointPtr_t JointRotation::clone () const
+    {
+      return new JointRotation (*this);
+    }
+
     JointRotation::~JointRotation ()
     {
       delete configuration_;
@@ -323,6 +364,17 @@ namespace hpp {
     {
       configuration_ = new TranslationJointConfig;
       t_.setValue (0);
+    }
+
+    JointTranslation::JointTranslation (const JointTranslation& joint) :
+      Joint (joint), t_ ()
+    {
+      t_.setValue (0);
+    }
+
+    JointPtr_t JointTranslation::clone () const
+    {
+      return new JointTranslation (*this);
     }
 
     JointTranslation::~JointTranslation ()

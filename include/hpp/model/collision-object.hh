@@ -38,15 +38,16 @@ namespace hpp {
     /// distance computation can be computed between them.
     class HPP_MODEL_DLLAPI CollisionObject {
     public:
-      explicit CollisionObject (fcl::CollisionObjectPtr_t object,
-				const std::string& name) :
-	object_ (object), joint_ (0), name_ (name)
-      {
-	positionInJointFrame_.setIdentity ();
-      }
-      explicit CollisionObject (fcl::CollisionGeometryPtr_t geometry,
-				const Transform3f& position,
-				const std::string& name);
+      /// Create collision object and return shared pointer
+      static CollisionObjectPtr_t create (fcl::CollisionObjectPtr_t object,
+					  const std::string& name);
+      /// Create collision object and return shared pointer
+      static CollisionObjectPtr_t create (fcl::CollisionGeometryPtr_t geometry,
+					  const Transform3f& position,
+					  const std::string& name);
+      /// Clone object and attach to given joint.
+      CollisionObjectPtr_t clone (const JointPtr_t& joint) const;
+
       const std::string& name () const {return name_;}
       /// Access to fcl object
       fcl::CollisionObjectPtr_t fcl () const {return object_;}
@@ -59,11 +60,50 @@ namespace hpp {
       /// Move object to given position
       /// \note If object is attached to a joint, throw exception.
       void move (const Transform3f& position);
+
+    protected:
+
+      /// \name Construction, destruction and copy
+      /// \{
+
+      /// Wrap fcl collision object at identity position
+      explicit CollisionObject (fcl::CollisionObjectPtr_t object,
+				const std::string& name) :
+	object_ (object), joint_ (0), name_ (name), weakPtr_ ()
+      {
+	positionInJointFrame_.setIdentity ();
+      }
+      /// Wrap fcl collision object and put at given position
+      explicit CollisionObject (fcl::CollisionGeometryPtr_t geometry,
+				const Transform3f& position,
+				const std::string& name) :
+	object_ (new fcl::CollisionObject (geometry, position)),
+	joint_ (0), name_ (name), weakPtr_ ()
+      {
+	positionInJointFrame_.setIdentity ();
+      }
+
+      /// Copy constructor
+      explicit CollisionObject (const CollisionObject& object) :
+	object_ (object.object_),
+	positionInJointFrame_ (object.positionInJointFrame_),
+	joint_ (0x0),
+	name_ (object.name_),
+	weakPtr_ ()
+	  {
+	  }
+
+      /// \}
+      void init (const CollisionObjectWkPtr& self)
+      {
+	weakPtr_ = self;
+      }
     private:
       fcl::CollisionObjectPtr_t object_;
       fcl::Transform3f positionInJointFrame_;
       JointPtr_t joint_;
       std::string name_;
+      CollisionObjectWkPtr weakPtr_;
     }; // class CollisionObject
   } // namespace model
 } // namespace hpp

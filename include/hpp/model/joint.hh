@@ -47,9 +47,26 @@ namespace hpp {
     /// instance that has the same class hierarchy as Joint.
     class HPP_MODEL_DLLAPI Joint {
     public:
+      /// \name Construction and copy and destruction
+      /// @{
+
+      /// Constructor
+      /// \param initialPosition position of the joint before being inserted
+      ///        in a kinematic chain,
+      /// \param configSize dimension of the configuration vector,
+      /// \param numberDof dimension of the velocity vector.
       Joint (const Transform3f& initialPosition, std::size_t configSize,
 	     std::size_t numberDof);
+      /// Copy constructor
+      ///
+      Joint (const Joint& joint);
+
+      /// Return pointer to copy of this
+      virtual JointPtr_t clone () const = 0;
+
       virtual ~Joint ();
+      /// @}
+
       /// \name Name
       /// @{
       /// Set name
@@ -157,7 +174,7 @@ namespace hpp {
       /// @{
       /// Get linked body
       BodyPtr_t linkedBody () const;
-      /// Get linked body
+      /// Set linked body
       void setLinkedBody (const BodyPtr_t& body);
       /// @}
 
@@ -226,6 +243,9 @@ namespace hpp {
     {
     public:
       JointAnchor (const Transform3f& initialPosition);
+      JointAnchor (const JointAnchor& joint);
+      /// Return pointer to copy of this
+      virtual JointPtr_t clone () const;
       virtual ~JointAnchor ();
       virtual void computeMotion (ConfigurationIn_t configuration,
 				    const Transform3f& parentConfig);
@@ -242,6 +262,9 @@ namespace hpp {
     {
     public:
       JointSO3 (const Transform3f& initialPosition);
+      JointSO3 (const JointSO3& joint);
+      /// Return pointer to copy of this
+      virtual JointPtr_t clone () const;
       virtual void computeMotion (ConfigurationIn_t configuration,
 				    const Transform3f& parentConfig);
       virtual ~JointSO3 ();
@@ -260,6 +283,9 @@ namespace hpp {
     {
     public:
       JointRotation (const Transform3f& initialPosition);
+      JointRotation (const JointRotation& joint);
+      /// Return pointer to copy of this
+      virtual JointPtr_t clone () const;
       virtual void computeMotion (ConfigurationIn_t configuration,
 				    const Transform3f& parentConfig);
       virtual ~JointRotation ();
@@ -283,6 +309,9 @@ namespace hpp {
     {
     public:
       JointTranslation (const Transform3f& initialPosition);
+      JointTranslation (const JointTranslation& joint);
+      /// Return pointer to copy of this
+      virtual JointPtr_t clone () const;
       virtual void computeMotion (ConfigurationIn_t configuration,
 				    const Transform3f& parentConfig);
       virtual ~JointTranslation ();

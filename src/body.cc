@@ -31,6 +31,9 @@ namespace fcl {
 
 namespace hpp {
   namespace model {
+
+    //-----------------------------------------------------------------------
+
     static ObjectVector_t::iterator
     findObject (ObjectVector_t& vector,
 		const fcl::CollisionObjectConstPtr_t& object)
@@ -44,11 +47,53 @@ namespace hpp {
       return it;
     }
 
+    //-----------------------------------------------------------------------
+
     Body:: Body () : collisionInnerObjects_ (), collisionOuterObjects_ (),
 		     distanceInnerObjects_ (), distanceOuterObjects_ (),
 		     joint_ (0x0), name_ (), localCom_ (), inertiaMatrix_ (),
 		     mass_ (0)
     {
+    }
+
+    //-----------------------------------------------------------------------
+
+    Body::Body (const Body& body) :
+      collisionInnerObjects_ (), collisionOuterObjects_ (),
+      distanceInnerObjects_ (), distanceOuterObjects_ (),
+      joint_ (0x0), name_ (body.name_), localCom_ (body.localCom_),
+      inertiaMatrix_ (body.inertiaMatrix_), mass_ (body.mass_)
+    {
+    }
+
+    //-----------------------------------------------------------------------
+
+    BodyPtr_t Body::clone (const JointPtr_t& joint) const
+    {
+      BodyPtr_t newBody = new Body (*this);
+      joint->setLinkedBody (newBody);
+      // Copy collision object lists
+      for (ObjectVector_t::const_iterator itObj =
+	     collisionInnerObjects_.begin ();
+	   itObj != collisionInnerObjects_.end (); ++itObj) {
+	newBody->collisionInnerObjects_.push_back ((*itObj)->clone (joint));
+      }
+      for (ObjectVector_t::const_iterator itObj =
+	     collisionOuterObjects_.begin ();
+	   itObj != collisionOuterObjects_.end (); ++itObj) {
+	newBody->collisionOuterObjects_.push_back ((*itObj)->clone (joint));
+      }
+      for (ObjectVector_t::const_iterator itObj =
+	     distanceInnerObjects_.begin ();
+	   itObj != distanceInnerObjects_.end (); ++itObj) {
+	newBody->distanceInnerObjects_.push_back ((*itObj)->clone (joint));
+      }
+      for (ObjectVector_t::const_iterator itObj =
+	     distanceOuterObjects_.begin ();
+	   itObj != distanceOuterObjects_.end (); ++itObj) {
+	newBody->distanceOuterObjects_.push_back ((*itObj)->clone (joint));
+      }
+      return newBody;
     }
 
     //-----------------------------------------------------------------------
