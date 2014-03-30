@@ -37,7 +37,7 @@ namespace hpp {
       positionInParentFrame_ (), T3f_ (), mass_ (0), massCom_ (),
       configSize_ (configSize), numberDof_ (numberDof),
       initialPosition_ (initialPosition),
-      body_ (0x0), robot_ (0x0),
+      body_ (0x0), robot_ (),
       name_ (), children_ (), parent_ (0x0), rankInConfiguration_ (-1),
       jacobian_ (), rankInParent_ (0)
     {
@@ -61,14 +61,15 @@ namespace hpp {
       return currentTransformation_;
     }
 
-    void Joint::addChildJoint (Joint* joint)
+    void Joint::addChildJoint (JointPtr_t joint)
     {
-      if (!robot_) {
+      DevicePtr_t robot = robot_.lock ();
+      if (!robot) {
 	throw std::runtime_error
 	  ("Cannot insert child joint to a joint not belonging to a device.");
       }
-      joint->robot_ = robot_;
-      robot_->registerJoint (joint);
+      joint->robot_ = robot;
+      robot->registerJoint (joint);
       joint->rankInParent_ = children_.size ();
       children_.push_back (joint);
       joint->parent_ = this;
@@ -108,16 +109,17 @@ namespace hpp {
       configuration_->upperBound (rank, upper);
     }
 
-    Body* Joint::linkedBody () const
+    BodyPtr_t Joint::linkedBody () const
     {
       return body_;
     }
 
-    void Joint::setLinkedBody (Body* body) {
+    void Joint::setLinkedBody (const BodyPtr_t& body) {
       body_ = body;
       body->joint (this);
-      if (robot_) {
-	robot_->computeMass ();
+      DevicePtr_t robot = robot_.lock ();
+      if (robot) {
+	robot->computeMass ();
       }
     }
 
@@ -375,7 +377,7 @@ namespace hpp {
 	os << " ," << (*it)->name ();
       }
       os << std::endl;
-      hpp::model::Body* body = linkedBody();
+      hpp::model::BodyPtr_t body = linkedBody();
       if (body) {
 	os << "Attached body:" << std::endl;
 	os << "Mass of the attached body: " << body->mass()
@@ -399,7 +401,7 @@ namespace hpp {
       }
       for (unsigned int iChild=0; iChild < numberChildJoints ();
 	   iChild++) {
-	hpp::model::Joint* child = childJoint (iChild);
+	hpp::model::JointPtr_t child = childJoint (iChild);
 	os << *(child) << std::endl;
 	os <<std::endl;
       }

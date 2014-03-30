@@ -53,12 +53,12 @@ namespace hpp {
       /// \}
 
       /// Get to joint holding the body
-      Joint* joint () const
+      JointPtr_t joint () const
       {
 	return joint_;
       }
       /// Set joint holding the body
-      void joint (Joint* joint) {joint_ = joint;}
+      void joint (JointPtr_t joint) {joint_ = joint;}
 
       /// \name Inner objects
       /// \{
@@ -173,7 +173,7 @@ namespace hpp {
       ObjectVector_t collisionOuterObjects_;
       ObjectVector_t distanceInnerObjects_;
       ObjectVector_t distanceOuterObjects_;
-      Joint* joint_;
+      JointPtr_t joint_;
       std::string name_;
       /// Inertial information
       fcl::Vec3f localCom_;

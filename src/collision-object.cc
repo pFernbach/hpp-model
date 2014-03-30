@@ -34,7 +34,7 @@ namespace hpp {
 
     // -----------------------------------------------------------------------
 
-    void CollisionObject::joint (const Joint* joint)
+    void CollisionObject::joint (const JointPtr_t joint)
     {
       assert (joint);
       joint_ = joint;

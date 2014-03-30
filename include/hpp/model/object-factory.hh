@@ -63,7 +63,7 @@ namespace hpp {
       {
 	return new JointTranslation (initialPosition);
       }
-      virtual Body* createBody ()
+      virtual BodyPtr_t createBody ()
       {
 	return new Body;
       }

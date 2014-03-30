@@ -91,8 +91,8 @@ namespace hpp {
     {
       JointVector_t jv = getJointVector ();
       for (JointVector_t::iterator it = jv.begin (); it != jv.end (); it++) {
-	Joint* joint = *it;
-	Body* body = joint->linkedBody ();
+	JointPtr_t joint = *it;
+	BodyPtr_t body = joint->linkedBody ();
 	if (body) {
 	  body->addOuterObject (object, collision, distance);
 	}
@@ -106,8 +106,8 @@ namespace hpp {
     {
       JointVector_t jv = getJointVector ();
       for (JointVector_t::iterator it = jv.begin (); it != jv.end (); it++) {
-	Joint* joint = *it;
-	Body* body = joint->linkedBody ();
+	JointPtr_t joint = *it;
+	BodyPtr_t body = joint->linkedBody ();
 	if (body) {
 	  body->removeOuterObject (object, collision, distance);
 	}
@@ -139,7 +139,7 @@ namespace hpp {
        JointVector_t::size_type size = 0;
        for (JointVector_t::iterator it = joints.begin (); it != joints.end ();
 	    it++) {
-	 Body* body = (*it)->linkedBody ();
+	 BodyPtr_t body = (*it)->linkedBody ();
 	 if (body) {
 	   size += body->innerObjects (DISTANCE).size () *
 	     body->outerObjects (DISTANCE).size ();
@@ -156,7 +156,7 @@ namespace hpp {
       JointVector_t::size_type offset = 0;
        for (JointVector_t::iterator it = joints.begin (); it != joints.end ();
 	    it++) {
-	 Body* body = (*it)->linkedBody ();
+	 BodyPtr_t body = (*it)->linkedBody ();
 	 if (body) {
 	   body->computeDistances (distances_, offset);
 	   assert (offset <= distances_.size ());
@@ -170,7 +170,7 @@ namespace hpp {
     {
       for (JointVector_t::const_iterator itJoint = jointVector_.begin ();
 	   itJoint != jointVector_.end (); itJoint++) {
-	Body* body = (*itJoint)->linkedBody ();
+	BodyPtr_t body = (*itJoint)->linkedBody ();
 	if (body != 0x0) {
 	  if (body->collisionTest ()) {
 	    return true;
@@ -199,7 +199,7 @@ namespace hpp {
       JointVector_t jv = getJointVector ();
       for (JointVector_t::iterator itJoint = jv.begin (); itJoint != jv.end ();
 	   itJoint++) {
-	Body* body = (*itJoint)->linkedBody ();
+	BodyPtr_t body = (*itJoint)->linkedBody ();
 	if (body) {
 	  const ObjectVector_t& cbv =
 	    body->innerObjects (COLLISION);
@@ -228,7 +228,7 @@ namespace hpp {
 
     // ========================================================================
 
-    void Device::registerJoint (Joint* joint)
+    void Device::registerJoint (JointPtr_t joint)
     {
       jointVector_.push_back (joint);
       joint->rankInConfiguration_ = configSize_;
@@ -246,11 +246,11 @@ namespace hpp {
       computeMass ();
     }
 
-    void Device::rootJoint (Joint* joint)
+    void Device::rootJoint (JointPtr_t joint)
     {
       rootJoint_ = joint;
       registerJoint (joint);
-      joint->setRobot (this);
+      joint->setRobot (weakPtr_.lock ());
     }
 
     JointPtr_t Device::rootJoint () const
@@ -263,7 +263,7 @@ namespace hpp {
       return jointVector_;
     }
 
-    Joint* Device::getJointByName (const std::string& name)
+    JointPtr_t Device::getJointByName (const std::string& name)
     {
       return jointByName_ [name];
     }
@@ -327,7 +327,7 @@ std::ostream& operator<<(std::ostream& os, hpp::model::Device& device)
   //
   // Go through joints and output each joint
   //
-  hpp::model::Joint* joint = device.rootJoint();
+  hpp::model::JointPtr_t joint = device.rootJoint();
 
   if (joint) {
     os << *joint << std::endl;

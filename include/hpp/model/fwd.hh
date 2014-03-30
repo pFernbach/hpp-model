@@ -47,14 +47,15 @@ namespace hpp {
     HPP_PREDEF_CLASS (ObjectFactory);
     HPP_PREDEF_CLASS (ObjectIterator);
     enum Request_t {COLLISION, DISTANCE};
+    typedef Body* BodyPtr_t;
     typedef boost::shared_ptr <CollisionObject> CollisionObjectPtr_t;
     typedef std::vector <CollisionObjectPtr_t> ObjectVector_t;
     typedef boost::shared_ptr <Device> DevicePtr_t;
     typedef std::vector <DistanceResult> DistanceResults_t;
     typedef boost::shared_ptr <HumanoidRobot> HumanoidRobotPtr_t;
     typedef Joint* JointPtr_t;
-    typedef std::map <std::string, Joint*> JointByName_t;
-    typedef std::vector <Joint*> JointVector_t;
+    typedef std::map <std::string, JointPtr_t> JointByName_t;
+    typedef std::vector <JointPtr_t> JointVector_t;
     typedef Eigen::Matrix <double, Eigen::Dynamic, 1> vector_t;
     typedef vector_t Configuration_t;
     typedef Eigen::Ref <const Configuration_t> ConfigurationIn_t;

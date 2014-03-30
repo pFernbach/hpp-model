@@ -150,15 +150,15 @@ namespace hpp {
       /// Access to configuration space
       JointConfiguration* configuration () const {return configuration_;}
       /// Set robot owning the kinematic chain
-      void setRobot (Device* device) {robot_ = device;}
+      void setRobot (const DevicePtr_t& device) {robot_ = device;}
       /// Access robot owning the object
-      Device* getRobot () { return robot_;}
+      DevicePtr_t getRobot () { return robot_.lock ();}
       /// \name Body linked to the joint
       /// @{
       /// Get linked body
-      Body* linkedBody () const;
+      BodyPtr_t linkedBody () const;
       /// Get linked body
-      void setLinkedBody (Body* body);
+      void setLinkedBody (const BodyPtr_t& body);
       /// @}
 
       /// Display joint
@@ -203,8 +203,8 @@ namespace hpp {
       std::size_t configSize_;
       std::size_t numberDof_;
       Transform3f initialPosition_;
-      Body* body_;
-      Device* robot_;
+      BodyPtr_t body_;
+      DeviceWkPtr robot_;
       std::string name_;
       std::vector <JointPtr_t> children_;
       JointPtr_t parent_;

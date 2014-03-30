@@ -30,7 +30,7 @@ namespace hpp {
       jointIt_ (joints_.begin ())
     {
       for (;jointIt_ != joints_.end (); jointIt_++) {
-	Body* body = (*jointIt_)->linkedBody ();
+	BodyPtr_t body = (*jointIt_)->linkedBody ();
 	if (body != 0) {
 	  objects_ = body->innerObjects (type_);
 	  objIt_ = objects_.begin ();
@@ -48,7 +48,7 @@ namespace hpp {
     {
       objIt_++;
       while (objIt_ == objects_.end ()) {
-	Body* body = 0x0;
+	BodyPtr_t body = 0x0;
 	while (body == 0x0 && jointIt_ != joints_.end ()) {
 	  jointIt_++;
 	  if (jointIt_ != joints_.end ()) {

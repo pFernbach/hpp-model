@@ -50,8 +50,8 @@ namespace hpp {
       const std::string& name () const {return name_;}
       /// Access to fcl object
       fcl::CollisionObjectPtr_t fcl () const {return object_;}
-      const Joint* joint () const {return joint_;}
-      void joint (const Joint* joint);
+      const JointPtr_t joint () const {return joint_;}
+      void joint (const JointPtr_t joint);
       const fcl::Transform3f& positionInJointFrame () const
       {
 	return positionInJointFrame_;
@@ -62,7 +62,7 @@ namespace hpp {
     private:
       fcl::CollisionObjectPtr_t object_;
       fcl::Transform3f positionInJointFrame_;
-      const Joint* joint_;
+      const JointPtr_t joint_;
       std::string name_;
     }; // class CollisionObject
   } // namespace model

@@ -81,19 +81,19 @@ namespace hpp {
       /// \{
 
       /// Set the root of the kinematic chain
-      void rootJoint (Joint* joint);
+      void rootJoint (JointPtr_t joint);
 
       /// Get root joint
       JointPtr_t rootJoint () const;
 
       /// Register joint in internal containers
-      void registerJoint (Joint* joint);
+      void registerJoint (JointPtr_t joint);
 
       /// Get vector of joints
       const JointVector_t& getJointVector () const;
 
       /// Get joint by name
-      Joint* getJointByName (const std::string& name);
+      JointPtr_t getJointByName (const std::string& name);
 
       /// Size of configuration vectors
       const std::size_t& configSize () const
