@@ -54,6 +54,7 @@ namespace hpp {
     typedef std::vector <DistanceResult> DistanceResults_t;
     typedef boost::shared_ptr <HumanoidRobot> HumanoidRobotPtr_t;
     typedef Joint* JointPtr_t;
+    typedef const Joint* JointConstPtr_t;
     typedef std::map <std::string, JointPtr_t> JointByName_t;
     typedef std::vector <JointPtr_t> JointVector_t;
     typedef Eigen::Matrix <double, Eigen::Dynamic, 1> vector_t;
