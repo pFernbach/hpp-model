@@ -31,12 +31,12 @@ namespace hpp {
     typedef Eigen::AngleAxis <double> AngleAxis_t;
     typedef fcl::Quaternion3f Quaternion_t;
 
-    JointConfiguration::JointConfiguration (std::size_t numberDof)
+    JointConfiguration::JointConfiguration (size_type numberDof)
     {
       bounded_.resize (numberDof);
       lowerBounds_.resize (numberDof);
       upperBounds_.resize (numberDof);
-      for (std::size_t i=0; i<bounded_.size (); ++i) {
+      for (size_type i=0; i<bounded_.size (); ++i) {
 	bounded_ [i] = false;
       }
     }
@@ -45,32 +45,32 @@ namespace hpp {
     {
     }
 
-    void JointConfiguration::isBounded (std::size_t rank, bool bounded)
+    void JointConfiguration::isBounded (size_type rank, bool bounded)
     {
       bounded_ [rank] = bounded;
     }
 
-    bool JointConfiguration::isBounded (std::size_t rank) const
+    bool JointConfiguration::isBounded (size_type rank) const
     {
       return bounded_ [rank];
     }
 
-    double JointConfiguration::lowerBound (std::size_t rank) const
+    double JointConfiguration::lowerBound (size_type rank) const
     {
       return lowerBounds_ [rank];
     }
 
-    double JointConfiguration::upperBound (std::size_t rank) const
+    double JointConfiguration::upperBound (size_type rank) const
     {
       return upperBounds_ [rank];
     }
 
-    void JointConfiguration::lowerBound (std::size_t rank, double lowerBound)
+    void JointConfiguration::lowerBound (size_type rank, double lowerBound)
     {
       lowerBounds_ [rank] = lowerBound;
     }
 
-    void JointConfiguration::upperBound (std::size_t rank, double upperBound)
+    void JointConfiguration::upperBound (size_type rank, double upperBound)
     {
       upperBounds_ [rank] = upperBound;
     }

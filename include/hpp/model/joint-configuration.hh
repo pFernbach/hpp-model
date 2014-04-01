@@ -135,8 +135,8 @@ namespace hpp {
 
     private:
       std::vector <bool> bounded_;
-      std::vector <double> lowerBounds_;
-      std::vector <double> upperBounds_;
+      vector_t lowerBounds_;
+      vector_t upperBounds_;
     }; // class JointConfiguration
 
     /// Configuration of a JointAnchor

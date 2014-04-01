@@ -137,17 +137,17 @@ namespace hpp {
       /// \name Bounds
       /// @{
       /// Set whether given degree of freedom is bounded
-      void isBounded (std::size_t rank, bool bounded);
+      void isBounded (size_type rank, bool bounded);
       /// Get whether given degree of freedom is bounded
-      bool isBounded (std::size_t rank) const;
+      bool isBounded (size_type rank) const;
       /// Get lower bound of given degree of freedom
-      double lowerBound (std::size_t rank) const;
+      double lowerBound (size_type rank) const;
       /// Get upper bound of given degree of freedom
-      double upperBound (std::size_t rank) const;
+      double upperBound (size_type rank) const;
       /// Set lower bound of given degree of freedom
-      void lowerBound (std::size_t rank, double lowerBound);
+      void lowerBound (size_type rank, double lowerBound);
       /// Set upper bound of given degree of freedom
-      void upperBound (std::size_t rank, double upperBound);
+      void upperBound (size_type rank, double upperBound);
       /// @}
 
       /// \name Jacobian

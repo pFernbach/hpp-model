@@ -89,32 +89,32 @@ namespace hpp {
       joint->positionInParentFrame_ = Mp.inverse () * Mj;
     }
 
-    void Joint::isBounded (std::size_t rank, bool bounded)
+    void Joint::isBounded (size_type rank, bool bounded)
     {
       configuration_->isBounded (rank, bounded);
     }
 
-    bool Joint::isBounded (std::size_t rank) const
+    bool Joint::isBounded (size_type rank) const
     {
       return configuration_->isBounded (rank);
     }
 
-    double Joint::lowerBound (std::size_t rank) const
+    double Joint::lowerBound (size_type rank) const
     {
       return configuration_->lowerBound (rank);
     }
 
-    double Joint::upperBound (std::size_t rank) const
+    double Joint::upperBound (size_type rank) const
     {
       return configuration_->upperBound (rank);
     }
 
-    void Joint::lowerBound (std::size_t rank, double lower)
+    void Joint::lowerBound (size_type rank, double lower)
     {
       configuration_->lowerBound (rank, lower);
     }
 
-    void Joint::upperBound (std::size_t rank, double upper)
+    void Joint::upperBound (size_type rank, double upper)
     {
       configuration_->upperBound (rank, upper);
     }
