@@ -41,7 +41,7 @@ namespace hpp {
       /// \param numberDof number of degrees of freedom of the joint
       ///        configuration
       /// Used to resize the vector of bounds.
-      JointConfiguration (std::size_t numberDof);
+      JointConfiguration (size_type numberDof);
 
       /// Destructor
       virtual ~JointConfiguration ();
@@ -64,7 +64,7 @@ namespace hpp {
       virtual void interpolate (ConfigurationIn_t q1,
 				ConfigurationIn_t q2,
 				const double& u,
-				const std::size_t& index,
+				const size_type& index,
 				ConfigurationOut_t result) = 0;
 
       /// Distance between two configurations of the joint
@@ -74,7 +74,7 @@ namespace hpp {
       /// the joint.
       virtual double distance (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
-			       const std::size_t& index) const = 0;
+			       const size_type& index) const = 0;
 
       /// Integrate constant derivative during unit time
       /// \param q initial configuration
@@ -89,8 +89,8 @@ namespace hpp {
       /// \note if result is beying bounds, return active bound.
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,
-			      const std::size_t& indexConfig,
-			      const std::size_t& indexVelocity,
+			      const size_type& indexConfig,
+			      const size_type& indexVelocity,
 			      ConfigurationOut_t result) const = 0;
 
       /// Difference between two configurations
@@ -107,30 +107,30 @@ namespace hpp {
       /// See derived classes for details
       virtual void difference (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
-			       const std::size_t& indexConfig,
-			       const std::size_t& indexVelocity,
+			       const size_type& indexConfig,
+			       const size_type& indexVelocity,
 			       vectorOut_t result) const = 0;
 
       /// Uniformly sample the configuration space of the joint
       /// \param index index of first component of q corresponding to the joint.
       /// \retval result write joint configuration in
       /// result [index:index+nb dofs]
-      virtual void uniformlySample (const std::size_t& index,
+      virtual void uniformlySample (const size_type& index,
 				    ConfigurationOut_t result) const = 0;
       /// \name Bounds
       /// @{
       /// Set whether given degree of freedom is bounded
-      void isBounded (std::size_t rank, bool bounded);
+      void isBounded (size_type rank, bool bounded);
       /// Get whether given degree of freedom is bounded
-      bool isBounded (std::size_t rank) const;
+      bool isBounded (size_type rank) const;
       /// Get lower bound of given degree of freedom
-      double lowerBound (std::size_t rank) const;
+      double lowerBound (size_type rank) const;
       /// Get upper bound of given degree of freedom
-      double upperBound (std::size_t rank) const;
+      double upperBound (size_type rank) const;
       /// Set lower bound of given degree of freedom
-      void lowerBound (std::size_t rank, double lowerBound);
+      void lowerBound (size_type rank, double lowerBound);
       /// Set upper bound of given degree of freedom
-      void upperBound (std::size_t rank, double upperBound);
+      void upperBound (size_type rank, double upperBound);
       /// @}
 
     private:
@@ -148,24 +148,24 @@ namespace hpp {
       virtual void interpolate (ConfigurationIn_t,
 				ConfigurationIn_t,
 				const double&,
-				const std::size_t&,
+				const size_type&,
 				ConfigurationOut_t);
 
       virtual double distance (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
-			       const std::size_t& index) const;
+			       const size_type& index) const;
 
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,
-			      const std::size_t& indexConfig,
-			      const std::size_t& indexVelocity,
+			      const size_type& indexConfig,
+			      const size_type& indexVelocity,
 			      ConfigurationOut_t result) const;
       virtual void difference (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
-			       const std::size_t& indexConfig,
-			       const std::size_t& indexVelocity,
+			       const size_type& indexConfig,
+			       const size_type& indexVelocity,
 			       vectorOut_t result) const;
-      virtual void uniformlySample (const std::size_t& index,
+      virtual void uniformlySample (const size_type& index,
 				    ConfigurationOut_t result) const;
     }; // class AnchorJointConfig
 
@@ -178,16 +178,16 @@ namespace hpp {
       virtual void interpolate (ConfigurationIn_t q1,
 				ConfigurationIn_t q2,
 				const double& u,
-				const std::size_t& index,
+				const size_type& index,
 				ConfigurationOut_t result);
 
       virtual double distance (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
-			       const std::size_t& index) const;
+			       const size_type& index) const;
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,
-			      const std::size_t& indexConfig,
-			      const std::size_t& indexVelocity,
+			      const size_type& indexConfig,
+			      const size_type& indexVelocity,
 			      ConfigurationOut_t result) const;
       /// Difference between two configurations
       ///
@@ -213,10 +213,10 @@ namespace hpp {
       /// \f]
       virtual void difference (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
-			       const std::size_t& indexConfig,
-			       const std::size_t& indexVelocity,
+			       const size_type& indexConfig,
+			       const size_type& indexVelocity,
 			       vectorOut_t result) const;
-      virtual void uniformlySample (const std::size_t& index,
+      virtual void uniformlySample (const size_type& index,
 				    ConfigurationOut_t result) const;
     }; // class SO3JointConfig
 
@@ -229,16 +229,16 @@ namespace hpp {
       virtual void interpolate (ConfigurationIn_t q1,
 				ConfigurationIn_t q2,
 				const double& u,
-				const std::size_t& index,
+				const size_type& index,
 				ConfigurationOut_t result);
 
       virtual double distance (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
-			       const std::size_t& index) const;
+			       const size_type& index) const;
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,
-			      const std::size_t& indexConfig,
-			      const std::size_t& indexVelocity,
+			      const size_type& indexConfig,
+			      const size_type& indexVelocity,
 			      ConfigurationOut_t result) const;
 
       /// Difference between two configurations
@@ -267,11 +267,11 @@ namespace hpp {
       /// between \f$-\pi\f$ and \f$\pi\f$.
       virtual void difference (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
-			       const std::size_t& indexConfig,
-			       const std::size_t& indexVelocity,
+			       const size_type& indexConfig,
+			       const size_type& indexVelocity,
 			       vectorOut_t result) const;
 
-      virtual void uniformlySample (const std::size_t& index,
+      virtual void uniformlySample (const size_type& index,
 				    ConfigurationOut_t result) const;
     }; // class RotationJointConfig
 
@@ -284,17 +284,17 @@ namespace hpp {
       virtual void interpolate (ConfigurationIn_t q1,
 				ConfigurationIn_t q2,
 				const double& u,
-				const std::size_t& index,
+				const size_type& index,
 				ConfigurationOut_t result);
 
       virtual double distance (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
-			       const std::size_t& index) const;
+			       const size_type& index) const;
 
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,
-			      const std::size_t& indexConfig,
-			      const std::size_t& indexVelocity,
+			      const size_type& indexConfig,
+			      const size_type& indexVelocity,
 			      ConfigurationOut_t result) const;
       /// Difference between two configurations
       ///
@@ -313,11 +313,11 @@ namespace hpp {
       /// \f]
       virtual void difference (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
-			       const std::size_t& indexConfig,
-			       const std::size_t& indexVelocity,
+			       const size_type& indexConfig,
+			       const size_type& indexVelocity,
 			       vectorOut_t result) const;
 
-      virtual void uniformlySample (const std::size_t& index,
+      virtual void uniformlySample (const size_type& index,
 				    ConfigurationOut_t result) const;
     }; // class TranslationJointConfig
 

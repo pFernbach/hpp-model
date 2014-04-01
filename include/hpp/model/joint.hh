@@ -55,8 +55,8 @@ namespace hpp {
       ///        in a kinematic chain,
       /// \param configSize dimension of the configuration vector,
       /// \param numberDof dimension of the velocity vector.
-      Joint (const Transform3f& initialPosition, std::size_t configSize,
-	     std::size_t numberDof);
+      Joint (const Transform3f& initialPosition, size_type configSize,
+	     size_type numberDof);
       /// Copy constructor
       ///
       Joint (const Joint& joint);
@@ -89,22 +89,22 @@ namespace hpp {
       const Transform3f& currentTransformation () const;
       ///@}
       /// Return number of degrees of freedom
-      const std::size_t& numberDof () const
+      const size_type& numberDof () const
       {
 	return numberDof_;
       }
       /// Return number of degrees of freedom
-      const std::size_t& configSize () const
+      const size_type& configSize () const
       {
 	return configSize_;
       }
       /// Return rank of the joint in the configuration vector
-      const std::size_t& rankInConfiguration () const
+      const size_type& rankInConfiguration () const
       {
 	return rankInConfiguration_;
       }
       /// Return rank of the joint in the velocity vector
-      std::size_t rankInVelocity () const
+      size_type rankInVelocity () const
       {
 	return rankInVelocity_;
       }
@@ -217,16 +217,16 @@ namespace hpp {
       void computeMassTimesCenterOfMass ();
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
 					const double& totalMass) = 0;
-      std::size_t configSize_;
-      std::size_t numberDof_;
+      size_type configSize_;
+      size_type numberDof_;
       Transform3f initialPosition_;
       BodyPtr_t body_;
       DeviceWkPtr robot_;
       std::string name_;
       std::vector <JointPtr_t> children_;
       JointPtr_t parent_;
-      std::size_t rankInConfiguration_;
-      std::size_t rankInVelocity_;
+      size_type rankInConfiguration_;
+      size_type rankInVelocity_;
       JointJacobian_t jacobian_;
       /// Rank of the joint in vector of children of parent joint.
       std::size_t rankInParent_;

@@ -47,8 +47,8 @@ namespace hpp {
       const JointVector_t& jv (robot->getJointVector ());
       for (model::JointVector_t::const_iterator itJoint = jv.begin ();
 	   itJoint != jv.end (); itJoint++) {
-	std::size_t indexConfig = (*itJoint)->rankInConfiguration ();
-	std::size_t indexVelocity = (*itJoint)->rankInVelocity ();
+	size_type indexConfig = (*itJoint)->rankInConfiguration ();
+	size_type indexVelocity = (*itJoint)->rankInVelocity ();
 	(*itJoint)->configuration ()->integrate (configuration, velocity,
 						 indexConfig, indexVelocity,
 						 result);
@@ -69,8 +69,8 @@ namespace hpp {
       const JointVector_t& jv (robot->getJointVector ());
       for (model::JointVector_t::const_iterator itJoint = jv.begin ();
 	   itJoint != jv.end (); itJoint++) {
-	std::size_t indexConfig = (*itJoint)->rankInConfiguration ();
-	std::size_t indexVelocity = (*itJoint)->rankInVelocity ();
+	size_type indexConfig = (*itJoint)->rankInConfiguration ();
+	size_type indexVelocity = (*itJoint)->rankInVelocity ();
 	(*itJoint)->configuration ()->difference (q1, q2, indexConfig,
 						  indexVelocity, result);
       }

@@ -32,7 +32,7 @@ namespace hpp {
   namespace model {
 
     Joint::Joint (const Transform3f& initialPosition,
-		  std::size_t configSize, std::size_t numberDof) :
+		  size_type configSize, size_type numberDof) :
       configuration_ (0x0), currentTransformation_ (initialPosition),
       positionInParentFrame_ (), T3f_ (), mass_ (0), massCom_ (),
       configSize_ (configSize), numberDof_ (numberDof),
@@ -270,7 +270,7 @@ namespace hpp {
 
     void JointSO3::writeSubJacobian (const JointPtr_t& child)
     {
-      std::size_t col = rankInVelocity ();
+      size_type col = rankInVelocity ();
       // Set diagonal terms to 1
       child->jacobian () (3,col) = child->jacobian () (4,col+1) =
 	child->jacobian () (5,col+2) = 1;
@@ -392,7 +392,7 @@ namespace hpp {
 
     void JointTranslation::writeSubJacobian (const JointPtr_t& child)
     {
-      std::size_t col = rankInVelocity ();
+      size_type col = rankInVelocity ();
       // Get translation axis
       axis_ = currentTransformation_.getRotation ().getColumn (0);
       child->jacobian () (0, col) = axis_ [0];
@@ -403,7 +403,7 @@ namespace hpp {
     void JointTranslation::writeComSubjacobian (ComJacobian_t& jacobian,
 						const double& totalMass)
     {
-      std::size_t col = rankInVelocity ();
+      size_type col = rankInVelocity ();
       // Get translation axis
       axis_ = currentTransformation_.getRotation ().getColumn (0);
       jacobian (0, col) = (mass_/totalMass) * axis_ [0];

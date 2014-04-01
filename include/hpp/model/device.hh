@@ -96,13 +96,13 @@ namespace hpp {
       JointPtr_t getJointByName (const std::string& name);
 
       /// Size of configuration vectors
-      const std::size_t& configSize () const
+      const size_type& configSize () const
       {
 	return configSize_;
       }
 
       /// Size of velocity vectors
-      const std::size_t& numberDof () const
+      const size_type& numberDof () const
       {
 	return numberDof_;
       }
@@ -258,8 +258,8 @@ namespace hpp {
       JointByName_t jointByName_;
       JointVector_t jointVector_;
       JointPtr_t rootJoint_;
-      std::size_t numberDof_;
-      std::size_t configSize_;
+      size_type numberDof_;
+      size_type configSize_;
       Configuration_t currentConfiguration_;
       vector_t currentVelocity_;
       vector_t currentAcceleration_;

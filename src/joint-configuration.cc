@@ -111,35 +111,35 @@ namespace hpp {
     void AnchorJointConfig::interpolate (ConfigurationIn_t,
 					 ConfigurationIn_t,
 					 const double&,
-					 const std::size_t&,
+					 const size_type&,
 					 ConfigurationOut_t)
     {
     }
 
     double AnchorJointConfig::distance (ConfigurationIn_t,
 					ConfigurationIn_t,
-					const std::size_t&) const
+					const size_type&) const
     {
       return 0;
     }
 
     void AnchorJointConfig::integrate (ConfigurationIn_t,
 				       vectorIn_t,
-				       const std::size_t&,
-				       const std::size_t&,
+				       const size_type&,
+				       const size_type&,
 				       ConfigurationOut_t) const
     {
     }
 
     void AnchorJointConfig::difference (ConfigurationIn_t,
 					ConfigurationIn_t,
-					const std::size_t&,
-					const std::size_t&,
+					const size_type&,
+					const size_type&,
 					vectorOut_t) const
     {
     }
 
-    void AnchorJointConfig::uniformlySample (const std::size_t&,
+    void AnchorJointConfig::uniformlySample (const size_type&,
 					     ConfigurationOut_t) const
     {
     }
@@ -152,7 +152,7 @@ namespace hpp {
     /// \return angle between both joint configuration
     static double angleBetweenQuaternions (ConfigurationIn_t q1,
 					   ConfigurationIn_t q2,
-					   const std::size_t& index)
+					   const size_type& index)
     {
       double innerprod = q1.segment (index, 4).dot (q2.segment (index, 4));
       assert (fabs (innerprod) < 1.0001);
@@ -165,7 +165,7 @@ namespace hpp {
     void SO3JointConfig::interpolate (ConfigurationIn_t q1,
 				      ConfigurationIn_t q2,
 				      const double& u,
-				      const std::size_t& index,
+				      const size_type& index,
 				      ConfigurationOut_t result)
     {
       // Linearly interpolate translation part
@@ -187,7 +187,7 @@ namespace hpp {
 
     double SO3JointConfig::distance (ConfigurationIn_t q1,
 				     ConfigurationIn_t q2,
-				     const std::size_t& index) const
+				     const size_type& index) const
     {
       double theta = angleBetweenQuaternions (q1, q2, index);
       assert (theta >= 0);
@@ -196,8 +196,8 @@ namespace hpp {
 
     void SO3JointConfig::integrate (ConfigurationIn_t q,
 				    vectorIn_t v,
-				    const std::size_t& indexConfig,
-				    const std::size_t& indexVelocity,
+				    const size_type& indexConfig,
+				    const size_type& indexVelocity,
 				    ConfigurationOut_t result) const
     {
       vector3_t omega (v [indexVelocity + 0], v [indexVelocity + 1],
@@ -230,8 +230,8 @@ namespace hpp {
 
     void SO3JointConfig::difference (ConfigurationIn_t q1,
 				     ConfigurationIn_t q2,
-				     const std::size_t& indexConfig,
-				     const std::size_t& indexVelocity,
+				     const size_type& indexConfig,
+				     const size_type& indexVelocity,
 				     vectorOut_t result) const
     {
       // Compute rotation vector between q2 and q1.
@@ -247,7 +247,7 @@ namespace hpp {
       result [indexVelocity + 2] = angle*axis [2];
     }
 
-    void SO3JointConfig::uniformlySample (const std::size_t& index,
+    void SO3JointConfig::uniformlySample (const size_type& index,
 					  ConfigurationOut_t result) const
     {
       double u1 = (double)rand() / RAND_MAX;
@@ -262,7 +262,7 @@ namespace hpp {
     void TranslationJointConfig::interpolate (ConfigurationIn_t q1,
 					      ConfigurationIn_t q2,
 					      const double& u,
-					      const std::size_t& index,
+					      const size_type& index,
 					      ConfigurationOut_t result)
     {
       result [index] = (1-u) * q1 [index] + u * q2 [index];
@@ -272,15 +272,15 @@ namespace hpp {
 
     double TranslationJointConfig::distance (ConfigurationIn_t q1,
 					     ConfigurationIn_t q2,
-					     const std::size_t& index) const
+					     const size_type& index) const
     {
       return fabs (q2 [index] - q1 [index]);
     }
 
     void TranslationJointConfig::integrate (ConfigurationIn_t q,
 					    vectorIn_t v,
-					    const std::size_t& indexConfig,
-					    const std::size_t& indexVelocity,
+					    const size_type& indexConfig,
+					    const size_type& indexVelocity,
 					    ConfigurationOut_t result) const
     {
       assert (indexConfig < result.size ());
@@ -296,14 +296,14 @@ namespace hpp {
 
     void TranslationJointConfig::difference (ConfigurationIn_t q1,
 					     ConfigurationIn_t q2,
-					     const std::size_t& indexConfig,
-					     const std::size_t& indexVelocity,
+					     const size_type& indexConfig,
+					     const size_type& indexVelocity,
 					     vectorOut_t result) const
     {
       result [indexVelocity] = q1 [indexConfig] - q2 [indexConfig];
     }
 
-    void TranslationJointConfig::uniformlySample (const std::size_t& index,
+    void TranslationJointConfig::uniformlySample (const size_type& index,
 						  ConfigurationOut_t result) const
     {
       if (!isBounded (0)) {
@@ -322,7 +322,7 @@ namespace hpp {
     void RotationJointConfig::interpolate (ConfigurationIn_t q1,
 					   ConfigurationIn_t q2,
 					   const double& u,
-					   const std::size_t& index,
+					   const size_type& index,
 					   ConfigurationOut_t result)
     {
       if (isBounded (0)) {
@@ -340,7 +340,7 @@ namespace hpp {
 
     double RotationJointConfig::distance (ConfigurationIn_t q1,
 					  ConfigurationIn_t q2,
-					  const std::size_t& index) const
+					  const size_type& index) const
     {
       if (isBounded (0)) {
 	// linearly interpolate
@@ -355,8 +355,8 @@ namespace hpp {
 
     void RotationJointConfig::integrate (ConfigurationIn_t q,
 					 vectorIn_t v,
-					 const std::size_t& indexConfig,
-					 const std::size_t& indexVelocity,
+					 const size_type& indexConfig,
+					 const size_type& indexVelocity,
 					 ConfigurationOut_t result) const
     {
       using jrlMathTools::Angle;
@@ -373,8 +373,8 @@ namespace hpp {
 
     void RotationJointConfig::difference (ConfigurationIn_t q1,
 					  ConfigurationIn_t q2,
-					  const std::size_t& indexConfig,
-					  const std::size_t& indexVelocity,
+					  const size_type& indexConfig,
+					  const size_type& indexVelocity,
 					  vectorOut_t result) const
     {
       using jrlMathTools::Angle;
@@ -386,7 +386,7 @@ namespace hpp {
       }
     }
 
-    void RotationJointConfig::uniformlySample (const std::size_t& index,
+    void RotationJointConfig::uniformlySample (const size_type& index,
 					       ConfigurationOut_t result) const
     {
       if (!isBounded (0)) {
