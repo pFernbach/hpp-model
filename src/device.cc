@@ -30,7 +30,8 @@ namespace hpp {
     static Transform3f I4;
 
     Device::Device(const std::string& name) :
-	name_ (name), distances_ (), jointByName_ (),
+      name_ (name), distances_ (), collisionPairs_ (), distancePairs_ (),
+      jointByName_ (),
 	jointVector_ (), rootJoint_ (0x0), numberDof_ (0),
 	configSize_ (0), currentConfiguration_ (configSize_),
 	currentVelocity_ (numberDof_), 	currentAcceleration_ (numberDof_),
@@ -111,6 +112,63 @@ namespace hpp {
 	if (body) {
 	  body->removeOuterObject (object, collision, distance);
 	}
+      }
+    }
+
+    // ========================================================================
+
+    void Device::addCollisionPairs (const JointPtr_t& joint1,
+				    const JointPtr_t& joint2,
+				    Request_t type)
+    {
+      BodyPtr_t body1 = joint1->linkedBody ();
+      BodyPtr_t body2 = joint2->linkedBody ();
+      if (type == COLLISION) {
+	// Add each inner object of body 1 as outer object of body 2
+	const ObjectVector_t& collisionObjects =
+	  body1->innerObjects (COLLISION);
+	hppDout (info, "Number of collision objects in body "
+		 << bodyName1 << ": " << collisionObjects.size ());
+	for (ObjectVector_t::const_iterator itObj1 =
+	       collisionObjects.begin ();
+	     itObj1 != collisionObjects.end (); itObj1++) {
+	  body2->addOuterObject (*itObj1, true, false);
+	  hppDout (info, "Adding object " << (*itObj1)->name ()
+		   << " to body " << body2->name ()
+		   << " for collision");
+	}
+	collisionPairs_.push_back (std::make_pair (joint1, joint2));
+      }
+      if (type == DISTANCE) {
+	const ObjectVector_t& distanceObjects =
+	  body1->innerObjects (DISTANCE);
+	hppDout (info, "Number of distance objects in body "
+		 << bodyName1 << ": " << distanceObjects.size ());
+	for (ObjectVector_t::const_iterator itObj1 =
+	       distanceObjects.begin ();
+	     itObj1 != distanceObjects.end (); itObj1++) {
+	  body2->addOuterObject (*itObj1, false, true);
+	  hppDout (info, "Adding object " << (*itObj1)->name ()
+		   << " to body " << body2->name ()
+		   << " for distance");
+	}
+	distancePairs_.push_back (std::make_pair (joint1, joint2));
+      }
+    }
+
+    // ========================================================================
+
+    const InteractionPairs_t& Device::collisionPairs (Request_t type) const
+    {
+      switch (type) {
+      case COLLISION:
+	return collisionPairs_;
+	break;
+      case DISTANCE:
+	return distancePairs_;
+	break;
+      default:
+	abort ();
       }
     }
 
@@ -293,7 +351,7 @@ namespace hpp {
       rootJoint_->computeMassTimesCenterOfMass ();
       com_ = (1/mass_) * rootJoint_->massCom_;
     }
-    
+
     void Device::computeJacobianCenterOfMass ()
     {
       for (JointVector_t::iterator it = jointVector_.begin ();

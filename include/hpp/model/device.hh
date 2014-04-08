@@ -170,7 +170,7 @@ namespace hpp {
       {
 	return jacobianCom_;
       }
-      
+
       /// \}
 
       /// \name Collision and distance computation
@@ -198,12 +198,30 @@ namespace hpp {
       virtual void removeOuterObject (const CollisionObjectPtr_t& object,
 				      bool collision, bool distance);
 
+      /// Add collision pairs between objects attached to two joints
+      ///
+      /// \param joint1 first joint
+      /// \param joint2 second joint
+      /// \param type collision or distance.
+      ///
+      /// Define collision pair between each object of joint 1 body and
+      /// each object of joint2 body.
+      virtual void addCollisionPairs (const JointPtr_t& joint1,
+				      const JointPtr_t& joint2,
+				      Request_t type);
+
+      /// Get the set of collision pairs
+      ///
+      /// \return pairs of joints for which method addCollisionPairs has been
+      ///         called.
+      const InteractionPairs_t& collisionPairs (Request_t type) const;
+
       /// Iterator over inner objects of the device
       /// \param type Collision or distance
       ObjectIterator objectIterator (Request_t type);
       /// Iterator end
       ObjectIterator objectIteratorEnd (Request_t type);
-      
+
       /// Test collision of current configuration
       /// \warning Users should call computeForwardKinematics first.
       bool collisionTest () const;
@@ -255,6 +273,8 @@ namespace hpp {
       void resizeJacobians ();
       std::string name_;
       DistanceResults_t distances_;
+      InteractionPairs_t collisionPairs_;
+      InteractionPairs_t distancePairs_;
       JointByName_t jointByName_;
       JointVector_t jointVector_;
       JointPtr_t rootJoint_;
