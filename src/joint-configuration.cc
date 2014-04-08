@@ -36,7 +36,7 @@ namespace hpp {
       bounded_.resize (numberDof);
       lowerBounds_.resize (numberDof);
       upperBounds_.resize (numberDof);
-      for (size_type i=0; i<bounded_.size (); ++i) {
+      for (size_type i=0; i < (size_type)bounded_.size (); ++i) {
 	bounded_ [i] = false;
       }
     }
