@@ -197,6 +197,9 @@ namespace hpp {
       /// \note If object is not in body, do nothing
       virtual void removeOuterObject (const CollisionObjectPtr_t& object,
 				      bool collision, bool distance);
+				      
+	  /// Reset all objects for collision or distance computation from a device		      
+	  void resetOuterObject (bool collision, bool distance);
 
       /// Add collision pairs between objects attached to two joints
       ///
@@ -221,6 +224,12 @@ namespace hpp {
       ObjectIterator objectIterator (Request_t type);
       /// Iterator end
       ObjectIterator objectIteratorEnd (Request_t type);
+      
+      /// Mapping of outer objects used in collision checking using the joint name
+      const ObjectVector_t& outerCollisionObjectVectors (const std::string& name);
+            
+      /// Mapping of outer objects used in distance computation using the joint name
+      const ObjectVector_t& outerDistanceObjectVectors (const std::string& name);
 
       /// Test collision of current configuration
       /// \warning Users should call computeForwardKinematics first.
@@ -289,6 +298,11 @@ namespace hpp {
       bool upToDate_;
       Computation_t computationFlag_;
       DeviceWkPtr weakPtr_;
+      
+      /// Map of outer collision objects by joints names
+      std::map <std::string, ObjectVector_t> outerCollisionObjectVectorsMap_;
+      /// Map of outer distance objects by joints names
+      std::map <std::string, ObjectVector_t> outerDistanceObjectVectorsMap_;  // ObjectVector_t distanceObstacles_;   CollisionObjectPtr_t
     }; // class Device
   } // namespace model
 } // namespace hpp

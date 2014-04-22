@@ -109,6 +109,8 @@ namespace hpp {
       /// \param distance  whether this object should be considered for
       ///        distance computation
       /// \note If object is already in body, do nothing.
+      /// \warning Added objects by this method will be unknown from the 
+      ///         Device and will not be reset by it
       virtual void addOuterObject (const CollisionObjectPtr_t& object,
 				   bool collision, bool distance);
       /// Remove an obstacle to the body

@@ -96,6 +96,14 @@ namespace hpp {
 	BodyPtr_t body = joint->linkedBody ();
 	if (body) {
 	  body->addOuterObject (object, collision, distance);
+	  if(collision){
+	    ObjectVector_t collisionVectorTmp = outerCollisionObjectVectorsMap_[body->name ()];
+        collisionVectorTmp.push_back(object);
+      }
+      if(distance){
+	    ObjectVector_t distanceVectorTmp = outerDistanceObjectVectorsMap_[body->name ()];
+        distanceVectorTmp.push_back(object);
+      }
 	}
       }
     }
@@ -114,7 +122,33 @@ namespace hpp {
 	}
       }
     }
+    
+    // ========================================================================
 
+    void Device::resetOuterObject (bool collision, bool distance)
+    {
+      JointVector_t jv = getJointVector ();
+      for (JointVector_t::iterator it = jv.begin (); it != jv.end (); it++) {
+	JointPtr_t joint = *it;
+	BodyPtr_t body = joint->linkedBody ();
+	if (body) {
+	    if(collision){
+		      for (ObjectVector_t::const_iterator object = outerCollisionObjectVectors(body->name ()).begin (); 
+	         object != outerCollisionObjectVectors(body->name ()).end (); object++) {
+	          body->removeOuterObject (*object, true, false); 
+	        }
+	    }
+	    
+	    if(distance){
+	        for (ObjectVector_t::const_iterator object = outerDistanceObjectVectors(body->name ()).begin (); 
+	         object != outerDistanceObjectVectors(body->name ()).end (); object++) {
+	          body->removeOuterObject (*object, false, true); 
+	        }
+	    }
+	}
+      }
+    }
+    
     // ========================================================================
 
     void Device::addCollisionPairs (const JointPtr_t& joint1,
@@ -188,6 +222,27 @@ namespace hpp {
 	iterator.setToEnd ();
 	return iterator;
       }
+      
+      
+    // ========================================================================
+      
+      
+      const ObjectVector_t& Device::outerCollisionObjectVectors
+    (const std::string& name)
+    {
+      return outerCollisionObjectVectorsMap_ [name];
+    }
+
+
+    // ========================================================================
+      
+      
+      const ObjectVector_t& Device::outerDistanceObjectVectors
+    (const std::string& name)
+    {
+      return outerDistanceObjectVectorsMap_ [name];
+    }
+
 
     // ========================================================================
 

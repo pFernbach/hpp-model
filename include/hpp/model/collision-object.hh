@@ -51,12 +51,23 @@ namespace hpp {
       const std::string& name () const {return name_;}
       /// Access to fcl object
       fcl::CollisionObjectPtr_t fcl () const {return object_;}
+      /// Access to the joint
       const JointConstPtr_t& joint () const {return joint_;}
       void joint (const JointPtr_t joint);
+      
+      /// Return the position in the joint frame
       const fcl::Transform3f& positionInJointFrame () const
       {
 	return positionInJointFrame_;
       }
+      
+      /// Return the transform of the fcl object
+      const fcl::Transform3f& getTransform () const
+      {
+      fcl::Transform3f transform_ = object_->getTransform();
+	return transform_;
+      }
+      
       /// Move object to given position
       /// \note If object is attached to a joint, throw exception.
       void move (const Transform3f& position);
@@ -98,6 +109,7 @@ namespace hpp {
       {
 	weakPtr_ = self;
       }
+      
     private:
       fcl::CollisionObjectPtr_t object_;
       fcl::Transform3f positionInJointFrame_;
