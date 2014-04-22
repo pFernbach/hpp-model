@@ -59,11 +59,14 @@ namespace hpp {
 
     void CollisionObject::joint (const JointPtr_t joint)
     {
-      assert (joint);
       joint_ = joint;
-      fcl::Transform3f jointPosition = joint->currentTransformation ();
-      positionInJointFrame_ = jointPosition.inverse () *
-	object_->getTransform ();
+      if (joint_) {
+	fcl::Transform3f jointPosition = joint->currentTransformation ();
+	positionInJointFrame_ = jointPosition.inverse () *
+	  object_->getTransform ();
+      } else {
+	positionInJointFrame_ = object_->getTransform ();
+      }
     }
 
     // -----------------------------------------------------------------------
