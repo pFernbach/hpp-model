@@ -35,6 +35,7 @@ namespace hpp {
       bool operator!= (const ObjectIterator& other) const;
       void operator++ ();
       void setToEnd ();
+      bool isEnd () const;
     private:
       Device& device_;
       Request_t type_;

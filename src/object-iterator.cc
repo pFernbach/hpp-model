@@ -47,24 +47,29 @@ namespace hpp {
     void ObjectIterator::operator++ ()
     {
       objIt_++;
-      while (objIt_ == objects_.end ()) {
+      bool endOfObjects = (objIt_ == objects_.end ());
+      while (endOfObjects && jointIt_ != joints_.end ()) {
 	BodyPtr_t body = 0x0;
 	while (body == 0x0 && jointIt_ != joints_.end ()) {
 	  jointIt_++;
+	  endOfObjects = false;
 	  if (jointIt_ != joints_.end ()) {
 	    body = (*jointIt_)->linkedBody ();
 	    if (body != 0x0) {
 	      objects_ = body->innerObjects (type_);
 	      objIt_ = objects_.begin ();
+	      endOfObjects = (objIt_ == objects_.end ());
 	    }
 	  }
 	}
       }
     }
+
     bool ObjectIterator::operator== (const ObjectIterator& other) const
     {
+      if (other.jointIt_ == joints_.end () && jointIt_ == joints_.end ())
+	return true;
       if (joints_ != other.joints_ || jointIt_ != other.jointIt_) return false;
-      if (jointIt_ == joints_.end ()) return true;
       if (objects_ != other.objects_ || objIt_ != other.objIt_) return false;
       return true;
     }
@@ -76,7 +81,10 @@ namespace hpp {
     {
       jointIt_ = joints_.end ();
     }
-
+    bool ObjectIterator::isEnd () const
+    {
+      return jointIt_ == joints_.end ();
+    }
 
   } // namespace model
 } // namespace hpp
