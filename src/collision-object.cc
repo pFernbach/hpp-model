@@ -17,6 +17,7 @@
 // hpp-model  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include <hpp/util/debug.hh>
 #include <hpp/model/fwd.hh>
 #include <hpp/model/collision-object.hh>
 #include <hpp/model/joint.hh>
@@ -77,6 +78,7 @@ namespace hpp {
 	throw std::runtime_error ("Cannot move object attached to a joint");
       }
       positionInJointFrame_ = position;
+      hppDout (info, "transform = " << position);
       object_->setTransform (positionInJointFrame_);
     }
 

@@ -61,7 +61,11 @@ namespace hpp {
 	return positionInJointFrame_;
       }
 
-      /// Return the transform of the fcl object
+      /// Return transform of the fcl object
+      /// \warning If joint linked object -as a robot body- and the robot is
+      /// manually moved, this will return the non-update transform.
+      /// \note If object is not attached to a joint, use move() to update
+      /// transform between hpp and fcl.
       const fcl::Transform3f& getTransform () const
       {
 	return object_->getTransform();

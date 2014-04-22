@@ -122,7 +122,7 @@ namespace hpp {
 	}
       }
     }
-    
+
     // ========================================================================
 
     void Device::resetOuterObject (bool collision, bool distance)
@@ -148,7 +148,7 @@ namespace hpp {
 	}
       }
     }
-    
+
     // ========================================================================
 
     void Device::addCollisionPairs (const JointPtr_t& joint1,
@@ -162,7 +162,7 @@ namespace hpp {
 	const ObjectVector_t& collisionObjects =
 	  body1->innerObjects (COLLISION);
 	hppDout (info, "Number of collision objects in body "
-		 << bodyName1 << ": " << collisionObjects.size ());
+		 << body1->name () << ": " << collisionObjects.size ());
 	for (ObjectVector_t::const_iterator itObj1 =
 	       collisionObjects.begin ();
 	     itObj1 != collisionObjects.end (); itObj1++) {
@@ -177,7 +177,7 @@ namespace hpp {
 	const ObjectVector_t& distanceObjects =
 	  body1->innerObjects (DISTANCE);
 	hppDout (info, "Number of distance objects in body "
-		 << bodyName1 << ": " << distanceObjects.size ());
+		 << body1->name () << ": " << distanceObjects.size ());
 	for (ObjectVector_t::const_iterator itObj1 =
 	       distanceObjects.begin ();
 	     itObj1 != distanceObjects.end (); itObj1++) {
@@ -222,11 +222,11 @@ namespace hpp {
 	iterator.setToEnd ();
 	return iterator;
       }
-      
-      
+
+
     // ========================================================================
-      
-      
+
+
       const ObjectVector_t& Device::outerCollisionObjectVectors
     (const std::string& name)
     {
@@ -235,8 +235,8 @@ namespace hpp {
 
 
     // ========================================================================
-      
-      
+
+
       const ObjectVector_t& Device::outerDistanceObjectVectors
     (const std::string& name)
     {
