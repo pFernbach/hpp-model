@@ -64,8 +64,7 @@ namespace hpp {
       /// Return the transform of the fcl object
       const fcl::Transform3f& getTransform () const
       {
-      fcl::Transform3f transform_ = object_->getTransform();
-	return transform_;
+	return object_->getTransform();
       }
       
       /// Move object to given position
