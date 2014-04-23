@@ -97,13 +97,11 @@ namespace hpp {
 	if (body) {
 	  body->addOuterObject (object, collision, distance);
 	  if(collision){
-	    ObjectVector_t collisionVectorTmp = outerCollisionObjectVectorsMap_[body->name ()];
-        collisionVectorTmp.push_back(object);
-      }
-      if(distance){
-	    ObjectVector_t distanceVectorTmp = outerDistanceObjectVectorsMap_[body->name ()];
-        distanceVectorTmp.push_back(object);
-      }
+            outerCollisionObjectVectorsMap_[body->name ()].push_back(object);
+          }
+          if(distance){
+            outerDistanceObjectVectorsMap_[body->name ()].push_back(object);
+          }
 	}
       }
     }
@@ -132,19 +130,23 @@ namespace hpp {
 	JointPtr_t joint = *it;
 	BodyPtr_t body = joint->linkedBody ();
 	if (body) {
-	    if(collision){
-		      for (ObjectVector_t::const_iterator object = outerCollisionObjectVectors(body->name ()).begin (); 
-	         object != outerCollisionObjectVectors(body->name ()).end (); object++) {
-	          body->removeOuterObject (*object, true, false); 
-	        }
+	  if(collision){
+	    for (ObjectVector_t::const_iterator object =
+	      outerCollisionObjectVectors(body->name ()).begin ();
+	      object != outerCollisionObjectVectors(body->name ()).end ();
+	      object++) {
+	        body->removeOuterObject (*object, true, false);
+	      }
 	    }
-	    
-	    if(distance){
-	        for (ObjectVector_t::const_iterator object = outerDistanceObjectVectors(body->name ()).begin (); 
-	         object != outerDistanceObjectVectors(body->name ()).end (); object++) {
-	          body->removeOuterObject (*object, false, true); 
-	        }
+
+	  if(distance){
+	    for (ObjectVector_t::const_iterator object =
+	    outerDistanceObjectVectors(body->name ()).begin ();
+	    object != outerDistanceObjectVectors(body->name ()).end ();
+	    object++) {
+	      body->removeOuterObject (*object, false, true);
 	    }
+	  }
 	}
       }
     }
