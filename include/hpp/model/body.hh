@@ -109,7 +109,7 @@ namespace hpp {
       /// \param distance  whether this object should be considered for
       ///        distance computation
       /// \note If object is already in body, do nothing.
-      /// \warning Added objects by this method will be unknown from the 
+      /// \warning Added objects by this method will be unknown from the
       ///         Device and will not be reset by it
       virtual void addOuterObject (const CollisionObjectPtr_t& object,
 				   bool collision, bool distance);
@@ -130,11 +130,11 @@ namespace hpp {
 
       /// \name Collision and distance computation
       /// @{
-      
+
       /// Test for collision
       /// \return true if collision, false if no collision
       bool collisionTest () const;
-      
+
       /// Compute distances between pairs of objects stored in bodies
       void computeDistances (DistanceResults_t& results,
 			     DistanceResults_t::size_type& offset);
@@ -165,19 +165,19 @@ namespace hpp {
       {
 	inertiaMatrix_ = inertiaMatrix;
       }
-      
+
       /// Get mass.
       inline  double mass() const
       {
 	return mass_;
       }
-      
+
       /// Set mass.
       inline  void mass(double mass)
       {
 	mass_ = mass;
       }
-      
+
       ///  @}
     private:
       ObjectVector_t collisionInnerObjects_;

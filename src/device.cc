@@ -32,11 +32,11 @@ namespace hpp {
     Device::Device(const std::string& name) :
       name_ (name), distances_ (), collisionPairs_ (), distancePairs_ (),
       jointByName_ (),
-	jointVector_ (), rootJoint_ (0x0), numberDof_ (0),
-	configSize_ (0), currentConfiguration_ (configSize_),
-	currentVelocity_ (numberDof_), 	currentAcceleration_ (numberDof_),
-	com_ (), jacobianCom_ (3, 0), mass_ (0), upToDate_ (false),
-	computationFlag_ (ALL),	weakPtr_ ()
+      jointVector_ (), rootJoint_ (0x0), numberDof_ (0),
+      configSize_ (0), currentConfiguration_ (configSize_),
+      currentVelocity_ (numberDof_), 	currentAcceleration_ (numberDof_),
+      com_ (), jacobianCom_ (3, 0), mass_ (0), upToDate_ (false),
+      computationFlag_ (ALL),	weakPtr_ ()
     {
       com_.setZero ();
       I4.setIdentity ();
@@ -132,18 +132,18 @@ namespace hpp {
 	if (body) {
 	  if(collision){
 	    for (ObjectVector_t::const_iterator object =
-	      outerCollisionObjectVectors(body->name ()).begin ();
-	      object != outerCollisionObjectVectors(body->name ()).end ();
-	      object++) {
-	        body->removeOuterObject (*object, true, false);
-	      }
+		   outerCollisionObjectVectors(body->name ()).begin ();
+		 object != outerCollisionObjectVectors(body->name ()).end ();
+		 object++) {
+	      body->removeOuterObject (*object, true, false);
 	    }
+	  }
 
 	  if(distance){
 	    for (ObjectVector_t::const_iterator object =
-	    outerDistanceObjectVectors(body->name ()).begin ();
-	    object != outerDistanceObjectVectors(body->name ()).end ();
-	    object++) {
+		   outerDistanceObjectVectors(body->name ()).begin ();
+		 object != outerDistanceObjectVectors(body->name ()).end ();
+		 object++) {
 	      body->removeOuterObject (*object, false, true);
 	    }
 	  }
@@ -210,26 +210,26 @@ namespace hpp {
 
     // ========================================================================
 
-      ObjectIterator Device::objectIterator (Request_t type)
-      {
-	return ObjectIterator (*this, type);
-      }
+    ObjectIterator Device::objectIterator (Request_t type)
+    {
+      return ObjectIterator (*this, type);
+    }
 
 
     // ========================================================================
 
-      ObjectIterator Device::objectIteratorEnd (Request_t type)
-      {
-	ObjectIterator iterator (*this, type);
-	iterator.setToEnd ();
-	return iterator;
-      }
+    ObjectIterator Device::objectIteratorEnd (Request_t type)
+    {
+      ObjectIterator iterator (*this, type);
+      iterator.setToEnd ();
+      return iterator;
+    }
 
 
     // ========================================================================
 
 
-      const ObjectVector_t& Device::outerCollisionObjectVectors
+    const ObjectVector_t& Device::outerCollisionObjectVectors
     (const std::string& name)
     {
       return collisionOuterObjects_ [name];
@@ -239,7 +239,7 @@ namespace hpp {
     // ========================================================================
 
 
-      const ObjectVector_t& Device::outerDistanceObjectVectors
+    const ObjectVector_t& Device::outerDistanceObjectVectors
     (const std::string& name)
     {
       return distanceOuterObjects_ [name];
@@ -250,17 +250,17 @@ namespace hpp {
 
     void Device::updateDistances ()
     {
-       JointVector_t joints = getJointVector ();
-       JointVector_t::size_type size = 0;
-       for (JointVector_t::iterator it = joints.begin (); it != joints.end ();
-	    it++) {
-	 BodyPtr_t body = (*it)->linkedBody ();
-	 if (body) {
-	   size += body->innerObjects (DISTANCE).size () *
-	     body->outerObjects (DISTANCE).size ();
-	 }
-	 distances_.resize (size);
-       }
+      JointVector_t joints = getJointVector ();
+      JointVector_t::size_type size = 0;
+      for (JointVector_t::iterator it = joints.begin (); it != joints.end ();
+	   it++) {
+	BodyPtr_t body = (*it)->linkedBody ();
+	if (body) {
+	  size += body->innerObjects (DISTANCE).size () *
+	    body->outerObjects (DISTANCE).size ();
+	}
+	distances_.resize (size);
+      }
     }
 
     // ========================================================================
@@ -269,14 +269,14 @@ namespace hpp {
     {
       JointVector_t joints = getJointVector ();
       JointVector_t::size_type offset = 0;
-       for (JointVector_t::iterator it = joints.begin (); it != joints.end ();
-	    it++) {
-	 BodyPtr_t body = (*it)->linkedBody ();
-	 if (body) {
-	   body->computeDistances (distances_, offset);
-	   assert (offset <= distances_.size ());
-	 }
-       }
+      for (JointVector_t::iterator it = joints.begin (); it != joints.end ();
+	   it++) {
+	BodyPtr_t body = (*it)->linkedBody ();
+	if (body) {
+	  body->computeDistances (distances_, offset);
+	  assert (offset <= distances_.size ());
+	}
+      }
     }
 
     // ========================================================================
