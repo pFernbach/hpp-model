@@ -72,9 +72,6 @@ namespace hpp {
     typedef Eigen::Block <JointJacobian_t, 3, Eigen::Dynamic>
     HalfJointJacobian_t;
     typedef fcl::Transform3f Transform3f;
-
-    typedef std::pair <JointPtr_t, JointPtr_t> InteractionPair_t;
-    typedef std::vector <InteractionPair_t> InteractionPairs_t;
   } // namespace model
 } // namespace hpp
 #endif //HPP_MODEL_FWD_HH

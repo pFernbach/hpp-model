@@ -30,7 +30,7 @@ namespace hpp {
     static Transform3f I4;
 
     Device::Device(const std::string& name) :
-      name_ (name), distances_ (), collisionPairs_ (), distancePairs_ (),
+      name_ (name), distances_ (),
       jointByName_ (),
       jointVector_ (), rootJoint_ (0x0), numberDof_ (0),
       configSize_ (0), currentConfiguration_ (configSize_),
@@ -96,12 +96,6 @@ namespace hpp {
 	BodyPtr_t body = joint->linkedBody ();
 	if (body) {
 	  body->addOuterObject (object, collision, distance);
-	  if(collision){
-            collisionOuterObjects_[body->name ()].push_back(object);
-          }
-          if(distance){
-            distanceOuterObjects_[body->name ()].push_back(object);
-          }
 	}
       }
     }
@@ -117,36 +111,6 @@ namespace hpp {
 	BodyPtr_t body = joint->linkedBody ();
 	if (body) {
 	  body->removeOuterObject (object, collision, distance);
-	}
-      }
-    }
-
-    // ========================================================================
-
-    void Device::resetOuterObject (bool collision, bool distance)
-    {
-      JointVector_t jv = getJointVector ();
-      for (JointVector_t::iterator it = jv.begin (); it != jv.end (); it++) {
-	JointPtr_t joint = *it;
-	BodyPtr_t body = joint->linkedBody ();
-	if (body) {
-	  if(collision){
-	    for (ObjectVector_t::const_iterator object =
-		   outerCollisionObjectVectors(body->name ()).begin ();
-		 object != outerCollisionObjectVectors(body->name ()).end ();
-		 object++) {
-	      body->removeOuterObject (*object, true, false);
-	    }
-	  }
-
-	  if(distance){
-	    for (ObjectVector_t::const_iterator object =
-		   outerDistanceObjectVectors(body->name ()).begin ();
-		 object != outerDistanceObjectVectors(body->name ()).end ();
-		 object++) {
-	      body->removeOuterObject (*object, false, true);
-	    }
-	  }
 	}
       }
     }
@@ -173,7 +137,6 @@ namespace hpp {
 		   << " to body " << body2->name ()
 		   << " for collision");
 	}
-	collisionPairs_.push_back (std::make_pair (joint1, joint2));
       }
       if (type == DISTANCE) {
 	const ObjectVector_t& distanceObjects =
@@ -188,23 +151,6 @@ namespace hpp {
 		   << " to body " << body2->name ()
 		   << " for distance");
 	}
-	distancePairs_.push_back (std::make_pair (joint1, joint2));
-      }
-    }
-
-    // ========================================================================
-
-    const InteractionPairs_t& Device::collisionPairs (Request_t type) const
-    {
-      switch (type) {
-      case COLLISION:
-	return collisionPairs_;
-	break;
-      case DISTANCE:
-	return distancePairs_;
-	break;
-      default:
-	abort ();
       }
     }
 
@@ -224,27 +170,6 @@ namespace hpp {
       iterator.setToEnd ();
       return iterator;
     }
-
-
-    // ========================================================================
-
-
-    const ObjectVector_t& Device::outerCollisionObjectVectors
-    (const std::string& name)
-    {
-      return collisionOuterObjects_ [name];
-    }
-
-
-    // ========================================================================
-
-
-    const ObjectVector_t& Device::outerDistanceObjectVectors
-    (const std::string& name)
-    {
-      return distanceOuterObjects_ [name];
-    }
-
 
     // ========================================================================
 
