@@ -300,9 +300,9 @@ namespace hpp {
       DeviceWkPtr weakPtr_;
       
       /// Map of outer collision objects by joints names
-      std::map <std::string, ObjectVector_t> outerCollisionObjectVectorsMap_;
+      std::map <std::string, ObjectVector_t> collisionOuterObjects_;
       /// Map of outer distance objects by joints names
-      std::map <std::string, ObjectVector_t> outerDistanceObjectVectorsMap_;  // ObjectVector_t distanceObstacles_;   CollisionObjectPtr_t
+      std::map <std::string, ObjectVector_t> distanceOuterObjects_;
     }; // class Device
   } // namespace model
 } // namespace hpp

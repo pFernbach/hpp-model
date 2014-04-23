@@ -97,10 +97,10 @@ namespace hpp {
 	if (body) {
 	  body->addOuterObject (object, collision, distance);
 	  if(collision){
-            outerCollisionObjectVectorsMap_[body->name ()].push_back(object);
+            collisionOuterObjects_[body->name ()].push_back(object);
           }
           if(distance){
-            outerDistanceObjectVectorsMap_[body->name ()].push_back(object);
+            distanceOuterObjects_[body->name ()].push_back(object);
           }
 	}
       }
@@ -232,7 +232,7 @@ namespace hpp {
       const ObjectVector_t& Device::outerCollisionObjectVectors
     (const std::string& name)
     {
-      return outerCollisionObjectVectorsMap_ [name];
+      return collisionOuterObjects_ [name];
     }
 
 
@@ -242,7 +242,7 @@ namespace hpp {
       const ObjectVector_t& Device::outerDistanceObjectVectors
     (const std::string& name)
     {
-      return outerDistanceObjectVectorsMap_ [name];
+      return distanceOuterObjects_ [name];
     }
 
 
