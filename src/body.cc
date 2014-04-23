@@ -174,6 +174,11 @@ namespace hpp {
 	  findObject (distanceInnerObjects_, object->fcl ());
 	if (it != distanceInnerObjects_.end ())
 	  distanceInnerObjects_.erase (it);
+	if (!joint ()->robot ()) {
+	  throw std::runtime_error ("Body should be connected to a robot "
+				    "before inserting outer objects.");
+	}
+	joint ()->robot ()->updateDistances ();
       }
     }
 
@@ -195,6 +200,11 @@ namespace hpp {
 	if (it != distanceOuterObjects_.end ()) {
 	  distanceOuterObjects_.erase (it);
 	}
+	if (!joint ()->robot ()) {
+	  throw std::runtime_error ("Body should be connected to a robot "
+				    "before inserting outer objects.");
+	}
+	joint ()->robot ()->updateDistances ();
       }
     }
 
