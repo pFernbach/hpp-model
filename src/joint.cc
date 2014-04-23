@@ -87,6 +87,10 @@ namespace hpp {
       fcl::Transform3f Mp = currentTransformation_;
       fcl::Transform3f Mj = joint->currentTransformation_;
       joint->positionInParentFrame_ = Mp.inverse () * Mj;
+      // If child joint has been created by Joint::clone, bodies and list of
+      // inner and outer objects have been copied without updating the number of
+      // distance results.
+      robot->updateDistances ();
     }
 
     void Joint::isBounded (size_type rank, bool bounded)
