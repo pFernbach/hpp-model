@@ -59,9 +59,12 @@ namespace hpp {
 	     size_type numberDof);
       /// Copy constructor
       ///
+      /// Clone body and therefore inner and outer objects (see Body::clone).
       Joint (const Joint& joint);
 
       /// Return pointer to copy of this
+      ///
+      /// Clone body and therefore inner and outer objects (see Body::clone).
       virtual JointPtr_t clone () const = 0;
 
       virtual ~Joint ();
@@ -245,6 +248,7 @@ namespace hpp {
       JointAnchor (const Transform3f& initialPosition);
       JointAnchor (const JointAnchor& joint);
       /// Return pointer to copy of this
+      /// Clone body and therefore inner and outer objects (see Body::clone).
       virtual JointPtr_t clone () const;
       virtual ~JointAnchor ();
       virtual void computeMotion (ConfigurationIn_t configuration,
@@ -264,6 +268,7 @@ namespace hpp {
       JointSO3 (const Transform3f& initialPosition);
       JointSO3 (const JointSO3& joint);
       /// Return pointer to copy of this
+      /// Clone body and therefore inner and outer objects (see Body::clone).
       virtual JointPtr_t clone () const;
       virtual void computeMotion (ConfigurationIn_t configuration,
 				    const Transform3f& parentConfig);
@@ -285,6 +290,7 @@ namespace hpp {
       JointRotation (const Transform3f& initialPosition);
       JointRotation (const JointRotation& joint);
       /// Return pointer to copy of this
+      /// Clone body and therefore inner and outer objects (see Body::clone).
       virtual JointPtr_t clone () const;
       virtual void computeMotion (ConfigurationIn_t configuration,
 				    const Transform3f& parentConfig);
@@ -311,6 +317,7 @@ namespace hpp {
       JointTranslation (const Transform3f& initialPosition);
       JointTranslation (const JointTranslation& joint);
       /// Return pointer to copy of this
+      /// Clone body and therefore inner and outer objects (see Body::clone).
       virtual JointPtr_t clone () const;
       virtual void computeMotion (ConfigurationIn_t configuration,
 				    const Transform3f& parentConfig);

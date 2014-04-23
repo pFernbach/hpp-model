@@ -47,7 +47,10 @@ namespace hpp {
       Body ();
       /// Copy constructor
       Body (const Body& body);
-      /// Clone body and attach to new joint
+      /// Clone body and attach to given joint
+      ///
+      /// inner and outer object lists are filled with copies of the objects
+      /// contained in the lists of this. (See CollisionObject::clone).
       BodyPtr_t clone (const JointPtr_t& joint) const;
       virtual ~Body () {}
       /// @}
