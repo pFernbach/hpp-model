@@ -225,10 +225,11 @@ namespace hpp {
       /// Iterator end
       ObjectIterator objectIteratorEnd (Request_t type);
 
-      /// Mapping of outer objects used in collision checking using the joint name
-      const ObjectVector_t& outerCollisionObjectVectors (const std::string& name);
+      /// Get mapping joint name -> outer objects used for collision checking
+      const ObjectVector_t& outerCollisionObjectVectors
+	(const std::string& name);
 
-      /// Mapping of outer objects used in distance computation using the joint name
+      /// Get mapping joint name -> outer objects used for distance computation
       const ObjectVector_t& outerDistanceObjectVectors (const std::string& name);
 
       /// Test collision of current configuration
