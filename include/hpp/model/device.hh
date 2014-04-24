@@ -213,8 +213,6 @@ namespace hpp {
       /// Iterator over inner objects of the device
       /// \param type Collision or distance
       ObjectIterator objectIterator (Request_t type);
-      /// Iterator end
-      ObjectIterator objectIteratorEnd (Request_t type);
 
       /// Test collision of current configuration
       /// \warning Users should call computeForwardKinematics first.

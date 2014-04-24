@@ -164,15 +164,6 @@ namespace hpp {
 
     // ========================================================================
 
-    ObjectIterator Device::objectIteratorEnd (Request_t type)
-    {
-      ObjectIterator iterator (*this, type);
-      iterator.setToEnd ();
-      return iterator;
-    }
-
-    // ========================================================================
-
     void Device::updateDistances ()
     {
       JointVector_t joints = getJointVector ();
