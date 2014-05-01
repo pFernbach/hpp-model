@@ -342,32 +342,35 @@ namespace hpp {
 	(*itJoint)->jacobian_.setZero ();
       }
     }
+    std::ostream& Device::print(std::ostream& os) const
+    {
+      os << "Device: " << name() << std::endl;
+      os << std::endl;
+      os << " Current configuration: " << currentConfiguration ()
+	 << std::endl;
+      os << std::endl;
+      os << " Writing kinematic chain" << std::endl;
 
+      //
+      // Go through joints and output each joint
+      //
+      hpp::model::JointPtr_t joint = rootJoint();
+
+      if (joint) {
+	os << *joint << std::endl;
+      }
+      // Get position of center of mass
+      hpp::model::vector3_t com = positionCenterOfMass ();
+
+      //debug
+      os << "total mass " << mass() << ", COM: "
+	 << com [0] <<", "<< com [1] << ", " << com [2] <<std::endl;
+      return os;
+    }
   } // namespace model
 } // namespace hpp
 
 std::ostream& operator<<(std::ostream& os, const hpp::model::Device& device)
 {
-  os << "Device: " << device.name() << std::endl;
-  os << std::endl;
-  os << " Current configuration: " << device.currentConfiguration ()
-     << std::endl;
-  os << std::endl;
-  os << " Writing kinematic chain" << std::endl;
-
-  //
-  // Go through joints and output each joint
-  //
-  hpp::model::JointPtr_t joint = device.rootJoint();
-
-  if (joint) {
-    os << *joint << std::endl;
-  }
-  // Get position of center of mass
-  hpp::model::vector3_t com = device.positionCenterOfMass ();
-
-  //debug
-  os << "total mass " << device.mass() << ", COM: "
-     << com [0] <<", "<< com [1] << ", " << com [2] <<std::endl;
-  return os;
+  return device.print (os);
 }

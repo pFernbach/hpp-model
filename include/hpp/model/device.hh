@@ -245,6 +245,10 @@ namespace hpp {
       /// Compute forward kinematics
       virtual void computeForwardKinematics ();
       /// \}
+
+      /// Print object in a stream
+      virtual std::ostream& print (std::ostream& os) const;
+
     protected:
       /// \brief Constructor
       Device(const std::string& name);
