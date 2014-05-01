@@ -172,6 +172,8 @@ namespace hpp {
       /// Set robot owning the kinematic chain
       void robot (const DevicePtr_t& device) {robot_ = device;}
       /// Access robot owning the object
+      DeviceConstPtr_t robot () const { return robot_.lock ();}
+      /// Access robot owning the object
       DevicePtr_t robot () { return robot_.lock ();}
       /// \name Body linked to the joint
       /// @{

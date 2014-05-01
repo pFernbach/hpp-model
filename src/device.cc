@@ -346,7 +346,7 @@ namespace hpp {
   } // namespace model
 } // namespace hpp
 
-std::ostream& operator<<(std::ostream& os, hpp::model::Device& device)
+std::ostream& operator<<(std::ostream& os, const hpp::model::Device& device)
 {
   os << "Device: " << device.name() << std::endl;
   os << std::endl;

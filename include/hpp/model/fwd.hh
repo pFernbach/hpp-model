@@ -51,6 +51,7 @@ namespace hpp {
     typedef boost::shared_ptr <CollisionObject> CollisionObjectPtr_t;
     typedef std::vector <CollisionObjectPtr_t> ObjectVector_t;
     typedef boost::shared_ptr <Device> DevicePtr_t;
+    typedef boost::shared_ptr <const Device> DeviceConstPtr_t;
     typedef std::vector <DistanceResult> DistanceResults_t;
     typedef boost::shared_ptr <HumanoidRobot> HumanoidRobotPtr_t;
     typedef Joint* JointPtr_t;

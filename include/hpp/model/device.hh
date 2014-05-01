@@ -64,7 +64,7 @@ namespace hpp {
       /// \}
 
       /// Get name of device
-      const std::string& name () {return name_;}
+      const std::string& name () const {return name_;}
 
       /// \brief Creation of a new device
       /// \return a shared pointer to the new device
@@ -283,6 +283,6 @@ namespace hpp {
   } // namespace model
 } // namespace hpp
 
-std::ostream& operator<<(std::ostream& os, hpp::model::Device& device);
+std::ostream& operator<< (std::ostream& os, const hpp::model::Device& device);
 
 #endif // HPP_MODEL_DEVICE_HH
