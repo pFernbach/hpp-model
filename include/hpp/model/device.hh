@@ -258,9 +258,10 @@ namespace hpp {
       ///
       void init(const DeviceWkPtr& weakPtr);
 
-    private:
       /// Recompute number of distance pairs
       void updateDistances ();
+
+    private:
       void computeJointPositions ();
       void computeJointJacobians ();
       void computeMass ();
