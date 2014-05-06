@@ -93,7 +93,10 @@ namespace hpp {
       const JointVector_t& getJointVector () const;
 
       /// Get joint by name
-      JointPtr_t getJointByName (const std::string& name);
+      JointPtr_t getJointByName (const std::string& name) const;
+
+      /// Get joint by body name
+      JointPtr_t getJointByBodyName (const std::string& name) const;
 
       /// Size of configuration vectors
       const size_type& configSize () const

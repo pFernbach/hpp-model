@@ -294,9 +294,30 @@ namespace hpp {
       return jointVector_;
     }
 
-    JointPtr_t Device::getJointByName (const std::string& name)
+    JointPtr_t Device::getJointByName (const std::string& name) const
     {
-      return jointByName_ [name];
+      JointByName_t::const_iterator it = jointByName_.find (name);
+      if (it == jointByName_.end ()) {
+	throw std::runtime_error ("Device " + name_ +
+				  " does not have any joint named "
+				  + name);
+      }
+      return it->second;
+    }
+
+    JointPtr_t Device::getJointByBodyName (const std::string& name) const
+    {
+      for (JointVector_t::const_iterator itJoint= jointVector_.begin ();
+	   itJoint != jointVector_.end (); ++itJoint) {
+	const JointPtr_t& joint = *itJoint;
+	BodyPtr_t body = joint->linkedBody ();
+	if (body && body->name () == name) {
+	  return joint;
+	}
+      }
+      throw std::runtime_error ("Device " + name_ +
+				" has no joint with body of name "
+				+ name);
     }
 
     void Device::computeJointPositions ()
