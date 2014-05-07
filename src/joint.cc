@@ -37,7 +37,7 @@ namespace hpp {
       positionInParentFrame_ (), T3f_ (), mass_ (0), massCom_ (),
       configSize_ (configSize), numberDof_ (numberDof),
       initialPosition_ (initialPosition),
-      body_ (0x0), robot_ (),
+      robot_ (), body_ (0x0),
       name_ (), children_ (), parent_ (0x0), rankInConfiguration_ (-1),
       jacobian_ (), rankInParent_ (0)
     {
@@ -50,7 +50,8 @@ namespace hpp {
       configuration_ (joint.configuration_),
       positionInParentFrame_ (joint.positionInParentFrame_),
       configSize_ (joint.configSize_), numberDof_ (joint.numberDof_),
-      body_ (joint.body_->clone (this)), robot_ (), name_ (joint.name_),
+      robot_ (), body_ (joint.body_ ? joint.body_->clone (this) : 0x0),
+      name_ (joint.name_),
       children_ (), parent_ (), rankInConfiguration_ (-1), rankInVelocity_ (-1),
       rankInParent_ (-1)
     {
