@@ -47,7 +47,7 @@ namespace hpp {
 
     // ========================================================================
 
-    void HumanoidRobot::init(const HumanoidRobotWkPtr& weakPtr)
+    void HumanoidRobot::init(const HumanoidRobotWkPtr_t& weakPtr)
     {
       Device::init (weakPtr);
       weakPtr_ = weakPtr;

@@ -105,10 +105,10 @@ namespace hpp {
       ///
       /// \brief Initialization.
       ///
-      void init (const HumanoidRobotWkPtr& weakPtr);
+      void init (const HumanoidRobotWkPtr_t& weakPtr);
 
     private:
-      HumanoidRobotWkPtr weakPtr_;
+      HumanoidRobotWkPtr_t weakPtr_;
       JointPtr_t waist_;
       JointPtr_t chest_;
       JointPtr_t leftWrist_;

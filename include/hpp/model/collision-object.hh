@@ -108,7 +108,7 @@ namespace hpp {
 	  }
 
       /// \}
-      void init (const CollisionObjectWkPtr& self)
+      void init (const CollisionObjectWkPtr_t& self)
       {
 	weakPtr_ = self;
       }
@@ -118,7 +118,7 @@ namespace hpp {
       fcl::Transform3f positionInJointFrame_;
       JointConstPtr_t joint_;
       std::string name_;
-      CollisionObjectWkPtr weakPtr_;
+      CollisionObjectWkPtr_t weakPtr_;
     }; // class CollisionObject
   } // namespace model
 } // namespace hpp

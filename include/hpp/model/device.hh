@@ -259,7 +259,7 @@ namespace hpp {
       ///
       /// \brief Initialization.
       ///
-      void init(const DeviceWkPtr& weakPtr);
+      void init(const DeviceWkPtr_t& weakPtr);
 
       /// Recompute number of distance pairs
       void updateDistances ();
@@ -286,7 +286,7 @@ namespace hpp {
       double mass_;
       bool upToDate_;
       Computation_t computationFlag_;
-      DeviceWkPtr weakPtr_;
+      DeviceWkPtr_t weakPtr_;
     }; // class Device
   } // namespace model
 } // namespace hpp
