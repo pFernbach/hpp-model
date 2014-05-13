@@ -48,7 +48,7 @@ namespace hpp {
     class HPP_MODEL_DLLAPI Joint {
     public:
       /// \name Construction and copy and destruction
-      /// @{
+      /// \{
 
       /// Constructor
       /// \param initialPosition position of the joint before being inserted
@@ -68,10 +68,11 @@ namespace hpp {
       virtual JointPtr_t clone () const = 0;
 
       virtual ~Joint ();
-      /// @}
+      /// \}
 
       /// \name Name
-      /// @{
+      /// \{
+
       /// Set name
       virtual inline void name(const std::string& name)
       {
@@ -82,15 +83,16 @@ namespace hpp {
       {
 	return name_;
       }
-      /// @}
-
+      /// \}
       /// \name Position
-      /// @{
+      /// \{
+
       /// Joint initial position (when robot is in zero configuration)
       const Transform3f& initialPosition () const;
       /// Joint transformation
       const Transform3f& currentTransformation () const;
-      ///@}
+      ///\}
+
       /// Return number of degrees of freedom
       const size_type& numberDof () const
       {
@@ -113,7 +115,8 @@ namespace hpp {
       }
 
       /// \name Kinematic chain
-      /// @{
+      /// \{
+
       /// Get a pointer to the parent joint (if any).
       JointPtr_t parentJoint () const
       {
@@ -133,12 +136,10 @@ namespace hpp {
 	return children_ [rank];
       }
 
-      /// Get the rank of this joint in the robot configuration vector.
-      ///
-      ///@}
+      ///\}
 
       /// \name Bounds
-      /// @{
+      /// \{
       /// Set whether given degree of freedom is bounded
       void isBounded (size_type rank, bool bounded);
       /// Get whether given degree of freedom is bounded
@@ -151,7 +152,7 @@ namespace hpp {
       void lowerBound (size_type rank, double lowerBound);
       /// Set upper bound of given degree of freedom
       void upperBound (size_type rank, double upperBound);
-      /// @}
+      /// \}
 
       /// \name Jacobian
       /// \{
@@ -176,12 +177,12 @@ namespace hpp {
       /// Access robot owning the object
       DevicePtr_t robot () { return robot_.lock ();}
       /// \name Body linked to the joint
-      /// @{
+      /// \{
       /// Get linked body
       BodyPtr_t linkedBody () const;
       /// Set linked body
       void setLinkedBody (const BodyPtr_t& body);
-      /// @}
+      /// \}
 
       /// Display joint
       virtual std::ostream& display (std::ostream& os) const;
