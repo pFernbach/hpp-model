@@ -123,7 +123,18 @@ namespace hpp {
 	return parent_;
       }
       /// Add child joint
-      void addChildJoint (JointPtr_t joint);
+      /// \param joint child joint added to this one,
+      /// \param computePositionInParent whether to compute position of the
+      ///        child joint in this one's frame.
+      ///
+      /// \note When building a kinematic chain, we usually build the
+      /// joint in its initial position and compute the (constant)
+      /// position of the joint in its parent when adding the joint in
+      /// the kinematic chain. When copying a kinematic chain, we copy the
+      /// position of the joint in its parent frame and therefore we do
+      /// not update it when adding the joint in the kinematic chain.
+      void addChildJoint (JointPtr_t joint,
+			  bool computePositionInParent = true);
 
       /// Number of child joints
       std::size_t numberChildJoints () const

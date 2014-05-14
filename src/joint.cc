@@ -72,7 +72,8 @@ namespace hpp {
       return currentTransformation_;
     }
 
-    void Joint::addChildJoint (JointPtr_t joint)
+    void Joint::addChildJoint (JointPtr_t joint,
+			       bool computePositionInParent)
     {
       DevicePtr_t robot = robot_.lock ();
       if (!robot) {
@@ -87,7 +88,8 @@ namespace hpp {
       // Mjoint/parent = Mparent^{-1} Mjoint
       fcl::Transform3f Mp = currentTransformation_;
       fcl::Transform3f Mj = joint->currentTransformation_;
-      joint->positionInParentFrame_ = Mp.inverse () * Mj;
+      if (computePositionInParent)
+	joint->positionInParentFrame_ = Mp.inverse () * Mj;
       // If child joint has been created by Joint::clone, bodies and list of
       // inner and outer objects have been copied without updating the number of
       // distance results.
