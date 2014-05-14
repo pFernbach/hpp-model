@@ -144,8 +144,6 @@ namespace hpp {
 				 const Transform3f& parentConfig)
     {
       computeMotion (configuration, parentConfig);
-      hppDout (info, "Joint " << name_);
-      hppDout (info, "Joint position " << currentTransformation_);
       for (std::vector <JointPtr_t>::iterator itJoint = children_.begin ();
 	   itJoint != children_.end (); itJoint++) {
 	(*itJoint)->computePosition (configuration, currentTransformation_);
@@ -213,6 +211,8 @@ namespace hpp {
 				     const Transform3f& parentConfig)
     {
       currentTransformation_ = parentConfig * positionInParentFrame_;
+      hppDout (info, "Joint " << name ());
+      hppDout (info, "currentTransformation_ = " << currentTransformation_);
     }
 
     void JointAnchor::writeSubJacobian (const JointPtr_t&)
@@ -257,6 +257,7 @@ namespace hpp {
       hppDout (info, "positionInParentFrame_ = " << positionInParentFrame_);
       hppDout (info, "T3f_ = " << T3f_);
       currentTransformation_ = parentConfig * positionInParentFrame_ * T3f_;
+      hppDout (info, "Joint " << name ());
       hppDout (info, "currentTransformation_ = " << currentTransformation_);
     }
     static void cross (const fcl::Vec3f& x, JointJacobian_t& J, size_type row,
@@ -395,6 +396,8 @@ namespace hpp {
       t_ [0] = configuration [rankInConfiguration ()];
       T3f_.setTranslation (t_);
       currentTransformation_ = parentConfig * positionInParentFrame_ * T3f_;
+      hppDout (info, "Joint " << name ());
+      hppDout (info, "currentTransformation_ = " << currentTransformation_);
     }
 
     void JointTranslation::writeSubJacobian (const JointPtr_t& child)
@@ -410,59 +413,75 @@ namespace hpp {
     void JointTranslation::writeComSubjacobian (ComJacobian_t& jacobian,
 						const double& totalMass)
     {
-      size_type col = rankInVelocity ();
-      // Get translation axis
-      axis_ = currentTransformation_.getRotation ().getColumn (0);
-      jacobian (0, col) = (mass_/totalMass) * axis_ [0];
-      jacobian (1, col) = (mass_/totalMass) * axis_ [1];
-      jacobian (2, col) = (mass_/totalMass) * axis_ [2];
+      if (mass_ > 0) {
+	size_type col = rankInVelocity ();
+	// Get translation axis
+	axis_ = currentTransformation_.getRotation ().getColumn (0);
+	jacobian (0, col) = (mass_/totalMass) * axis_ [0];
+	jacobian (1, col) = (mass_/totalMass) * axis_ [1];
+	jacobian (2, col) = (mass_/totalMass) * axis_ [2];
+      }
+    }
+
+    std::ostream& displayTransform3f (std::ostream& os,
+				      const fcl::Transform3f trans)
+    {
+      const fcl::Matrix3f& R (trans.getRotation ());
+      const fcl::Vec3f& t (trans.getTranslation ());
+      const fcl::Quaternion3f& q (trans.getQuatRotation ());
+      os << "rotation matrix: " << R << "\\n";
+      os << "rotation quaternion: " << "(" << q.getW () << ", "
+	 << q.getX () << ", " << q.getY () << ", " << q.getZ () << ")"
+	 << "\\n";
+      os << "translation: " << t;
+      return os;
     }
 
     std::ostream& Joint::display (std::ostream& os) const
     {
-      os << "Joint: " << name () << std::endl;
+      os << "\"" << name () << "\"" << "[shape=box label=\"" << name ()
+	 << "\\n";
       if (configSize () != 0)
-	os << "Rank in configuration: "
-	   << rankInConfiguration()
-	   << std::endl;
+	os << "Rank in configuration: " << rankInConfiguration() << "\\n";
       else
-	os << "Anchor joint" << std::endl;
-      os << "Current transformation:" << std::endl;
-      os << currentTransformation() << std:: endl;
-      os << std::endl;
-      os << "children: ";
-      for (hpp::model::JointVector_t::const_iterator it =
-	     children_.begin (); it != children_.end (); it++) {
-	os << " ," << (*it)->name ();
-      }
-      os << std::endl;
+	os << "Anchor joint\\n";
+      os << "Current transformation: ";
+      displayTransform3f (os, currentTransformation());
+      os << "\\n";
       hpp::model::BodyPtr_t body = linkedBody();
       if (body) {
-	os << "Attached body:" << std::endl;
-	os << "Mass of the attached body: " << body->mass()
-	   << std::endl;
-	os << "Local center of mass:" << body->localCenterOfMass()
-	   << std::endl;
-	os << "Inertia matrix:" << std::endl;
-	os << body->inertiaMatrix() << std::endl;
-	os << "geometric objects" << std::endl;
+	const matrix3_t& I = body->inertiaMatrix();
+	os << "Attached body: " << body->name () << "\\n";
+	os << "Mass of the attached body: " << body->mass() << "\\n";
+	os << "Local center of mass:" << body->localCenterOfMass() << "\\n";
+	os << "Inertia matrix:" << "\\n";
+	os << I (0,0) << "\t" << I (0,1) << "\t" << I (0,2) << "\\n"
+	   << I (1,0) << "\t" << I (1,1) << "\t" << I (1,2) << "\\n"
+	   << I (2,0) << "\t" << I (2,1) << "\t" << I (2,2) << "\\n";
+	os << "geometric objects" << "\\n";
 	const hpp::model::ObjectVector_t& colObjects =
 	  body->innerObjects (hpp::model::COLLISION);
 	for (hpp::model::ObjectVector_t::const_iterator it =
 	       colObjects.begin (); it != colObjects.end (); it++) {
-	  os << "name: " << (*it)->name () << std::endl;
-	  os << "position :" << std::endl;
+	  os << "name: " << (*it)->name () << "\\n";
+	  os << "position :" << "\\n";
 	  const fcl::Transform3f& transform ((*it)->fcl ()->getTransform ());
-	  os << transform;
+	  displayTransform3f (os, transform);
 	}
       } else {
-	os << "No body" << std::endl;
+	os << "No body";
       }
+      os << "\"]" << std::endl;
       for (unsigned int iChild=0; iChild < numberChildJoints ();
 	   iChild++) {
 	hpp::model::JointPtr_t child = childJoint (iChild);
 	os << *(child) << std::endl;
-	os <<std::endl;
+      }
+      // write edges to children joints
+      for (hpp::model::JointVector_t::const_iterator it =
+	     children_.begin (); it != children_.end (); it++) {
+	os << "\"" << name () << "\"->\"" << (*it)->name () << "\""
+	   << std::endl;
       }
       return os;
     }
