@@ -94,6 +94,7 @@ namespace hpp {
       // inner and outer objects have been copied without updating the number of
       // distance results.
       robot->updateDistances ();
+      robot->computeMass ();
     }
 
     void Joint::isBounded (size_type rank, bool bounded)
@@ -294,10 +295,12 @@ namespace hpp {
     void JointSO3::writeComSubjacobian (ComJacobian_t& jacobian,
 					const double& totalMass)
     {
-      const fcl::Vec3f& center (currentTransformation_.getTranslation ());
-      com_ = massCom_ * (1/mass_);
-      size_type col = rankInVelocity ();
-      cross ((mass_/totalMass)*(center-com_), jacobian, (size_type) 0, col);
+      if (mass_ > 0) {
+	const fcl::Vec3f& center (currentTransformation_.getTranslation ());
+	com_ = massCom_ * (1/mass_);
+	size_type col = rankInVelocity ();
+	cross ((mass_/totalMass)*(center-com_), jacobian, (size_type) 0, col);
+      }
     }
 
     JointRotation::JointRotation (const Transform3f& initialPosition) :
@@ -356,15 +359,17 @@ namespace hpp {
     void JointRotation::writeComSubjacobian (ComJacobian_t& jacobian,
 					     const double& totalMass)
     {
-      size_type col = rankInVelocity ();
-      axis_ = currentTransformation_.getRotation ().getColumn (0);
-      com_ = massCom_ * (1/mass_);
-      const fcl::Vec3f& center (currentTransformation_.getTranslation ());
-      O2O1_ = center - com_;
-      cross_ = (mass_/totalMass) * O2O1_.cross (axis_);
-      jacobian (0, col) = cross_ [0];
-      jacobian (1, col) = cross_ [1];
-      jacobian (2, col) = cross_ [2];
+      if (mass_ > 0) {
+	size_type col = rankInVelocity ();
+	axis_ = currentTransformation_.getRotation ().getColumn (0);
+	com_ = massCom_ * (1/mass_);
+	const fcl::Vec3f& center (currentTransformation_.getTranslation ());
+	O2O1_ = center - com_;
+	cross_ = (mass_/totalMass) * O2O1_.cross (axis_);
+	jacobian (0, col) = cross_ [0];
+	jacobian (1, col) = cross_ [1];
+	jacobian (2, col) = cross_ [2];
+      }
     }
 
     JointTranslation::JointTranslation (const Transform3f& initialPosition) :

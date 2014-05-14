@@ -358,6 +358,7 @@ namespace hpp {
     void Device::resizeJacobians ()
     {
       jacobianCom_.resize (3, numberDof_);
+      jacobianCom_.setZero ();
       for (JointVector_t::iterator itJoint = jointVector_.begin ();
 	   itJoint != jointVector_.end () ; itJoint++) {
 	(*itJoint)->jacobian_.resize (6, numberDof_);
