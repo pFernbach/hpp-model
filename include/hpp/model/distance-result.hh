@@ -28,6 +28,21 @@ namespace hpp {
   namespace model {
     /// Result of distance computation between two CollisionObject.
     struct HPP_MODEL_DLLAPI DistanceResult {
+      /// Get distance between objects
+      const double& distance () const
+      {
+	return fcl.min_distance;
+      }
+      /// Get closest point on inner object,
+      const fcl::Vec3f& closestPointInner () const
+      {
+	return fcl.nearest_points [0];
+      }
+      /// Get closest point on outer object,
+      const fcl::Vec3f& closestPointOuter () const
+      {
+	return fcl.nearest_points [1];
+      }
       fcl::DistanceResult fcl;
       CollisionObjectPtr_t innerObject;
       CollisionObjectPtr_t outerObject;
