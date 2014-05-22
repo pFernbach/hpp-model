@@ -38,6 +38,7 @@ namespace fcl {
 namespace hpp {
   namespace model {
     HPP_PREDEF_CLASS (Body);
+    HPP_PREDEF_CLASS (ChildrenIterator);
     HPP_PREDEF_CLASS (CollisionObject);
     HPP_PREDEF_CLASS (Device);
     HPP_PREDEF_CLASS (DistanceResult);

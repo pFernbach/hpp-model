@@ -45,6 +45,7 @@ ENDIF()
 # Declare headers
 SET(${PROJECT_NAME}_HEADERS
   include/hpp/model/body.hh
+  include/hpp/model/children-iterator.hh
   include/hpp/model/collision-object.hh
   include/hpp/model/configuration.hh
   include/hpp/model/device.hh

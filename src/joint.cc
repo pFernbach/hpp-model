@@ -26,7 +26,7 @@
 #include <hpp/model/joint.hh>
 #include <hpp/model/joint-configuration.hh>
 
-#include "children-iterator.hh"
+#include <hpp/model/children-iterator.hh>
 
 namespace hpp {
   namespace model {
