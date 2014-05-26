@@ -275,10 +275,6 @@ namespace hpp {
 			 distanceRequest, results [offset].fcl);
 	  results [offset].innerObject = *itInner;
 	  results [offset].outerObject = *itOuter;
-	  assert (results [offset].fcl.o1 == 0 || results [offset].fcl.o1 ==
-		  (*itInner)->fcl ()->collisionGeometry ().get ());
-	  assert (results [offset].fcl.o1 == 0 || results [offset].fcl.o1 ==
-		  (*itInner)->fcl ()->collisionGeometry ().get ());
 	  offset++;
 	}
       }
