@@ -271,6 +271,7 @@ namespace hpp {
 	for (ObjectVector_t::iterator itOuter = distanceOuterObjects_.begin ();
 	     itOuter != distanceOuterObjects_.end (); itOuter++) {
 	  // Compute global position if inner object
+	  results [offset].fcl.clear ();
 	  fcl::distance ((*itInner)->fcl ().get (), (*itOuter)->fcl ().get (),
 			 distanceRequest, results [offset].fcl);
 	  results [offset].innerObject = *itInner;
