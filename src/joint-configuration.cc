@@ -330,8 +330,8 @@ namespace hpp {
 	result [index] = (1-u) * q1 [index] + u * q2 [index];
       } else {
 	// interpolate on the unit circle
-	jrlMathTools::Angle th1 (q1 [0]);
-	jrlMathTools::Angle th2 (q2 [0]);
+	jrlMathTools::Angle th1 (q1 [index]);
+	jrlMathTools::Angle th2 (q2 [index]);
 	result [index] = th1.interpolate (u, th2);
       }
       hppDout (info, "index = " << index);
@@ -347,8 +347,8 @@ namespace hpp {
 	return fabs (q2 [index] - q1 [index]);
       } else {
 	// distance on the unit circle
-	jrlMathTools::Angle th1 (q1 [0]);
-	jrlMathTools::Angle th2 (q2 [0]);
+	jrlMathTools::Angle th1 (q1 [index]);
+	jrlMathTools::Angle th2 (q2 [index]);
 	return th1.distance (th2);
       }
     }
