@@ -31,8 +31,9 @@ namespace hpp {
     {
       for (;jointIt_ != joints_.end (); jointIt_++) {
 	BodyPtr_t body = (*jointIt_)->linkedBody ();
-	if (body != 0) {
-	  objects_ = body->innerObjects (type_);
+	if ((body != 0) &&
+	    (objects_ = body->innerObjects (type_)).size () != 0) {
+	  ;
 	  objIt_ = objects_.begin ();
 	  return;
 	}
