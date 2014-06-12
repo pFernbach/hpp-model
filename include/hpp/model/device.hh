@@ -174,6 +174,22 @@ namespace hpp {
 	return jacobianCom_;
       }
 
+      /// Add a gripper to the Device
+      void addGripper (const GripperPtr_t& gripper)
+      {
+	grippers_.push_back (gripper);
+      }
+      /// Return list of grippers of the Device
+      Grippers_t& grippers ()
+      {
+	return grippers_;
+      }
+      /// Return list of grippers of the Device
+      const Grippers_t& grippers () const
+      {
+	return grippers_;
+      }
+
       /// \}
 
       /// \name Collision and distance computation
@@ -286,6 +302,7 @@ namespace hpp {
       double mass_;
       bool upToDate_;
       Computation_t computationFlag_;
+      Grippers_t grippers_;
       DeviceWkPtr_t weakPtr_;
     }; // class Device
   } // namespace model

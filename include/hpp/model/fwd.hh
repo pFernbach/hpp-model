@@ -47,6 +47,7 @@ namespace hpp {
     HPP_PREDEF_CLASS (JointConfiguration);
     HPP_PREDEF_CLASS (ObjectFactory);
     HPP_PREDEF_CLASS (ObjectIterator);
+    HPP_PREDEF_CLASS (Gripper);
     enum Request_t {COLLISION, DISTANCE};
     typedef Body* BodyPtr_t;
     typedef boost::shared_ptr <CollisionObject> CollisionObjectPtr_t;
@@ -58,7 +59,9 @@ namespace hpp {
     typedef Joint* JointPtr_t;
     typedef const Joint* JointConstPtr_t;
     typedef std::map <std::string, JointPtr_t> JointByName_t;
-    typedef std::vector <JointPtr_t> JointVector_t;
+    typedef std::vector <JointPtr_t> JointVector_t;    
+    typedef boost::shared_ptr <Gripper> GripperPtr_t;
+    typedef std::vector <GripperPtr_t> Grippers_t;
     typedef Eigen::Matrix <double, Eigen::Dynamic, 1> vector_t;
     typedef vector_t Configuration_t;
     typedef Eigen::Ref <const Configuration_t> ConfigurationIn_t;

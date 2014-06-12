@@ -23,6 +23,7 @@
 #include <hpp/model/device.hh>
 #include <hpp/model/fcl-to-eigen.hh>
 #include <hpp/model/object-factory.hh>
+#include <hpp/model/gripper.hh>
 
 namespace hpp {
   namespace model {
@@ -36,7 +37,7 @@ namespace hpp {
       configSize_ (0), currentConfiguration_ (configSize_),
       currentVelocity_ (numberDof_), 	currentAcceleration_ (numberDof_),
       com_ (), jacobianCom_ (3, 0), mass_ (0), upToDate_ (false),
-      computationFlag_ (ALL),	weakPtr_ ()
+      computationFlag_ (ALL), grippers_ (),	weakPtr_ ()
     {
       com_.setZero ();
       I4.setIdentity ();
@@ -387,6 +388,13 @@ namespace hpp {
 	os << *joint << std::endl;
       }
       os << "}" << std::endl;
+
+      os << "Grippers:" << std::endl;
+	for (Grippers_t::const_iterator it = grippers_.begin ();
+	     it != grippers_.end (); ++it) {
+	  (*it)->print (os); os << std::endl;
+	}
+
       return os;
     }
   } // namespace model
