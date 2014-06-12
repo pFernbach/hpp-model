@@ -57,6 +57,7 @@ SET(${PROJECT_NAME}_HEADERS
   include/hpp/model/joint-configuration.hh
   include/hpp/model/object-factory.hh
   include/hpp/model/object-iterator.hh
+  include/hpp/model/gripper.hh
   )
 
 # Declare dependencies

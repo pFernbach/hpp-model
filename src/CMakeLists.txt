@@ -28,6 +28,7 @@ ADD_LIBRARY(${LIBRARY_NAME}
   joint.cc
   joint-configuration.cc
   object-iterator.cc
+  gripper.cc
   )
 
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-util)
