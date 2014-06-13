@@ -33,13 +33,13 @@ namespace hpp {
       {
         GripperPtr_t self = weakPtr_.lock ();
         return Gripper::create (self->name (),self->joint (),
-                                self->handlePositionInJoint ());
+                                self->objectPositionInJoint ());
       }
 
       std::ostream& Gripper::print (std::ostream& os) const
       {
         os << "name :" << name () << std::endl;
-        os << "handle Position in joint :" << handlePositionInJoint () << std::endl;
+        os << "handle Position in joint :" << objectPositionInJoint () << std::endl;
         os << "joint :" << joint ()->name () << std::endl;
         return os;
       }

@@ -25,18 +25,27 @@
 
 namespace hpp {
   namespace model {
-    /// Constraint between the position of a robot joint and of an object handle
+    /// Definition of a robot gripper
+    ///
+    /// This class represent a robot gripper as a frame attached to the joint
+    /// of the robot that holds the gripper.
+    ///
+    /// \image html figures/figure-gripper.png
+    ///
+    /// To graps a box-shaped object with small lengths along x and y, the 
+    /// gripper frame should coincide with the object frame.
     class HPP_MODEL_DLLAPI Gripper
     {
     public:
       /// Return a shared pointer to new instance
       /// \param joint joint of the robot that will hold handles,
-      /// \param handlePositionInJoint handle position in the the grasping
+      /// \param objectPositionInJoint object position in the the grasping
       ///        joint.
-      static GripperPtr_t create (const std::string& name, const JointPtr_t& joint,
-				const Transform3f& handlePositionInJoint)
+      static GripperPtr_t create (const std::string& name,
+				  const JointPtr_t& joint,
+				  const Transform3f& objectPositionInJoint)
       {
-	Gripper* ptr = new Gripper (name, joint, handlePositionInJoint);
+	Gripper* ptr = new Gripper (name, joint, objectPositionInJoint);
 	GripperPtr_t shPtr (ptr);
 	ptr->init (shPtr);
 	return shPtr;
@@ -55,9 +64,9 @@ namespace hpp {
       }
 
       /// Get handle position in the the Grippering joint
-      const Transform3f& handlePositionInJoint () const
+      const Transform3f& objectPositionInJoint () const
       {
-	return handlePositionInJoint_;
+	return objectPositionInJoint_;
       }
       ///get name
       const std::string& name () const
@@ -80,13 +89,13 @@ namespace hpp {
     protected:
       /// Constructor
       /// \param joint joint of the robot that holds the handle,
-      /// \param handlePositionInJoint handle position in the the grasping
+      /// \param objectPositionInJoint handle position in the the grasping
       ///        joint.
       Gripper (const std::string& name, const JointPtr_t& joint,
-	     const Transform3f& handlePositionInJoint) :
+	     const Transform3f& objectPositionInJoint) :
         name_ (name),
 	joint_ (joint),
-	handlePositionInJoint_ (handlePositionInJoint)
+	objectPositionInJoint_ (objectPositionInJoint)
       {
       }
 
@@ -99,7 +108,7 @@ namespace hpp {
       std::string name_;
       /// Joint of the robot that holds handles.
       JointPtr_t joint_;
-      Transform3f handlePositionInJoint_;
+      Transform3f objectPositionInJoint_;
       /// Weak pointer to itself
       GripperWkPtr_t weakPtr_;
     }; // class Gripper
