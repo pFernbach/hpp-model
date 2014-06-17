@@ -33,12 +33,12 @@ namespace hpp {
       {
 	return fcl.min_distance;
       }
-      /// Get closest point on inner object,
+      /// Get closest point on inner object in global frame,
       const fcl::Vec3f& closestPointInner () const
       {
 	return fcl.nearest_points [0];
       }
-      /// Get closest point on outer object,
+      /// Get closest point on outer object in global frame,
       const fcl::Vec3f& closestPointOuter () const
       {
 	return fcl.nearest_points [1];
