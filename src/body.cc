@@ -261,7 +261,7 @@ namespace hpp {
     void Body::computeDistances (DistanceResults_t& results,
 				 DistanceResults_t::size_type& offset)
     {
-      fcl::DistanceRequest distanceRequest (true);
+      fcl::DistanceRequest distanceRequest (true, 0, 0, fcl::GST_INDEP);
       for (ObjectVector_t::iterator itInner = distanceInnerObjects_.begin ();
 	   itInner != distanceInnerObjects_.end (); itInner++) {
 	// Compute global position if inner object
