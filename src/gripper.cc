@@ -17,6 +17,7 @@
 // hpp-model. If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include <hpp/model/body.hh>
 #include <fcl/math/transform.h>
 #include <hpp/model/joint.hh>
 #include <hpp/model/gripper.hh>
@@ -33,14 +34,21 @@ namespace hpp {
       {
         GripperPtr_t self = weakPtr_.lock ();
         return Gripper::create (self->name (),self->joint (),
-                                self->objectPositionInJoint ());
+                                self->objectPositionInJoint (), 
+                                self->getDisabledCollisions());
       }
 
       std::ostream& Gripper::print (std::ostream& os) const
       {
         os << "name :" << name () << std::endl;
-        os << "handle Position in joint :" << objectPositionInJoint () << std::endl;
+        os << "handle Position in joint :" << objectPositionInJoint ();
         os << "joint :" << joint ()->name () << std::endl;
+        os << "disable Collisions : ";
+        for (JointVector_t::const_iterator itJoint = disabledCollisions_.begin() ;
+              itJoint != disabledCollisions_.end() ; itJoint++ ) {
+          os << (*itJoint)->name() << "  ";
+        }
+        os << std::endl;
         return os;
       }
 

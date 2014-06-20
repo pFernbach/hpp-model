@@ -262,6 +262,18 @@ namespace hpp {
 				      const JointPtr_t& joint2,
 				      Request_t type);
 
+      /// Remove collision pairs between objects attached to two joints
+      ///
+      /// \param joint1 first joint
+      /// \param joint2 second joint
+      /// \param type collision or distance.
+      ///
+      /// remove collision between each object of joint 1 body and
+      /// each object of joint2 body
+      virtual void removeCollisionPairs(const JointPtr_t& joint1,
+                                        const JointPtr_t& joint2,
+				        Request_t type);
+
       /// Iterator over inner objects of the device
       /// \param type Collision or distance
       ObjectIterator objectIterator (Request_t type);

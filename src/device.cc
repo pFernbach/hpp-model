@@ -173,6 +173,69 @@ namespace hpp {
     }
 
     // ========================================================================
+    void Device::removeCollisionPairs (const JointPtr_t& joint1,
+				       const JointPtr_t& joint2,
+				       Request_t type)
+    {
+      BodyPtr_t body1 = joint1->linkedBody ();
+      BodyPtr_t body2 = joint2->linkedBody ();
+      if (type == COLLISION) {
+	// delete each inner object of body 1 of outer objects list of body 2
+	const ObjectVector_t& collisionObjects =
+	  body1->innerObjects (COLLISION);
+	hppDout (info, "Number of collision objects in joint "
+		 << joint1->name () << ": " << collisionObjects.size ());
+	for (ObjectVector_t::const_iterator itObj1 =
+	       collisionObjects.begin ();
+	     itObj1 != collisionObjects.end (); itObj1++) {
+	  body2->removeOuterObject (*itObj1, true, false);
+	  hppDout (info, "delete object " << (*itObj1)->name ()
+		   << " to body " << body2->name ()
+		   << " for collision");
+        }
+	// Delete each inner object of body 2 of outer objects list of body 1
+	const ObjectVector_t& collisionObjects2 =
+	  body2->innerObjects (COLLISION);
+	hppDout (info, "Number of collision objects in joint "
+		 << joint2->name () << ": " << collisionObjects2.size ());
+	for (ObjectVector_t::const_iterator itObj2 =
+	       collisionObjects2.begin ();
+	     itObj2 != collisionObjects2.end (); itObj2++) {
+	  body1->removeOuterObject (*itObj2, true, false);
+	  hppDout (info, "delete object " << (*itObj2)->name ()
+		   << " to body " << body1->name ()
+		   << " for collision");
+        }
+      }
+      if (type == DISTANCE) {
+	const ObjectVector_t& distanceObjects =
+	  body1->innerObjects (DISTANCE);
+	hppDout (info, "Number of distance objects in joint "
+		 << joint1->name () << ": " << distanceObjects.size ());
+	for (ObjectVector_t::const_iterator itObj1 =
+	       distanceObjects.begin ();
+	     itObj1 != distanceObjects.end (); itObj1++) {
+	  body2->removeOuterObject (*itObj1, false, true);
+	  hppDout (info, "delete object " << (*itObj1)->name ()
+		   << " to body " << body2->name ()
+		   << " for distance");
+	}
+        const ObjectVector_t& distanceObjects2 =
+	  body2->innerObjects (DISTANCE);
+	hppDout (info, "Number of distance objects in joint "
+		 << joint2->name () << ": " << distanceObjects2.size ());
+	for (ObjectVector_t::const_iterator itObj2 =
+	       distanceObjects2.begin ();
+	     itObj2 != distanceObjects2.end (); itObj2++) {
+	  body1->removeOuterObject (*itObj2, false, true);
+	  hppDout (info, "delete object " << (*itObj2)->name ()
+		   << " to body " << body1->name ()
+		   << " for distance");
+	}
+      }
+    }
+
+    // ========================================================================
 
     ObjectIterator Device::objectIterator (Request_t type)
     {

@@ -50,6 +50,7 @@ namespace hpp {
     HPP_PREDEF_CLASS (Gripper);
     enum Request_t {COLLISION, DISTANCE};
     typedef Body* BodyPtr_t;
+    typedef std::vector<Body*> BodyVector_t;
     typedef boost::shared_ptr <CollisionObject> CollisionObjectPtr_t;
     typedef std::vector <CollisionObjectPtr_t> ObjectVector_t;
     typedef boost::shared_ptr <Device> DevicePtr_t;

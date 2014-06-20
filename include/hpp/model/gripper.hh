@@ -41,11 +41,16 @@ namespace hpp {
       /// \param joint joint of the robot that will hold handles,
       /// \param objectPositionInJoint object position in the the grasping
       ///        joint.
+      /// \param disabledCollisions vector of joints that will be in collision
+      ///        with the object, so collisions detection will be disabled 
+      ///        for those joints and the handles.
       static GripperPtr_t create (const std::string& name,
-				  const JointPtr_t& joint,
-				  const Transform3f& objectPositionInJoint)
+                                  const JointPtr_t& joint,
+                                  const Transform3f& objectPositionInJoint,
+                                  const JointVector_t disabledCollisions)
       {
-	Gripper* ptr = new Gripper (name, joint, objectPositionInJoint);
+        Gripper* ptr = new Gripper (name, joint, objectPositionInJoint,
+                                    disabledCollisions);
 	GripperPtr_t shPtr (ptr);
 	ptr->init (shPtr);
 	return shPtr;
@@ -79,7 +84,34 @@ namespace hpp {
 	name_ = n;
       }
 
-      
+      /// add joint to disabled collision vector
+      void addDisabledCollision(const JointPtr_t& joint)
+      {
+        disabledCollisions_.push_back(joint);
+      }
+
+      /// remove joint of disabled collision vector
+      void removeDisabledCollision(JointPtr_t& joint)
+      {
+        for (JointVector_t::iterator it = disabledCollisions_.begin() ;
+               it != disabledCollisions_.end() ; it++) {
+          if (*it == joint ) {
+            disabledCollisions_.erase(it);
+            return;
+          }
+        }
+      }
+
+      const JointVector_t& getDisabledCollisions() const
+      {
+        return disabledCollisions_;
+      }
+
+      void removeAllDisabledCollisions()
+      {
+        disabledCollisions_.clear();
+      }
+
       //DifferentiableFunctionPtr_t createGrasp(HandlePtr_t& handle);
 
       GripperPtr_t clone () const;
@@ -90,12 +122,16 @@ namespace hpp {
       /// Constructor
       /// \param joint joint of the robot that holds the handle,
       /// \param objectPositionInJoint handle position in the the grasping
-      ///        joint.
+      ///        joint. 
+      /// \param disabledCollisions vector of joints that will be in collision
+      ///        with the object, so collisions detection will be disabled 
+      ///        for those joints and the handles.
       Gripper (const std::string& name, const JointPtr_t& joint,
-	     const Transform3f& objectPositionInJoint) :
+	     const Transform3f& objectPositionInJoint, const JointVector_t disabledCollisions) :
         name_ (name),
 	joint_ (joint),
-	objectPositionInJoint_ (objectPositionInJoint)
+	objectPositionInJoint_ (objectPositionInJoint),
+        disabledCollisions_(disabledCollisions)
       {
       }
 
@@ -109,6 +145,9 @@ namespace hpp {
       /// Joint of the robot that holds handles.
       JointPtr_t joint_;
       Transform3f objectPositionInJoint_;
+      /// Joints that will be in collision with the object 
+      ///  => disabled collision between object and bodies of the joints
+      JointVector_t disabledCollisions_;
       /// Weak pointer to itself
       GripperWkPtr_t weakPtr_;
     }; // class Gripper
