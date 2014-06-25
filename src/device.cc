@@ -88,6 +88,23 @@ namespace hpp {
 
     // ========================================================================
 
+    size_type Device::configSize () const
+    {
+      hppDout (info, configSize_ + extraConfigSpace_.dimension ());
+      return configSize_ + extraConfigSpace_.dimension ();
+    }
+
+    // ========================================================================
+
+    /// Size of velocity vectors
+    size_type Device::numberDof () const
+    {
+      hppDout (info, numberDof_ + extraConfigSpace_.dimension ());
+      return numberDof_ + extraConfigSpace_.dimension ();
+    }
+
+    // ========================================================================
+
     void Device::addOuterObject (const CollisionObjectPtr_t &object,
 				 bool collision, bool distance)
     {
@@ -268,15 +285,29 @@ namespace hpp {
       joint->rankInVelocity_ = numberDof_;
       numberDof_ += joint->numberDof ();
       configSize_ += joint->configSize ();
-      currentConfiguration_.resize (configSize_);
-      currentVelocity_.resize (numberDof_);
-      currentAcceleration_.resize (numberDof_);
-      currentConfiguration_.setZero ();
-      currentVelocity_.setZero ();
-      currentAcceleration_.setZero ();
+      resizeState ();
       jointByName_ [joint->name ()] = joint;
       resizeJacobians ();
       computeMass ();
+    }
+
+    void Device::resizeState ()
+    {
+      size_type oldSize = currentConfiguration_.size ();
+      size_type newSize = configSize ();
+      currentConfiguration_.resize (newSize);
+      // if size of configuration increased, set last coordinates to 0
+      if (newSize > oldSize) {
+	currentConfiguration_.tail (newSize - oldSize).setZero ();
+      }
+      oldSize = currentVelocity_.size ();
+      newSize = numberDof ();
+      currentVelocity_.resize (newSize);
+      currentAcceleration_.resize (newSize);
+      if (newSize > oldSize) {
+	currentVelocity_.tail (newSize - oldSize).setZero ();
+	currentAcceleration_.tail (newSize - oldSize).setZero ();
+      }
     }
 
     void Device::rootJoint (JointPtr_t joint)

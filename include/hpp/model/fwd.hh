@@ -62,6 +62,7 @@ namespace hpp {
     typedef std::vector <JointPtr_t> JointVector_t;    
     typedef boost::shared_ptr <Gripper> GripperPtr_t;
     typedef std::vector <GripperPtr_t> Grippers_t;
+    typedef double value_type;
     typedef Eigen::Matrix <double, Eigen::Dynamic, 1> vector_t;
     typedef vector_t Configuration_t;
     typedef Eigen::Ref <const Configuration_t> ConfigurationIn_t;

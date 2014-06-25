@@ -23,9 +23,11 @@
 # include <iostream>
 # include <vector>
 
+# include <hpp/util/debug.hh>
 # include <hpp/model/fwd.hh>
 # include <hpp/model/config.hh>
 # include <hpp/model/distance-result.hh>
+# include <hpp/model/extra-config-space.hh>
 # include <hpp/model/object-iterator.hh>
 # include <hpp/model/config.hh>
 
@@ -99,16 +101,47 @@ namespace hpp {
       JointPtr_t getJointByBodyName (const std::string& name) const;
 
       /// Size of configuration vectors
-      const size_type& configSize () const
-      {
-	return configSize_;
-      }
+      /// Sum of joint dimensions and of extra configuration space dimension
+      size_type configSize () const;
 
       /// Size of velocity vectors
-      const size_type& numberDof () const
-      {
-	return numberDof_;
+      /// Sum of joint number of degrees of freedom and of extra configuration
+      /// space dimension
+      size_type numberDof () const;
+
+      /// \}
+
+      /// \name Extra configuration space
+      /// \{
+
+      /// Get degrees of freedom to store internal values in configurations
+      ///
+      /// In some applications, it is useful to store extra variables with
+      /// the configuration vector. For instance, when planning motions in
+      /// state space using roadmap based methods, the velocity of the robot
+      /// is stored in the nodes of the roadmap.
+      ExtraConfigSpace& extraConfigSpace () {
+	return extraConfigSpace_;
       }
+
+      /// Get degrees of freedom to store internal values in configurations
+      ///
+      /// In some applications, it is useful to store extra variables with
+      /// the configuration vector. For instance, when planning motions in
+      /// state space using roadmap based methods, the velocity of the robot
+      /// is stored in the nodes of the roadmap.
+      const ExtraConfigSpace& extraConfigSpace () const {
+	return extraConfigSpace_;
+      }
+
+      /// Set dimension of extra configuration space
+      void setDimensionExtraConfigSpace (const size_type& dimension)
+      {
+	extraConfigSpace_.setDimension (dimension);
+	resizeState ();
+      }
+
+      /// 
 
       /// \}
 
@@ -286,6 +319,7 @@ namespace hpp {
       void computeMass ();
       void computePositionCenterOfMass ();
       void computeJacobianCenterOfMass ();
+      void resizeState ();
       void resizeJacobians ();
       std::string name_;
       DistanceResults_t distances_;
@@ -303,6 +337,8 @@ namespace hpp {
       bool upToDate_;
       Computation_t computationFlag_;
       Grippers_t grippers_;
+      // Extra configuration space
+      ExtraConfigSpace extraConfigSpace_;
       DeviceWkPtr_t weakPtr_;
     }; // class Device
   } // namespace model

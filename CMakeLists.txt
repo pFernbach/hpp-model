@@ -50,6 +50,7 @@ SET(${PROJECT_NAME}_HEADERS
   include/hpp/model/configuration.hh
   include/hpp/model/device.hh
   include/hpp/model/distance-result.hh
+  include/hpp/model/extra-config-space.hh
   include/hpp/model/fcl-to-eigen.hh
   include/hpp/model/fwd.hh
   include/hpp/model/humanoid-robot.hh
