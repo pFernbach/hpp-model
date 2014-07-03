@@ -95,9 +95,12 @@ namespace hpp {
       const JointVector_t& getJointVector () const;
 
       /// Get joint by name
+      /// \param name name of the joint.
+      /// \throw runtime_error if device has no joint with this name
       JointPtr_t getJointByName (const std::string& name) const;
 
       /// Get joint by body name
+      /// \throw runtime_error if device has no body with this name
       JointPtr_t getJointByBodyName (const std::string& name) const;
 
       /// Size of configuration vectors
