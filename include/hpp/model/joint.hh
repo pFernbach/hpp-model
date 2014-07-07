@@ -146,7 +146,11 @@ namespace hpp {
       {
 	return children_ [rank];
       }
-
+      /// Get position of joint in parent frame
+      const Transform3f& positionInParentFrame () const
+      {
+	return positionInParentFrame_;
+      }
       ///\}
 
       /// \name Bounds
