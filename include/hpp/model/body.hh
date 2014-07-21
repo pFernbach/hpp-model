@@ -99,6 +99,13 @@ namespace hpp {
       /// \param type Collision or distance
       const ObjectVector_t& innerObjects (Request_t type) const;
 
+      /// Get radius
+      /// Radius is defined as an upper-bound to the distance of all points of
+      /// the body to the origin of the joint that holds the body.
+      value_type radius () const
+      {
+	return radius_;
+      }
       /// \}
 
       /// \name Outer objects
@@ -183,6 +190,7 @@ namespace hpp {
 
       ///  @}
     private:
+      void updateRadius (const CollisionObjectPtr_t& object);
       ObjectVector_t collisionInnerObjects_;
       ObjectVector_t collisionOuterObjects_;
       ObjectVector_t distanceInnerObjects_;
@@ -193,6 +201,7 @@ namespace hpp {
       fcl::Vec3f localCom_;
       matrix3_t inertiaMatrix_;
       double mass_;
+      value_type radius_;
     }; // class Body
   } // namespace model
 } // namespace hpp

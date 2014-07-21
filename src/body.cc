@@ -52,7 +52,7 @@ namespace hpp {
     Body:: Body () : collisionInnerObjects_ (), collisionOuterObjects_ (),
 		     distanceInnerObjects_ (), distanceOuterObjects_ (),
 		     joint_ (0x0), name_ (), localCom_ (), inertiaMatrix_ (),
-		     mass_ (0)
+		     mass_ (0), radius_ (0)
     {
     }
 
@@ -62,7 +62,8 @@ namespace hpp {
       collisionInnerObjects_ (), collisionOuterObjects_ (),
       distanceInnerObjects_ (), distanceOuterObjects_ (),
       joint_ (0x0), name_ (body.name_), localCom_ (body.localCom_),
-      inertiaMatrix_ (body.inertiaMatrix_), mass_ (body.mass_)
+      inertiaMatrix_ (body.inertiaMatrix_), mass_ (body.mass_),
+      radius_ (body.radius_)
     {
     }
 
@@ -98,6 +99,64 @@ namespace hpp {
 
     //-----------------------------------------------------------------------
 
+    void Body::updateRadius (const CollisionObjectPtr_t& object)
+    {
+      fcl::CollisionGeometryConstPtr_t geom =
+	object->fcl ()->collisionGeometry();
+      const Transform3f& positionInJoint = object->positionInJointFrame ();
+      fcl::Vec3f p;
+      p [0] = geom->aabb_local.min_ [0];
+      p [1] = geom->aabb_local.min_ [1];
+      p [2] = geom->aabb_local.min_ [2];
+      value_type newLength = positionInJoint.transform (p).length ();
+      if (newLength > radius_) radius_ = newLength;
+
+      p [0] = geom->aabb_local.max_ [0];
+      p [1] = geom->aabb_local.min_ [1];
+      p [2] = geom->aabb_local.min_ [2];
+      newLength = positionInJoint.transform (p).length ();
+      if (newLength > radius_) radius_ = newLength;
+
+      p [0] = geom->aabb_local.min_ [0];
+      p [1] = geom->aabb_local.max_ [1];
+      p [2] = geom->aabb_local.min_ [2];
+      newLength = positionInJoint.transform (p).length ();
+      if (newLength > radius_) radius_ = newLength;
+
+      p [0] = geom->aabb_local.max_ [0];
+      p [1] = geom->aabb_local.max_ [1];
+      p [2] = geom->aabb_local.min_ [2];
+      newLength = positionInJoint.transform (p).length ();
+      if (newLength > radius_) radius_ = newLength;
+
+      p [0] = geom->aabb_local.min_ [0];
+      p [1] = geom->aabb_local.min_ [1];
+      p [2] = geom->aabb_local.max_ [2];
+      newLength = positionInJoint.transform (p).length ();
+      if (newLength > radius_) radius_ = newLength;
+
+      p [0] = geom->aabb_local.max_ [0];
+      p [1] = geom->aabb_local.min_ [1];
+      p [2] = geom->aabb_local.max_ [2];
+      newLength = positionInJoint.transform (p).length ();
+      if (newLength > radius_) radius_ = newLength;
+
+      p [0] = geom->aabb_local.min_ [0];
+      p [1] = geom->aabb_local.max_ [1];
+      p [2] = geom->aabb_local.max_ [2];
+      newLength = positionInJoint.transform (p).length ();
+      if (newLength > radius_) radius_ = newLength;
+
+      p [0] = geom->aabb_local.max_ [0];
+      p [1] = geom->aabb_local.max_ [1];
+      p [2] = geom->aabb_local.max_ [2];
+      newLength = positionInJoint.transform (p).length ();
+      if (newLength > radius_) radius_ = newLength;
+      hppDout (info, "joint " << joint_->name () << ", radius " << radius_);
+    }
+
+    //-----------------------------------------------------------------------
+
     void Body::addInnerObject (const CollisionObjectPtr_t& object,
 			       bool collision, bool distance)
     {
@@ -109,6 +168,7 @@ namespace hpp {
 				      "before inserting objects.");
 	  }
 	  object->joint (joint ());
+	  updateRadius (object);
 	  collisionInnerObjects_.push_back (object);
 	}
       }
