@@ -47,6 +47,14 @@ namespace hpp {
     {
       res [0] = v [0]; res [1] = v [1]; res [2] = v [2];
     }
+    
+    inline void toEigen (const hpp::model::matrix3_t& m,
+			 hpp::model::matrixOut_t res)
+    {
+      res (0, 0) = m (0, 0); res (0, 1) = m (0, 1); res (0, 2) = m (0, 2);
+      res (1, 0) = m (1, 0); res (1, 1) = m (1, 1); res (1, 2) = m (1, 2);
+      res (2, 0) = m (2, 0); res (2, 1) = m (2, 1); res (2, 2) = m (2, 2);
+    }
   } // namespace model
 } // namespace hpp
 

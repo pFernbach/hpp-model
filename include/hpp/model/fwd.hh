@@ -82,6 +82,7 @@ namespace hpp {
     typedef Eigen::Ref <const vector_t> vectorIn_t;
     typedef Eigen::Ref <vector_t> vectorOut_t;
     typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> matrix_t;
+    typedef Eigen::Ref <matrix_t> matrixOut_t;
     typedef matrix_t::Index size_type;
     typedef fcl::Matrix3f matrix3_t;
     typedef fcl::Vec3f vector3_t;
