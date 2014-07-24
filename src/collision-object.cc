@@ -1,8 +1,8 @@
-///
-/// Copyright (c) 2013, 2014 CNRS
-/// Author: Florent Lamiraux
-///
-///
+//
+// Copyright (c) 2013, 2014 CNRS
+// Author: Florent Lamiraux
+//
+//
 // This file is part of hpp-model
 // hpp-model is free software: you can redistribute it
 // and/or modify it under the terms of the GNU Lesser General Public

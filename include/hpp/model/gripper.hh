@@ -1,8 +1,8 @@
-///
-/// Copyright (c) 2014 CNRS
-/// Authors: Florent Lamiraux, Mathieu Geisert
-///
-///
+//
+// Copyright (c) 2014 CNRS
+// Authors: Florent Lamiraux, Mathieu Geisert
+//
+//
 // This file is part of hpp-manipulation.
 // hpp-manipulation is free software: you can redistribute it
 // and/or modify it under the terms of the GNU Lesser General Public
