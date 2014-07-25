@@ -204,23 +204,15 @@ namespace hpp {
 		       v [indexVelocity + 2]);
       Quaternion_t p (q [indexConfig + 0], q [indexConfig + 1],
 		      q [indexConfig + 2], q [indexConfig + 3]);
-      matrix3_t R; p.toRotation (R);
 
-      // Apply Rodrigues (1795–1851) formula for rotation about omega vector
-      double angle = omega.norm();
+      double angle = .5*omega.norm();
       if (angle == 0) {
 	result.segment (indexConfig, 4) = q.segment (indexConfig, 4);
 	return;
       }
-      vector3_t k = omega/omega.norm();
-      // ei <- ei cos(angle) + sin(angle)(k ^ ei) + (k.ei)(1-cos(angle))k
-      for (unsigned int i=0; i<3; i++) {
-	vector3_t ei = R.getColumn (i);
-	vector3_t new_ei = ei*cos(angle) + (k.cross (ei))*sin(angle) +
-	  k*((k.dot(ei))*(1-cos(angle)));
-	R (0, i) = new_ei [0]; R (1, i) = new_ei [1]; R (2, i) = new_ei [2]; 
-      }
-      Quaternion_t res; res.fromRotation (R);
+      vector3_t k = (sin (angle)/omega.norm())*omega;
+      Quaternion_t pOmega (cos (angle), k [0], k [1], k [2]);
+      Quaternion_t res = pOmega*p;
       // Eigen does not allow to get the 4 coefficients at once.
       result [indexConfig + 0] = res.getW ();
       result [indexConfig + 1] = res.getX ();
