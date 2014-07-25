@@ -202,14 +202,18 @@ namespace hpp {
     {
       vector3_t omega (v [indexVelocity + 0], v [indexVelocity + 1],
 		       v [indexVelocity + 2]);
-      Quaternion_t p (q [indexConfig + 0], q [indexConfig + 1],
-		      q [indexConfig + 2], q [indexConfig + 3]);
 
       double angle = .5*omega.norm();
       if (angle == 0) {
 	result.segment (indexConfig, 4) = q.segment (indexConfig, 4);
 	return;
       }
+      // try to keep norm of quaternion close to 1.
+      value_type norm2p = q.segment (indexConfig, 4).squaredNorm ();
+      Quaternion_t p ((1.5-.5*norm2p) * q [indexConfig + 0],
+		      (1.5-.5*norm2p) * q [indexConfig + 1],
+		      (1.5-.5*norm2p) * q [indexConfig + 2],
+		      (1.5-.5*norm2p) * q [indexConfig + 3]);
       vector3_t k = (sin (angle)/omega.norm())*omega;
       Quaternion_t pOmega (cos (angle), k [0], k [1], k [2]);
       Quaternion_t res = pOmega*p;
