@@ -40,9 +40,9 @@ namespace hpp {
     ///
     /// \note bounded degrees of freedom are saturated if the result of the
     ///       above operation is beyond a bound.
-    void integrate  (const DevicePtr_t& robot,
-		     ConfigurationIn_t configuration,
-		     vectorIn_t velocity, ConfigurationOut_t result)
+    inline void integrate  (const DevicePtr_t& robot,
+			    ConfigurationIn_t configuration,
+			    vectorIn_t velocity, ConfigurationOut_t result)
     {
       const JointVector_t& jv (robot->getJointVector ());
       for (model::JointVector_t::const_iterator itJoint = jv.begin ();
@@ -63,8 +63,8 @@ namespace hpp {
     /// \retval result difference as a vector \f$\textbf{v}\f$ such that
     /// q2 is the result of method integrate from q1 with vector
     /// $\f\textbf{v}\f$
-    void difference (const DevicePtr_t& robot, ConfigurationIn_t q1,
-		     ConfigurationIn_t q2, vectorOut_t result)
+    void inline difference (const DevicePtr_t& robot, ConfigurationIn_t q1,
+			    ConfigurationIn_t q2, vectorOut_t result)
     {
       const JointVector_t& jv (robot->getJointVector ());
       for (model::JointVector_t::const_iterator itJoint = jv.begin ();
