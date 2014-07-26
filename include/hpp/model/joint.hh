@@ -91,6 +91,14 @@ namespace hpp {
       const Transform3f& initialPosition () const;
       /// Joint transformation
       const Transform3f& currentTransformation () const;
+      /// Compute position of joint
+      /// \param configuration the configuration of the robot,
+      /// \param parentPosition position of parent joint,
+      /// \retval position position of this joint.
+      virtual void computePosition (ConfigurationIn_t configuration,
+				    const Transform3f& parentPosition,
+				    Transform3f& position) = 0;
+
       ///\}
 
       /// Return number of degrees of freedom
@@ -213,10 +221,7 @@ namespace hpp {
    private:
       /// Compute position of this joint and all its descendents.
       void recursiveComputePosition (ConfigurationIn_t configuration,
-				     const Transform3f& parentConfig);
-
-      virtual void computeMotion (ConfigurationIn_t configuration,
-				  const Transform3f& parentConfig) = 0;
+				     const Transform3f& parentPosition);
 
       /// Write a block of Jacobian
       ///
@@ -270,8 +275,13 @@ namespace hpp {
       /// Clone body and therefore inner and outer objects (see Body::clone).
       virtual JointPtr_t clone () const;
       virtual ~JointAnchor ();
-      virtual void computeMotion (ConfigurationIn_t configuration,
-				    const Transform3f& parentConfig);
+      /// Compute position of joint
+      /// \param configuration the configuration of the robot,
+      /// \param parentPosition position of parent joint,
+      /// \retval position position of this joint.
+      virtual void computePosition (ConfigurationIn_t configuration,
+				    const Transform3f& parentPosition,
+				    Transform3f& position);
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
@@ -289,8 +299,13 @@ namespace hpp {
       /// Return pointer to copy of this
       /// Clone body and therefore inner and outer objects (see Body::clone).
       virtual JointPtr_t clone () const;
-      virtual void computeMotion (ConfigurationIn_t configuration,
-				    const Transform3f& parentConfig);
+      /// Compute position of joint
+      /// \param configuration the configuration of the robot,
+      /// \param parentPosition position of parent joint,
+      /// \retval position position of this joint.
+      virtual void computePosition (ConfigurationIn_t configuration,
+				    const Transform3f& parentPosition,
+				    Transform3f& position);
       virtual ~JointSO3 ();
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
@@ -311,8 +326,13 @@ namespace hpp {
       /// Return pointer to copy of this
       /// Clone body and therefore inner and outer objects (see Body::clone).
       virtual JointPtr_t clone () const;
-      virtual void computeMotion (ConfigurationIn_t configuration,
-				    const Transform3f& parentConfig);
+      /// Compute position of joint
+      /// \param configuration the configuration of the robot,
+      /// \param parentPosition position of parent joint,
+      /// \retval position position of this joint.
+      virtual void computePosition (ConfigurationIn_t configuration,
+				    const Transform3f& parentPosition,
+				    Transform3f& position);
       virtual ~JointRotation ();
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
@@ -338,8 +358,13 @@ namespace hpp {
       /// Return pointer to copy of this
       /// Clone body and therefore inner and outer objects (see Body::clone).
       virtual JointPtr_t clone () const;
-      virtual void computeMotion (ConfigurationIn_t configuration,
-				    const Transform3f& parentConfig);
+      /// Compute position of joint
+      /// \param configuration the configuration of the robot,
+      /// \param parentPosition position of parent joint,
+      /// \retval position position of this joint.
+      virtual void computePosition (ConfigurationIn_t configuration,
+				    const Transform3f& parentPosition,
+				    Transform3f& position);
       virtual ~JointTranslation ();
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
