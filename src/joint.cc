@@ -141,13 +141,14 @@ namespace hpp {
       }
     }
 
-    void Joint::computePosition (ConfigurationIn_t configuration,
-				 const Transform3f& parentConfig)
+    void Joint::recursiveComputePosition (ConfigurationIn_t configuration,
+					  const Transform3f& parentConfig)
     {
       computeMotion (configuration, parentConfig);
       for (std::vector <JointPtr_t>::iterator itJoint = children_.begin ();
 	   itJoint != children_.end (); itJoint++) {
-	(*itJoint)->computePosition (configuration, currentTransformation_);
+	(*itJoint)->recursiveComputePosition
+	  (configuration, currentTransformation_);
       }
     }
 

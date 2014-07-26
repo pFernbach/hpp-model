@@ -426,7 +426,7 @@ namespace hpp {
 
     void Device::computeJointPositions ()
     {
-      rootJoint_->computePosition (currentConfiguration_, I4);
+      rootJoint_->recursiveComputePosition (currentConfiguration_, I4);
     }
 
     void Device::computeJointJacobians ()

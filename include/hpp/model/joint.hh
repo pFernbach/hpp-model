@@ -211,8 +211,9 @@ namespace hpp {
       /// Mass time center of mass of this and all descendants
       fcl::Vec3f massCom_;
    private:
-      void computePosition (ConfigurationIn_t configuration,
-			    const Transform3f& parentConfig);
+      /// Compute position of this joint and all its descendents.
+      void recursiveComputePosition (ConfigurationIn_t configuration,
+				     const Transform3f& parentConfig);
 
       virtual void computeMotion (ConfigurationIn_t configuration,
 				  const Transform3f& parentConfig) = 0;
