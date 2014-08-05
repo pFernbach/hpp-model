@@ -1,3 +1,5 @@
 INPUT = @CMAKE_BINARY_DIR@/doc \
       @CMAKE_SOURCE_DIR@/include \
       @CMAKE_SOURCE_DIR@/doc \
+
+TAGFILES=@FCL_DOXYGENDOCDIR@/fcl.doxytag=@FCL_DOXYGENDOCDIR@

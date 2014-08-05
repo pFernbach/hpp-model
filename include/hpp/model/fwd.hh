@@ -24,18 +24,8 @@
 # include <map>
 # include <Eigen/Core>
 # include <hpp/util/pointer.hh>
+# include <fcl/fwd.hh>
 # include <fcl/math/matrix_3f.h>
-
-namespace fcl {
-  class CollisionObject;
-  typedef boost::shared_ptr <CollisionObject> CollisionObjectPtr_t;
-  typedef boost::shared_ptr < const CollisionObject> CollisionObjectConstPtr_t;
-  class CollisionGeometry;
-  typedef boost::shared_ptr <CollisionGeometry> CollisionGeometryPtr_t;
-  typedef boost::shared_ptr <const CollisionGeometry>
-  CollisionGeometryConstPtr_t;
-  class Transform3f;
-}
 
 namespace hpp {
   namespace model {
