@@ -300,7 +300,8 @@ namespace hpp {
 
     bool Body::collisionTest () const
     {
-      fcl::CollisionRequest collisionRequest;
+      fcl::CollisionRequest collisionRequest (1, false, false, 1, false, true,
+					      fcl::GST_INDEP);
       fcl::CollisionResult collisionResult;
       for (ObjectVector_t::const_iterator itInner =
 	     collisionInnerObjects_.begin ();
