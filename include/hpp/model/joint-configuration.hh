@@ -68,8 +68,7 @@ namespace hpp {
 				ConfigurationOut_t result) = 0;
 
       /// Distance between two configurations of the joint
-      /// \param q1, q2, two configurations to interpolate
-      /// q2 for u=1
+      /// \param q1, q2 two configurations of the robot
       /// \param index index of first component of q1 and q2 corresponding to
       /// the joint.
       virtual double distance (ConfigurationIn_t q1,
@@ -151,6 +150,11 @@ namespace hpp {
 				const size_type&,
 				ConfigurationOut_t);
 
+      /// Distance between two configurations of the joint
+      /// \param q1, q2 two configurations of the robot
+      /// \param index index of first component of q1 and q2 corresponding to
+      /// the joint.
+      /// \return 0
       virtual double distance (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
 			       const size_type& index) const;
@@ -181,6 +185,11 @@ namespace hpp {
 				const size_type& index,
 				ConfigurationOut_t result);
 
+      /// Distance between two configurations of the joint
+      /// \param q1, q2 two configurations of the robot
+      /// \param index index of first component of q1 and q2 corresponding to
+      /// the joint.
+      /// \return the angle between the joint orientations
       virtual double distance (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
 			       const size_type& index) const;
@@ -232,6 +241,11 @@ namespace hpp {
 				const size_type& index,
 				ConfigurationOut_t result);
 
+      /// Distance between two configurations of the joint
+      /// \param q1, q2 two configurations of the robot
+      /// \param index index of first component of q1 and q2 corresponding to
+      /// the joint.
+      /// \return the angle between the joint orientations
       virtual double distance (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
 			       const size_type& index) const;
@@ -287,6 +301,11 @@ namespace hpp {
 				const size_type& index,
 				ConfigurationOut_t result);
 
+      /// Distance between two configurations of the joint
+      /// \param q1, q2 two configurations of the robot
+      /// \param index index of first component of q1 and q2 corresponding to
+      /// the joint.
+      /// \return the absolute value of the joint value difference.
       virtual double distance (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
 			       const size_type& index) const;
