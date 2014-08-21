@@ -22,6 +22,7 @@
 
 # include <iostream>
 # include <vector>
+# include <list>
 
 # include <hpp/util/debug.hh>
 # include <hpp/model/fwd.hh>
@@ -56,6 +57,10 @@ namespace hpp {
 	COM = 0x8,
 	ALL = 0Xffff
       };
+
+      /// Collision pairs between bodies
+      typedef std::pair <JointPtr_t, JointPtr_t> CollisionPair_t;
+      typedef std::list <CollisionPair_t> CollisionPairs_t;
       /// \name Construction, copy and destruction
       /// \{
       virtual ~Device();
@@ -147,7 +152,7 @@ namespace hpp {
 	resizeState ();
       }
 
-      /// 
+      ///
 
       /// \}
 
@@ -280,6 +285,10 @@ namespace hpp {
                                         const JointPtr_t& joint2,
 				        Request_t type);
 
+      /// Get list of collision or distance pairs
+      /// \param type collision or distance.
+      const CollisionPairs_t& collisionPairs (Request_t type) const;
+
       /// Iterator over inner objects of the device
       /// \param type Collision or distance
       ObjectIterator objectIterator (Request_t type);
@@ -354,6 +363,9 @@ namespace hpp {
       double mass_;
       bool upToDate_;
       Computation_t computationFlag_;
+      // Collision pairs between bodies
+      CollisionPairs_t collisionPairs_;
+      CollisionPairs_t distancePairs_;
       Grippers_t grippers_;
       // Extra configuration space
       ExtraConfigSpace extraConfigSpace_;

@@ -37,7 +37,8 @@ namespace hpp {
       configSize_ (0), currentConfiguration_ (configSize_),
       currentVelocity_ (numberDof_), 	currentAcceleration_ (numberDof_),
       com_ (), jacobianCom_ (3, 0), mass_ (0), upToDate_ (false),
-      computationFlag_ (ALL), grippers_ (),	weakPtr_ ()
+      computationFlag_ (ALL), collisionPairs_ (), distancePairs_ (),
+      grippers_ (), weakPtr_ ()
     {
       com_.setZero ();
       I4.setIdentity ();
@@ -142,6 +143,23 @@ namespace hpp {
       BodyPtr_t body1 = joint1->linkedBody ();
       BodyPtr_t body2 = joint2->linkedBody ();
       if (type == COLLISION) {
+	// Check that collision pair has not already been added
+	CollisionPair_t colPair (joint2, joint1);
+	if (std::find (collisionPairs_.begin (), collisionPairs_.end (),
+		       colPair) != collisionPairs_.end ()) {
+	  throw std::runtime_error (std::string ("Collision pair between ") +
+				    joint2->name () + std::string (" and ") +
+				    joint1->name () +
+				    std::string (" has already been added."));
+	}
+	colPair = CollisionPair_t (joint1, joint2);
+	if (std::find (collisionPairs_.begin (), collisionPairs_.end (),
+		       colPair) != collisionPairs_.end ()) {
+	  throw std::runtime_error (std::string ("Collision pair between ") +
+				    joint1->name () + std::string (" and ") +
+				    joint2->name () +
+				    std::string (" has already been added."));
+	}
 	// Add each inner object of body 1 as outer object of body 2
 	const ObjectVector_t& collisionObjects =
 	  body1->innerObjects (COLLISION);
@@ -155,8 +173,27 @@ namespace hpp {
 		   << " to body " << body2->name ()
 		   << " for collision");
 	}
+	// Add pair in vector
+	collisionPairs_.push_back (colPair);
       }
       if (type == DISTANCE) {
+	// Check that collision pair has not already been added
+	CollisionPair_t colPair (joint2, joint1);
+	if (std::find (distancePairs_.begin (), distancePairs_.end (),
+		       colPair) != distancePairs_.end ()) {
+	  throw std::runtime_error (std::string ("Distance pair between ") +
+				    joint2->name () + std::string (" and ") +
+				    joint1->name () +
+				    std::string (" has already been added."));
+	}
+	colPair = CollisionPair_t (joint1, joint2);
+	if (std::find (distancePairs_.begin (), distancePairs_.end (),
+		       colPair) != distancePairs_.end ()) {
+	  throw std::runtime_error (std::string ("Distance pair between ") +
+				    joint1->name () + std::string (" and ") +
+				    joint2->name () +
+				    std::string (" has already been added."));
+	}
 	const ObjectVector_t& distanceObjects =
 	  body1->innerObjects (DISTANCE);
 	hppDout (info, "Number of distance objects in body "
@@ -169,6 +206,8 @@ namespace hpp {
 		   << " to body " << body2->name ()
 		   << " for distance");
 	}
+	// Add pair in vector
+	distancePairs_.push_back (colPair);
       }
     }
 
@@ -180,6 +219,22 @@ namespace hpp {
       BodyPtr_t body1 = joint1->linkedBody ();
       BodyPtr_t body2 = joint2->linkedBody ();
       if (type == COLLISION) {
+	// Check that the pair is referenced and remove it from the list
+	CollisionPair_t colPair (joint2, joint1);
+	CollisionPairs_t::iterator itPair = std::find
+	  (collisionPairs_.begin (), collisionPairs_.end (), colPair);
+	if (itPair == collisionPairs_.end ()) {
+	  colPair = CollisionPair_t (joint1, joint2);
+	  itPair = std::find (collisionPairs_.begin (),
+			       collisionPairs_.end (), colPair);
+	  if (itPair == collisionPairs_.end ()) {
+	    throw std::runtime_error (std::string ("No collision pair between ")
+				      + joint2->name () + std::string (" and ")
+				      + joint1->name () +
+				      std::string ("."));
+	  }
+	}
+	collisionPairs_.erase (itPair);
 	// delete each inner object of body 1 of outer objects list of body 2
 	const ObjectVector_t& collisionObjects =
 	  body1->innerObjects (COLLISION);
@@ -208,6 +263,22 @@ namespace hpp {
         }
       }
       if (type == DISTANCE) {
+	// Check that the pair is referenced and remove it from the list
+	CollisionPair_t colPair (joint2, joint1);
+	CollisionPairs_t::iterator itPair = std::find
+	  (distancePairs_.begin (), distancePairs_.end (), colPair);
+	if (itPair == distancePairs_.end ()) {
+	  colPair = CollisionPair_t (joint1, joint2);
+	  itPair = std::find (distancePairs_.begin (),
+			       distancePairs_.end (), colPair);
+	  if (itPair == distancePairs_.end ()) {
+	    throw std::runtime_error (std::string ("No collision pair between ")
+				      + joint2->name () + std::string (" and ")
+				      + joint1->name () +
+				      std::string ("."));
+	  }
+	}
+	distancePairs_.erase (itPair);
 	const ObjectVector_t& distanceObjects =
 	  body1->innerObjects (DISTANCE);
 	hppDout (info, "Number of distance objects in joint "
@@ -233,6 +304,20 @@ namespace hpp {
 		   << " for distance");
 	}
       }
+    }
+
+    // ========================================================================
+
+    const Device::CollisionPairs_t& Device::collisionPairs
+    (Request_t type) const
+    {
+      if (type == COLLISION) {
+	return collisionPairs_;
+      }
+      else if (type == DISTANCE) {
+	return distancePairs_;
+      }
+      throw std::runtime_error ("type should be either COLLISION or DISTANCE.");
     }
 
     // ========================================================================
