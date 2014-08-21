@@ -143,10 +143,11 @@ namespace hpp {
 
     void Joint::recursiveComputePosition (ConfigurationIn_t configuration,
 					  const Transform3f& parentPosition)
+      const
     {
       computePosition (configuration, parentPosition, currentTransformation_);
-      for (std::vector <JointPtr_t>::iterator itJoint = children_.begin ();
-	   itJoint != children_.end (); itJoint++) {
+      for (std::vector <JointPtr_t>::const_iterator itJoint =
+	     children_.begin (); itJoint != children_.end (); itJoint++) {
 	(*itJoint)->recursiveComputePosition
 	  (configuration, currentTransformation_);
       }
@@ -211,7 +212,7 @@ namespace hpp {
 
     void JointAnchor::computePosition (ConfigurationIn_t,
 				       const Transform3f& parentPosition,
-				       Transform3f& position)
+				       Transform3f& position) const
     {
       position = parentPosition * positionInParentFrame_;
       hppDout (info, "Joint " << name ());
@@ -250,7 +251,7 @@ namespace hpp {
 
     void JointSO3::computePosition (ConfigurationIn_t configuration,
 				    const Transform3f& parentPosition,
-				    Transform3f& position)
+				    Transform3f& position) const
     {
       fcl::Quaternion3f p (configuration [rankInConfiguration ()],
 			   configuration [rankInConfiguration () + 1],
@@ -331,7 +332,7 @@ namespace hpp {
 
     void JointRotation::computePosition (ConfigurationIn_t configuration,
 					 const Transform3f& parentPosition,
-					 Transform3f& position)
+					 Transform3f& position) const
     {
       angle_ = configuration [rankInConfiguration ()];
       R_ (1,1) = cos (angle_); R_ (1,2) = -sin (angle_);
@@ -401,7 +402,7 @@ namespace hpp {
 
     void JointTranslation::computePosition
     (ConfigurationIn_t configuration, const Transform3f& parentPosition,
-     Transform3f& position)
+     Transform3f& position) const
     {
       t_ [0] = configuration [rankInConfiguration ()];
       T3f_.setTranslation (t_);

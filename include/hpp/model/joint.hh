@@ -97,7 +97,7 @@ namespace hpp {
       /// \retval position position of this joint.
       virtual void computePosition (ConfigurationIn_t configuration,
 				    const Transform3f& parentPosition,
-				    Transform3f& position) = 0;
+				    Transform3f& position) const = 0;
 
       ///\}
 
@@ -211,9 +211,9 @@ namespace hpp {
       virtual std::ostream& display (std::ostream& os) const;
     protected:
       JointConfiguration* configuration_;
-      Transform3f currentTransformation_;
+      mutable Transform3f currentTransformation_;
       Transform3f positionInParentFrame_;
-      Transform3f T3f_;
+      mutable Transform3f T3f_;
       /// Mass of this and all descendants
       double mass_;
       /// Mass time center of mass of this and all descendants
@@ -221,7 +221,7 @@ namespace hpp {
    private:
       /// Compute position of this joint and all its descendents.
       void recursiveComputePosition (ConfigurationIn_t configuration,
-				     const Transform3f& parentPosition);
+				     const Transform3f& parentPosition) const;
 
       /// Write a block of Jacobian
       ///
@@ -281,7 +281,7 @@ namespace hpp {
       /// \retval position position of this joint.
       virtual void computePosition (ConfigurationIn_t configuration,
 				    const Transform3f& parentPosition,
-				    Transform3f& position);
+				    Transform3f& position) const;
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
@@ -305,7 +305,7 @@ namespace hpp {
       /// \retval position position of this joint.
       virtual void computePosition (ConfigurationIn_t configuration,
 				    const Transform3f& parentPosition,
-				    Transform3f& position);
+				    Transform3f& position) const;
       virtual ~JointSO3 ();
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
@@ -332,13 +332,13 @@ namespace hpp {
       /// \retval position position of this joint.
       virtual void computePosition (ConfigurationIn_t configuration,
 				    const Transform3f& parentPosition,
-				    Transform3f& position);
+				    Transform3f& position) const;
       virtual ~JointRotation ();
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
 					const double& totalMass);
-      fcl::Matrix3f R_;
+      mutable fcl::Matrix3f R_;
       mutable double angle_;
       mutable fcl::Vec3f axis_;
       mutable fcl::Vec3f O2O1_;
@@ -364,13 +364,13 @@ namespace hpp {
       /// \retval position position of this joint.
       virtual void computePosition (ConfigurationIn_t configuration,
 				    const Transform3f& parentPosition,
-				    Transform3f& position);
+				    Transform3f& position) const;
       virtual ~JointTranslation ();
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
 					const double& totalMass);
-      fcl::Vec3f t_;
+      mutable fcl::Vec3f t_;
       mutable fcl::Vec3f axis_;
       mutable fcl::Vec3f com_;
     }; // class JointTranslation
