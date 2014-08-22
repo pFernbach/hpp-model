@@ -117,6 +117,26 @@ namespace hpp {
 	  body->addOuterObject (object, collision, distance);
 	}
       }
+      // Store obstacle in collision list
+      if (collision) {
+	if (std::find (collisionObstacles_.begin (), collisionObstacles_.end (),
+		       object) != collisionObstacles_.end ()) {
+	  throw std::runtime_error
+	    (std::string ("Object ") + object->name () +
+	     std::string (" is already in collision obstacle list."));
+	}
+	collisionObstacles_.push_back (object);
+      }
+      // Store obstacle in distance list
+      if (distance) {
+	if (std::find (distanceObstacles_.begin (), distanceObstacles_.end (),
+		       object) != distanceObstacles_.end ()) {
+	  throw std::runtime_error
+	    (std::string ("Object ") + object->name () +
+	     std::string (" is already in distance obstacle list."));
+	}
+	distanceObstacles_.push_back (object);
+      }
     }
 
     // ========================================================================
@@ -132,6 +152,41 @@ namespace hpp {
 	  body->removeOuterObject (object, collision, distance);
 	}
       }
+      // Remove obstacle from collision list
+      if (collision) {
+	ObjectVector_t::iterator itObj = std::find
+	  (collisionObstacles_.begin (), collisionObstacles_.end (), object);
+	if (itObj == collisionObstacles_.end ()) {
+	  throw std::runtime_error
+	    (std::string ("Object ") + object->name () +
+	     std::string (" is not in collision obstacle list."));
+	}
+	collisionObstacles_.erase (itObj);
+      }
+      // Remove obstacle from distance list
+      if (distance) {
+	ObjectVector_t::iterator itObj = std::find
+	  (distanceObstacles_.begin (), distanceObstacles_.end (), object);
+	if (itObj == distanceObstacles_.end ()) {
+	  throw std::runtime_error
+	    (std::string ("Object ") + object->name () +
+	     std::string (" is not in distance obstacle list."));
+	}
+	distanceObstacles_.erase (itObj);
+      }
+    }
+
+    // ========================================================================
+
+    const ObjectVector_t& Device::obstacles (Request_t type) const
+    {
+      if (type == COLLISION) {
+	return collisionObstacles_;
+      }
+      if (type == DISTANCE) {
+	return distanceObstacles_;
+      }
+      throw std::runtime_error ("type should be either COLLISION or DISTANCE.");
     }
 
     // ========================================================================

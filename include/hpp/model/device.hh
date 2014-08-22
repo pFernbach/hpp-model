@@ -261,6 +261,10 @@ namespace hpp {
       virtual void removeOuterObject (const CollisionObjectPtr_t& object,
 				      bool collision, bool distance);
 
+      /// Get list of obstacles
+      /// \param type collision or distance.
+      const ObjectVector_t& obstacles (Request_t type) const;
+
       /// Add collision pairs between objects attached to two joints
       ///
       /// \param joint1 first joint
@@ -366,6 +370,10 @@ namespace hpp {
       // Collision pairs between bodies
       CollisionPairs_t collisionPairs_;
       CollisionPairs_t distancePairs_;
+      // Obstacles
+      ObjectVector_t collisionObstacles_;
+      ObjectVector_t distanceObstacles_;
+      // Grippers
       Grippers_t grippers_;
       // Extra configuration space
       ExtraConfigSpace extraConfigSpace_;
