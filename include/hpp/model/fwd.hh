@@ -21,6 +21,7 @@
 # define HPP_MODEL_FWD_HH
 
 # include <vector>
+# include <list>
 # include <map>
 # include <Eigen/Core>
 # include <hpp/util/pointer.hh>
@@ -47,7 +48,7 @@ namespace hpp {
     typedef Body* BodyPtr_t;
     typedef std::vector<Body*> BodyVector_t;
     typedef boost::shared_ptr <CollisionObject> CollisionObjectPtr_t;
-    typedef std::vector <CollisionObjectPtr_t> ObjectVector_t;
+    typedef std::list <CollisionObjectPtr_t> ObjectVector_t;
     typedef boost::shared_ptr <Device> DevicePtr_t;
     typedef boost::shared_ptr <const Device> DeviceConstPtr_t;
     typedef std::vector <DistanceResult> DistanceResults_t;
