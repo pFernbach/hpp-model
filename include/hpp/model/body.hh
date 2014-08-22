@@ -100,6 +100,7 @@ namespace hpp {
       const ObjectVector_t& innerObjects (Request_t type) const;
 
       /// Get radius
+      ///
       /// Radius is defined as an upper-bound to the distance of all points of
       /// the body to the origin of the joint that holds the body.
       value_type radius () const
