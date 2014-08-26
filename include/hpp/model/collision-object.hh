@@ -94,7 +94,7 @@ namespace hpp {
 	object_ (new fcl::CollisionObject (geometry, position)),
 	joint_ (0), name_ (name), weakPtr_ ()
 	{
-	  positionInJointFrame_.setIdentity ();
+	  positionInJointFrame_ = position;
 	}
 
       /// Copy constructor
