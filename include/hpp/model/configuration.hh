@@ -75,6 +75,18 @@ namespace hpp {
 						  indexVelocity, result);
       }
     }
+
+    /// Write configuration in a string
+    inline std::string displayConfig (ConfigurationIn_t q)
+    {
+      std::ostringstream oss;
+      for (size_type i=0; i < q.size (); ++i) {
+	oss << q [i] << ",";
+      }
+      return oss.str ();
+    }
+
+
   } // namespace model
 } // namespace hpp
 #endif // HPP_MODEL_CONFIGURATION_HH
