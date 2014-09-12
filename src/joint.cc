@@ -215,8 +215,6 @@ namespace hpp {
 				       Transform3f& position) const
     {
       position = parentPosition * positionInParentFrame_;
-      hppDout (info, "Joint " << name ());
-      hppDout (info, "currentTransformation_ = " << currentTransformation_);
     }
 
     void JointAnchor::writeSubJacobian (const JointPtr_t&)
@@ -258,12 +256,7 @@ namespace hpp {
 			   configuration [rankInConfiguration () + 2],
 			   configuration [rankInConfiguration () + 3]);
       T3f_.setQuatRotation (p);
-      hppDout (info, "parentPosition = " << parentPosition);
-      hppDout (info, "positionInParentFrame_ = " << positionInParentFrame_);
-      hppDout (info, "T3f_ = " << T3f_);
       position = parentPosition * positionInParentFrame_ * T3f_;
-      hppDout (info, "Joint " << name ());
-      hppDout (info, "currentTransformation_ = " << currentTransformation_);
     }
     static void cross (const fcl::Vec3f& x, JointJacobian_t& J, size_type row,
 		       size_type col)
@@ -287,10 +280,6 @@ namespace hpp {
       // Set diagonal terms to 1
       child->jacobian () (3,col) = child->jacobian () (4,col+1) =
 	child->jacobian () (5,col+2) = 1;
-      hppDout (info, "currentTransformation_.getTranslation ()" <<
-	       currentTransformation_.getTranslation ());
-      hppDout (info, "child->currentTransformation ().getTranslation ()" <<
-	       child->currentTransformation ().getTranslation ());
       cross (currentTransformation_.getTranslation () -
 	     child->currentTransformation ().getTranslation (),
 	     child->jacobian (), 0, col);
@@ -338,11 +327,7 @@ namespace hpp {
       R_ (1,1) = cos (angle_); R_ (1,2) = -sin (angle_);
       R_ (2,1) = sin (angle_); R_ (2,2) = cos (angle_);
       T3f_.setRotation (R_);
-      hppDout (info, "parentPosition = " << parentPosition);
-      hppDout (info, "positionInParentFrame_ = " << positionInParentFrame_);
-      hppDout (info, "T3f_ = " << T3f_);
       position = parentPosition * positionInParentFrame_ * T3f_;
-      hppDout (info, "currentTransformation_ = " << currentTransformation_);
     }
 
     void JointRotation::writeSubJacobian (const JointPtr_t& child)
@@ -407,8 +392,6 @@ namespace hpp {
       t_ [0] = configuration [rankInConfiguration ()];
       T3f_.setTranslation (t_);
       position = parentPosition * positionInParentFrame_ * T3f_;
-      hppDout (info, "Joint " << name ());
-      hppDout (info, "currentTransformation_ = " << currentTransformation_);
     }
 
     void JointTranslation::writeSubJacobian (const JointPtr_t& child)

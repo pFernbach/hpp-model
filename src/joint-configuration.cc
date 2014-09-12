@@ -262,8 +262,6 @@ namespace hpp {
 					      ConfigurationOut_t result)
     {
       result [index] = (1-u) * q1 [index] + u * q2 [index];
-      hppDout (info, "index = " << index);
-      hppDout (info, "result [index] = " << result [index]);
     }
 
     double TranslationJointConfig::distance (ConfigurationIn_t q1,
@@ -330,8 +328,6 @@ namespace hpp {
 	jrlMathTools::Angle th2 (q2 [index]);
 	result [index] = th1.interpolate (u, th2);
       }
-      hppDout (info, "index = " << index);
-      hppDout (info, "result [index] = " << result [index]);
     }
 
     double RotationJointConfig::distance (ConfigurationIn_t q1,

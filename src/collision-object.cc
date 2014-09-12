@@ -78,7 +78,6 @@ namespace hpp {
 	throw std::runtime_error ("Cannot move object attached to a joint");
       }
       positionInJointFrame_ = position;
-      hppDout (info, "transform = " << position);
       object_->setTransform (positionInJointFrame_);
     }
 

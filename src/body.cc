@@ -312,6 +312,8 @@ namespace hpp {
 	  if (fcl::collide ((*itInner)->fcl ().get (),
 			    (*itOuter)->fcl ().get (),
 			    collisionRequest, collisionResult) != 0) {
+	    hppDout (info, "Collision between " << (*itInner)->name ()
+		     << " and " << (*itOuter)->name ());
 	    return true;
 	  }
 	}

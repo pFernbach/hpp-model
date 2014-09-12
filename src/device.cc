@@ -574,9 +574,6 @@ namespace hpp {
       rootJoint_->computeJacobian ();
       for (JointVector_t::const_iterator it = jointVector_.begin ();
 	   it != jointVector_.end (); it++) {
-	hppDout (info, "Joint " << (*it)->name ());
-	hppDout (info, (*it)->currentTransformation ());
-	hppDout (info, (*it)->jacobian ());
       }
     }
 
