@@ -500,17 +500,19 @@ namespace hpp {
   } // namespace model
 } // namespace hpp
 
-std::ostream& operator<< (std::ostream& os , const fcl::Transform3f& trans)
-{
-  const fcl::Matrix3f& R (trans.getRotation ());
-  const fcl::Vec3f& t (trans.getTranslation ());
-  const fcl::Quaternion3f& q (trans.getQuatRotation ());
-  os << "rotation matrix: " << R << std::endl;
-  os << "rotation quaternion: " << "(" << q.getW () << ", "
-     << q.getX () << ", " << q.getY () << ", " << q.getZ () << ")"
-     << std::endl;
-  os << "translation: " << t << std::endl;
-  return os;
+namespace fcl {
+  std::ostream& operator<< (std::ostream& os , const fcl::Transform3f& trans)
+  {
+    const fcl::Matrix3f& R (trans.getRotation ());
+    const fcl::Vec3f& t (trans.getTranslation ());
+    const fcl::Quaternion3f& q (trans.getQuatRotation ());
+    os << "rotation matrix: " << R << std::endl;
+    os << "rotation quaternion: " << "(" << q.getW () << ", "
+       << q.getX () << ", " << q.getY () << ", " << q.getZ () << ")"
+       << std::endl;
+    os << "translation: " << t << std::endl;
+    return os;
+  }
 }
 
 std::ostream& operator<< (std::ostream& os, const hpp::model::Joint& joint)

@@ -378,7 +378,9 @@ namespace hpp {
   } // namespace model
 } // namespace hpp
 
-std::ostream& operator<< (std::ostream& os , const fcl::Transform3f& trans);
+namespace fcl {
+  std::ostream& operator<< (std::ostream& os , const fcl::Transform3f& trans);
+}
 std::ostream& operator<< (std::ostream& os, const hpp::model::Joint& joint);
 
 #endif // HPP_MODEL_JOINT_HH
