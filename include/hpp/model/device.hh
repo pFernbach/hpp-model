@@ -239,28 +239,6 @@ namespace hpp {
       /// \name Collision and distance computation
       /// \{
 
-      /// Add an object for collision or distance computation
-      ///
-      /// \param object object to add. Position of object is expressed in
-      /// world frame.
-      /// \param collision whether this object should be considered for
-      ///        collision
-      /// \param distance  whether this object should be considered for
-      ///        distance computation
-      virtual void addOuterObject (const CollisionObjectPtr_t &object,
-				   bool collision, bool distance);
-
-      /// Remove an object for collision or distance computation
-      ///
-      /// \param object object to remove
-      /// \param collision whether this object should be removed from
-      ///        list of collision objects
-      /// \param distance  whether this object should be removed from
-      ///        list of distance computation objects
-      /// \note If object is not in body, do nothing
-      virtual void removeOuterObject (const CollisionObjectPtr_t& object,
-				      bool collision, bool distance);
-
       /// Get list of obstacles
       /// \param type collision or distance.
       const ObjectVector_t& obstacles (Request_t type) const;
