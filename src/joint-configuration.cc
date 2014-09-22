@@ -83,7 +83,7 @@ namespace hpp {
     {
     }
 
-    SO3JointConfig::SO3JointConfig () : JointConfiguration (6)
+    SO3JointConfig::SO3JointConfig () : JointConfiguration (3)
     {
     }
 
@@ -168,10 +168,6 @@ namespace hpp {
 				      const size_type& index,
 				      ConfigurationOut_t result)
     {
-      // Linearly interpolate translation part
-      result [index] = (1-u) * q1 [index] + u * q2 [index];
-      result [index+1] = (1-u) * q1 [index+1] + u * q2 [index+1];
-      result [index+2] = (1-u) * q1 [index+2] + u * q2 [index+2];
       // for rotation part, transform roll pitch yaw into quaternion
       double theta = angleBetweenQuaternions (q1, q2, index);
 
