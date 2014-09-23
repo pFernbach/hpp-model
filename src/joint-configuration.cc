@@ -99,12 +99,14 @@ namespace hpp {
     {
     }
 
-    TranslationJointConfig::TranslationJointConfig () :
-      JointConfiguration (1)
+    template <size_type dimension>
+    TranslationJointConfig <dimension>::TranslationJointConfig () :
+      JointConfiguration (dimension)
     {
     }
 
-    TranslationJointConfig::~TranslationJointConfig ()
+    template <size_type dimension>
+    TranslationJointConfig <dimension>::~TranslationJointConfig ()
     {
     }
 
@@ -251,61 +253,74 @@ namespace hpp {
       result [index+3] = sqrt (u1) * cos(2*M_PI*u3);
     }
 
-    void TranslationJointConfig::interpolate (ConfigurationIn_t q1,
-					      ConfigurationIn_t q2,
-					      const double& u,
-					      const size_type& index,
-					      ConfigurationOut_t result)
+    template <size_type dimension>
+    void TranslationJointConfig <dimension>::interpolate
+    (ConfigurationIn_t q1, ConfigurationIn_t q2, const double& u,
+     const size_type& index, ConfigurationOut_t result)
     {
-      result [index] = (1-u) * q1 [index] + u * q2 [index];
+      result.segment <dimension> (index) =
+	(1-u) * q1.segment <dimension> (index) +
+	u * q2.segment <dimension> (index);
     }
 
-    double TranslationJointConfig::distance (ConfigurationIn_t q1,
-					     ConfigurationIn_t q2,
-					     const size_type& index) const
+    template <size_type dimension>
+    double TranslationJointConfig <dimension>::distance
+    (ConfigurationIn_t q1, ConfigurationIn_t q2, const size_type& index) const
     {
-      return fabs (q2 [index] - q1 [index]);
+      if (dimension == 1) {
+	return fabs (q2 [index] - q1 [index]);
+      } else {
+	return (q2.segment <dimension> (index) -
+		q1.segment <dimension> (index)).norm ();
+      }
     }
 
-    void TranslationJointConfig::integrate (ConfigurationIn_t q,
-					    vectorIn_t v,
-					    const size_type& indexConfig,
-					    const size_type& indexVelocity,
-					    ConfigurationOut_t result) const
+    template <size_type dimension>
+    void TranslationJointConfig <dimension>::integrate
+    (ConfigurationIn_t q, vectorIn_t v, const size_type& indexConfig,
+     const size_type& indexVelocity, ConfigurationOut_t result) const
     {
       assert (indexConfig < result.size ());
-      result [indexConfig] = q [indexConfig] + v [indexVelocity];
-      if (isBounded (0)) {
-	if (result [indexConfig] < lowerBound (0)) {
-	  result [indexConfig] = lowerBound (0);
-	} else if (result [indexConfig] > upperBound (0)) {
-	  result [indexConfig] = upperBound (0);
+      result.segment <dimension> (indexConfig) =
+	q.segment <dimension> (indexConfig) +
+	v.segment <dimension> (indexVelocity);
+      for (unsigned int i=0; i<dimension; ++i) {
+	if (isBounded (i)) {
+	  if (result [indexConfig + i] < lowerBound (i)) {
+	    result [indexConfig + i] = lowerBound (i);
+	  } else if (result [indexConfig + i] > upperBound (i)) {
+	    result [indexConfig + i] = upperBound (i);
+	  }
 	}
       }
     }
 
-    void TranslationJointConfig::difference (ConfigurationIn_t q1,
-					     ConfigurationIn_t q2,
-					     const size_type& indexConfig,
-					     const size_type& indexVelocity,
-					     vectorOut_t result) const
+    template <size_type dimension>
+    void TranslationJointConfig <dimension>::difference
+    (ConfigurationIn_t q1, ConfigurationIn_t q2, const size_type& indexConfig,
+     const size_type& indexVelocity, vectorOut_t result) const
     {
-      result [indexVelocity] = q1 [indexConfig] - q2 [indexConfig];
+      result.segment <dimension> (indexVelocity) =
+	q1.segment <dimension> (indexConfig) -
+	q2.segment <dimension> (indexConfig);
     }
 
-    void TranslationJointConfig::uniformlySample (const size_type& index,
-						  ConfigurationOut_t result) const
+    template <size_type dimension>
+    void TranslationJointConfig <dimension>::uniformlySample
+    (const size_type& index, ConfigurationOut_t result) const
     {
-      if (!isBounded (0)) {
-	std::ostringstream iss
-	  ("Cannot uniformly sample non bounded translation degrees of "
-	   "freedom at rank ");
-	iss  << index;
-	throw std::runtime_error (iss.str ());
-      }
-      else {
-	result [index] = lowerBound (0) +
-	  (upperBound (0) - lowerBound (0)) * rand ()/RAND_MAX;
+      for (unsigned int i=0; i<dimension; ++i) {
+	if (!isBounded (i)) {
+	  std::ostringstream iss
+	    ("Cannot uniformly sample non bounded translation degrees of "
+	     "freedom at rank ");
+	  iss  << index + i;
+	  throw std::runtime_error (iss.str ());
+	}
+	else {
+	  result [index + i] = lowerBound (i) +
+	    (upperBound (i) - lowerBound (i)) * rand ()/RAND_MAX;
+	}
       }
     }
 
@@ -385,6 +400,9 @@ namespace hpp {
 	  (upperBound (0) - lowerBound (0)) * rand ()/RAND_MAX;
       }
     }
+    template class TranslationJointConfig <1>;
+    template class TranslationJointConfig <2>;
+    template class TranslationJointConfig <3>;
 
   } // namespace model
 } // namespace hpp

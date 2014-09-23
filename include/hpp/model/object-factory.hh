@@ -36,7 +36,7 @@ namespace hpp {
       ObjectFactory ()
       {}
       virtual ~ObjectFactory () {}
- 
+
       virtual DevicePtr_t createRobot (const std::string& name)
       {
 	return Device::create (name);
@@ -61,7 +61,17 @@ namespace hpp {
       virtual JointPtr_t createJointTranslation
       (const Transform3f& initialPosition)
       {
-	return new JointTranslation (initialPosition);
+	return new JointTranslation <1> (initialPosition);
+      }
+      virtual JointPtr_t createJointTranslation2
+      (const Transform3f& initialPosition)
+      {
+	return new JointTranslation <2> (initialPosition);
+      }
+      virtual JointPtr_t createJointTranslation3
+      (const Transform3f& initialPosition)
+      {
+	return new JointTranslation <3> (initialPosition);
       }
       virtual BodyPtr_t createBody ()
       {

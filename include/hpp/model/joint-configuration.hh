@@ -290,6 +290,7 @@ namespace hpp {
     }; // class RotationJointConfig
 
     /// Configuration of a JointTranslation
+    template <size_type dimension>
     class HPP_MODEL_DLLAPI TranslationJointConfig : public JointConfiguration
     {
     public:

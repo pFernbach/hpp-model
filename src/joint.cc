@@ -362,60 +362,6 @@ namespace hpp {
       }
     }
 
-    JointTranslation::JointTranslation (const Transform3f& initialPosition) :
-      Joint (initialPosition, 1, 1), t_ ()
-    {
-      configuration_ = new TranslationJointConfig;
-      t_.setValue (0);
-    }
-
-    JointTranslation::JointTranslation (const JointTranslation& joint) :
-      Joint (joint), t_ ()
-    {
-      t_.setValue (0);
-    }
-
-    JointPtr_t JointTranslation::clone () const
-    {
-      return new JointTranslation (*this);
-    }
-
-    JointTranslation::~JointTranslation ()
-    {
-      delete configuration_;
-    }
-
-    void JointTranslation::computePosition
-    (ConfigurationIn_t configuration, const Transform3f& parentPosition,
-     Transform3f& position) const
-    {
-      t_ [0] = configuration [rankInConfiguration ()];
-      T3f_.setTranslation (t_);
-      position = parentPosition * positionInParentFrame_ * T3f_;
-    }
-
-    void JointTranslation::writeSubJacobian (const JointPtr_t& child)
-    {
-      size_type col = rankInVelocity ();
-      // Get translation axis
-      axis_ = currentTransformation_.getRotation ().getColumn (0);
-      child->jacobian () (0, col) = axis_ [0];
-      child->jacobian () (1, col) = axis_ [1];
-      child->jacobian () (2, col) = axis_ [2];
-    }
-
-    void JointTranslation::writeComSubjacobian (ComJacobian_t& jacobian,
-						const double& totalMass)
-    {
-      if (mass_ > 0) {
-	size_type col = rankInVelocity ();
-	// Get translation axis
-	axis_ = currentTransformation_.getRotation ().getColumn (0);
-	jacobian (0, col) = (mass_/totalMass) * axis_ [0];
-	jacobian (1, col) = (mass_/totalMass) * axis_ [1];
-	jacobian (2, col) = (mass_/totalMass) * axis_ [2];
-      }
-    }
 
     std::ostream& displayTransform3f (std::ostream& os,
 				      const fcl::Transform3f trans)
@@ -479,7 +425,86 @@ namespace hpp {
       }
       return os;
     }
+    template <size_type dimension>
+    JointTranslation <dimension>::JointTranslation
+    (const Transform3f& initialPosition) : Joint (initialPosition, dimension,
+						  dimension), t_ ()
+    {
+      if (dimension > 3 || dimension ==0) {
+	throw std::runtime_error
+	  ("Dimension of translation should be between 1 and 3.");
+      }
+      configuration_ = new TranslationJointConfig <dimension>;
+      t_.setValue (0);
+    }
 
+    template <size_type dimension>
+    JointTranslation <dimension>::JointTranslation
+    (const JointTranslation <dimension>& joint) : Joint (joint), t_ ()
+    {
+      t_.setValue (0);
+    }
+
+    template <size_type dimension>
+    JointPtr_t JointTranslation <dimension>::clone () const
+    {
+      return new JointTranslation <dimension> (*this);
+    }
+
+    template <size_type dimension>
+    JointTranslation <dimension>::~JointTranslation ()
+    {
+      delete configuration_;
+    }
+
+    template <size_type dimension>
+    void JointTranslation <dimension>::computePosition
+    (ConfigurationIn_t configuration, const Transform3f& parentPosition,
+     Transform3f& position) const
+    {
+      t_ [0] = configuration [rankInConfiguration ()];
+      if (dimension >= 2) {
+	t_ [1] = configuration [rankInConfiguration () + 1];
+      }
+      if (dimension >= 3) {
+	t_ [2] = configuration [rankInConfiguration () + 2];
+      }
+      T3f_.setTranslation (t_);
+      position = parentPosition * positionInParentFrame_ * T3f_;
+    }
+
+    template <size_type dimension>
+    void JointTranslation <dimension>::writeSubJacobian
+    (const JointPtr_t& child)
+    {
+      size_type col = rankInVelocity ();
+      // Get translation axis
+      for (unsigned int i=0; i<dimension; ++i) {
+	axis_[i] = currentTransformation_.getRotation ().getColumn (i);
+	child->jacobian () (0, col+i) = axis_ [i][0];
+	child->jacobian () (1, col+i) = axis_ [i][1];
+	child->jacobian () (2, col+i) = axis_ [i][2];
+      }
+    }
+
+    template <size_type dimension>
+    void JointTranslation <dimension>::writeComSubjacobian
+    (ComJacobian_t& jacobian, const double& totalMass)
+    {
+      if (mass_ > 0) {
+	size_type col = rankInVelocity ();
+	// Get translation axis
+	for (unsigned int i=0; i<dimension; ++i) {
+	  axis_ [i] = currentTransformation_.getRotation ().getColumn (i);
+	  jacobian (0, col+i) = (mass_/totalMass) * axis_ [i][0];
+	  jacobian (1, col+i) = (mass_/totalMass) * axis_ [i][1];
+	  jacobian (2, col+i) = (mass_/totalMass) * axis_ [i][2];
+	}
+      }
+    }
+    template class JointTranslation <1>;
+    template class JointTranslation <2>;
+    template class JointTranslation <3>;
   } // namespace model
 } // namespace hpp
 
@@ -502,3 +527,4 @@ std::ostream& operator<< (std::ostream& os, const hpp::model::Joint& joint)
 {
   return joint.display (os);
 }
+

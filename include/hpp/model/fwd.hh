@@ -40,34 +40,12 @@ namespace hpp {
     HPP_PREDEF_CLASS (JointAnchor);
     HPP_PREDEF_CLASS (JointRotation);
     HPP_PREDEF_CLASS (JointSO3);
-    HPP_PREDEF_CLASS (JointTranslation);
     HPP_PREDEF_CLASS (JointConfiguration);
     HPP_PREDEF_CLASS (ObjectFactory);
     HPP_PREDEF_CLASS (ObjectIterator);
     HPP_PREDEF_CLASS (Gripper);
     enum Request_t {COLLISION, DISTANCE};
-    typedef Body* BodyPtr_t;
-    typedef std::vector<Body*> BodyVector_t;
-    typedef boost::shared_ptr <CollisionObject> CollisionObjectPtr_t;
-    typedef std::list <CollisionObjectPtr_t> ObjectVector_t;
-    typedef boost::shared_ptr <Device> DevicePtr_t;
-    typedef boost::shared_ptr <const Device> DeviceConstPtr_t;
-    typedef std::vector <DistanceResult> DistanceResults_t;
-    typedef boost::shared_ptr <HumanoidRobot> HumanoidRobotPtr_t;
-    typedef Joint* JointPtr_t;
-    typedef JointAnchor* JointAnchorPtr_t;
-    typedef JointRotation* JointRotationPtr_t;
-    typedef JointSO3* JointSO3Ptr_t;
-    typedef JointTranslation* JointTranslationPtr_t;
-    typedef const Joint* JointConstPtr_t;
-    typedef const JointAnchor* JointAnchorConstPtr_t;
-    typedef const JointRotation* JointRotationConstPtr_t;
-    typedef const JointSO3* JointSO3ConstPtr_t;
-    typedef const JointTranslation * JointTranslationConstPtr_t;
-    typedef std::map <std::string, JointPtr_t> JointByName_t;
-    typedef std::vector <JointPtr_t> JointVector_t;    
-    typedef boost::shared_ptr <Gripper> GripperPtr_t;
-    typedef std::vector <GripperPtr_t> Grippers_t;
+
     typedef double value_type;
     typedef Eigen::Matrix <double, Eigen::Dynamic, 1> vector_t;
     typedef vector_t Configuration_t;
@@ -84,6 +62,34 @@ namespace hpp {
     typedef Eigen::Matrix <double, 3, Eigen::Dynamic> ComJacobian_t;
     typedef Eigen::Block <JointJacobian_t, 3, Eigen::Dynamic>
     HalfJointJacobian_t;
+
+    typedef Body* BodyPtr_t;
+    typedef std::vector<Body*> BodyVector_t;
+    typedef boost::shared_ptr <CollisionObject> CollisionObjectPtr_t;
+    typedef std::list <CollisionObjectPtr_t> ObjectVector_t;
+    typedef boost::shared_ptr <Device> DevicePtr_t;
+    typedef boost::shared_ptr <const Device> DeviceConstPtr_t;
+    typedef std::vector <DistanceResult> DistanceResults_t;
+    typedef boost::shared_ptr <HumanoidRobot> HumanoidRobotPtr_t;
+    typedef Joint* JointPtr_t;
+    typedef JointAnchor* JointAnchorPtr_t;
+    typedef JointRotation* JointRotationPtr_t;
+    typedef JointSO3* JointSO3Ptr_t;
+    template <size_type dimension = 1> class  JointTranslation;
+    typedef JointTranslation <1>* JointTranslationPtr_t;
+    typedef JointTranslation <2>* JointTranslation2Ptr_t;
+    typedef JointTranslation <3>* JointTranslation3Ptr_t;
+    typedef const Joint* JointConstPtr_t;
+    typedef const JointAnchor* JointAnchorConstPtr_t;
+    typedef const JointRotation* JointRotationConstPtr_t;
+    typedef const JointSO3* JointSO3ConstPtr_t;
+    typedef const JointTranslation <1>* JointTranslationConstPtr_t;
+    typedef const JointTranslation <2>* JointTranslation2ConstPtr_t;
+    typedef const JointTranslation <3>* JointTranslation3ConstPtr_t;
+    typedef std::map <std::string, JointPtr_t> JointByName_t;
+    typedef std::vector <JointPtr_t> JointVector_t;
+    typedef boost::shared_ptr <Gripper> GripperPtr_t;
+    typedef std::vector <GripperPtr_t> Grippers_t;
     typedef fcl::Transform3f Transform3f;
   } // namespace model
 } // namespace hpp

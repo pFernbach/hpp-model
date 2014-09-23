@@ -31,7 +31,7 @@ namespace hpp {
     ///
     /// A joint maps an input vector to a transformation of SE(3) from the
     /// parent frame to the joint frame.
-    /// 
+    ///
     /// The input vector is provided through the configuration vector of the
     /// robot the joint belongs to. The joint input vector is composed of the
     /// components of the robot configuration starting at
@@ -348,13 +348,13 @@ namespace hpp {
 
     /// Translation Joint
     ///
-    /// Map a length as one-dimensional input vector to a translation along a
-    /// fixed axis in parent frame.
+    /// Map a 1,2 or 3-dimensional input vector to a translation
+    template <size_type dimension>
     class HPP_MODEL_DLLAPI JointTranslation : public Joint
     {
     public:
       JointTranslation (const Transform3f& initialPosition);
-      JointTranslation (const JointTranslation& joint);
+      JointTranslation (const JointTranslation <dimension>& joint);
       /// Return pointer to copy of this
       /// Clone body and therefore inner and outer objects (see Body::clone).
       virtual JointPtr_t clone () const;
@@ -371,7 +371,7 @@ namespace hpp {
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
 					const double& totalMass);
       mutable fcl::Vec3f t_;
-      mutable fcl::Vec3f axis_;
+      mutable fcl::Vec3f axis_ [dimension];
       mutable fcl::Vec3f com_;
     }; // class JointTranslation
 
@@ -382,5 +382,4 @@ namespace fcl {
   std::ostream& operator<< (std::ostream& os , const fcl::Transform3f& trans);
 }
 std::ostream& operator<< (std::ostream& os, const hpp::model::Joint& joint);
-
 #endif // HPP_MODEL_JOINT_HH
