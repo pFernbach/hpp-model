@@ -107,22 +107,22 @@ namespace hpp {
       return configuration_->isBounded (rank);
     }
 
-    double Joint::lowerBound (size_type rank) const
+    value_type Joint::lowerBound (size_type rank) const
     {
       return configuration_->lowerBound (rank);
     }
 
-    double Joint::upperBound (size_type rank) const
+    value_type Joint::upperBound (size_type rank) const
     {
       return configuration_->upperBound (rank);
     }
 
-    void Joint::lowerBound (size_type rank, double lower)
+    void Joint::lowerBound (size_type rank, value_type lower)
     {
       configuration_->lowerBound (rank, lower);
     }
 
-    void Joint::upperBound (size_type rank, double upper)
+    void Joint::upperBound (size_type rank, value_type upper)
     {
       configuration_->upperBound (rank, upper);
     }
@@ -162,7 +162,7 @@ namespace hpp {
       }
     }
 
-    double Joint::computeMass ()
+    value_type Joint::computeMass ()
     {
       mass_ = 0;
       if (body_) {
@@ -222,7 +222,7 @@ namespace hpp {
     }
 
     void JointAnchor::writeComSubjacobian (ComJacobian_t&,
-					   const double&)
+					   const value_type&)
     {
     }
 
@@ -286,7 +286,7 @@ namespace hpp {
     }
 
     void JointSO3::writeComSubjacobian (ComJacobian_t& jacobian,
-					const double& totalMass)
+					const value_type& totalMass)
     {
       if (mass_ > 0) {
 	const fcl::Vec3f& center (currentTransformation_.getTranslation ());
@@ -347,7 +347,7 @@ namespace hpp {
     }
 
     void JointRotation::writeComSubjacobian (ComJacobian_t& jacobian,
-					     const double& totalMass)
+					     const value_type& totalMass)
     {
       if (mass_ > 0) {
 	size_type col = rankInVelocity ();
@@ -489,7 +489,7 @@ namespace hpp {
 
     template <size_type dimension>
     void JointTranslation <dimension>::writeComSubjacobian
-    (ComJacobian_t& jacobian, const double& totalMass)
+    (ComJacobian_t& jacobian, const value_type& totalMass)
     {
       if (mass_ > 0) {
 	size_type col = rankInVelocity ();

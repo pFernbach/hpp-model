@@ -203,7 +203,7 @@ namespace hpp {
       /// \{
 
       /// Get mass of robot
-      const double& mass () const
+      const value_type& mass () const
       {
 	return mass_;
       }
@@ -342,7 +342,7 @@ namespace hpp {
       vector_t currentAcceleration_;
       vector3_t com_;
       ComJacobian_t jacobianCom_;
-      double mass_;
+      value_type mass_;
       bool upToDate_;
       Computation_t computationFlag_;
       // Collision pairs between bodies

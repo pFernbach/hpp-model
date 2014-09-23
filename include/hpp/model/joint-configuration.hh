@@ -63,7 +63,7 @@ namespace hpp {
       ///   \li x, y, z, roll, pitch, yaw for freeflyer joints.
       virtual void interpolate (ConfigurationIn_t q1,
 				ConfigurationIn_t q2,
-				const double& u,
+				const value_type& u,
 				const size_type& index,
 				ConfigurationOut_t result) = 0;
 
@@ -71,9 +71,9 @@ namespace hpp {
       /// \param q1, q2 two configurations of the robot
       /// \param index index of first component of q1 and q2 corresponding to
       /// the joint.
-      virtual double distance (ConfigurationIn_t q1,
-			       ConfigurationIn_t q2,
-			       const size_type& index) const = 0;
+      virtual value_type distance (ConfigurationIn_t q1,
+				   ConfigurationIn_t q2,
+				   const size_type& index) const = 0;
 
       /// Integrate constant derivative during unit time
       /// \param q initial configuration
@@ -123,13 +123,13 @@ namespace hpp {
       /// Get whether given degree of freedom is bounded
       bool isBounded (size_type rank) const;
       /// Get lower bound of given degree of freedom
-      double lowerBound (size_type rank) const;
+      value_type lowerBound (size_type rank) const;
       /// Get upper bound of given degree of freedom
-      double upperBound (size_type rank) const;
+      value_type upperBound (size_type rank) const;
       /// Set lower bound of given degree of freedom
-      void lowerBound (size_type rank, double lowerBound);
+      void lowerBound (size_type rank, value_type lowerBound);
       /// Set upper bound of given degree of freedom
-      void upperBound (size_type rank, double upperBound);
+      void upperBound (size_type rank, value_type upperBound);
       /// @}
 
     private:
@@ -146,7 +146,7 @@ namespace hpp {
       virtual ~AnchorJointConfig ();
       virtual void interpolate (ConfigurationIn_t,
 				ConfigurationIn_t,
-				const double&,
+				const value_type&,
 				const size_type&,
 				ConfigurationOut_t);
 
@@ -155,9 +155,9 @@ namespace hpp {
       /// \param index index of first component of q1 and q2 corresponding to
       /// the joint.
       /// \return 0
-      virtual double distance (ConfigurationIn_t q1,
-			       ConfigurationIn_t q2,
-			       const size_type& index) const;
+      virtual value_type distance (ConfigurationIn_t q1,
+				   ConfigurationIn_t q2,
+				   const size_type& index) const;
 
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,
@@ -181,7 +181,7 @@ namespace hpp {
       virtual ~SO3JointConfig ();
       virtual void interpolate (ConfigurationIn_t q1,
 				ConfigurationIn_t q2,
-				const double& u,
+				const value_type& u,
 				const size_type& index,
 				ConfigurationOut_t result);
 
@@ -190,9 +190,9 @@ namespace hpp {
       /// \param index index of first component of q1 and q2 corresponding to
       /// the joint.
       /// \return the angle between the joint orientations
-      virtual double distance (ConfigurationIn_t q1,
-			       ConfigurationIn_t q2,
-			       const size_type& index) const;
+      virtual value_type distance (ConfigurationIn_t q1,
+				   ConfigurationIn_t q2,
+				   const size_type& index) const;
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,
 			      const size_type& indexConfig,
@@ -237,7 +237,7 @@ namespace hpp {
       virtual ~RotationJointConfig ();
       virtual void interpolate (ConfigurationIn_t q1,
 				ConfigurationIn_t q2,
-				const double& u,
+				const value_type& u,
 				const size_type& index,
 				ConfigurationOut_t result);
 
@@ -246,9 +246,9 @@ namespace hpp {
       /// \param index index of first component of q1 and q2 corresponding to
       /// the joint.
       /// \return the angle between the joint orientations
-      virtual double distance (ConfigurationIn_t q1,
-			       ConfigurationIn_t q2,
-			       const size_type& index) const;
+      virtual value_type distance (ConfigurationIn_t q1,
+				   ConfigurationIn_t q2,
+				   const size_type& index) const;
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,
 			      const size_type& indexConfig,
@@ -298,7 +298,7 @@ namespace hpp {
       virtual ~TranslationJointConfig ();
       virtual void interpolate (ConfigurationIn_t q1,
 				ConfigurationIn_t q2,
-				const double& u,
+				const value_type& u,
 				const size_type& index,
 				ConfigurationOut_t result);
 
@@ -307,9 +307,9 @@ namespace hpp {
       /// \param index index of first component of q1 and q2 corresponding to
       /// the joint.
       /// \return the absolute value of the joint value difference.
-      virtual double distance (ConfigurationIn_t q1,
-			       ConfigurationIn_t q2,
-			       const size_type& index) const;
+      virtual value_type distance (ConfigurationIn_t q1,
+				   ConfigurationIn_t q2,
+				   const size_type& index) const;
 
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,

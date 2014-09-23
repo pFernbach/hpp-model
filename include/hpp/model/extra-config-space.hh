@@ -69,8 +69,8 @@ namespace hpp {
 	dimension_ = dimension;
 	lowerBounds_.resize (dimension);
 	upperBounds_.resize (dimension);
-	lowerBounds_.setConstant (-std::numeric_limits<double>::infinity());
-	upperBounds_.setConstant (+std::numeric_limits<double>::infinity());
+	lowerBounds_.setConstant (-std::numeric_limits<value_type>::infinity());
+	upperBounds_.setConstant (+std::numeric_limits<value_type>::infinity());
       }
       size_type dimension_;
       vector_t lowerBounds_;

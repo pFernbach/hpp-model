@@ -29,7 +29,7 @@ namespace hpp {
     /// Result of distance computation between two CollisionObject.
     struct HPP_MODEL_DLLAPI DistanceResult {
       /// Get distance between objects
-      const double& distance () const
+      const value_type& distance () const
       {
 	return fcl.min_distance;
       }

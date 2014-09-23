@@ -28,7 +28,7 @@
 
 namespace hpp {
   namespace model {
-    typedef Eigen::AngleAxis <double> AngleAxis_t;
+    typedef Eigen::AngleAxis <value_type> AngleAxis_t;
     typedef fcl::Quaternion3f Quaternion_t;
 
     JointConfiguration::JointConfiguration (size_type numberDof)
@@ -55,22 +55,22 @@ namespace hpp {
       return bounded_ [rank];
     }
 
-    double JointConfiguration::lowerBound (size_type rank) const
+    value_type JointConfiguration::lowerBound (size_type rank) const
     {
       return lowerBounds_ [rank];
     }
 
-    double JointConfiguration::upperBound (size_type rank) const
+    value_type JointConfiguration::upperBound (size_type rank) const
     {
       return upperBounds_ [rank];
     }
 
-    void JointConfiguration::lowerBound (size_type rank, double lowerBound)
+    void JointConfiguration::lowerBound (size_type rank, value_type lowerBound)
     {
       lowerBounds_ [rank] = lowerBound;
     }
 
-    void JointConfiguration::upperBound (size_type rank, double upperBound)
+    void JointConfiguration::upperBound (size_type rank, value_type upperBound)
     {
       upperBounds_ [rank] = upperBound;
     }
@@ -112,15 +112,15 @@ namespace hpp {
 
     void AnchorJointConfig::interpolate (ConfigurationIn_t,
 					 ConfigurationIn_t,
-					 const double&,
+					 const value_type&,
 					 const size_type&,
 					 ConfigurationOut_t)
     {
     }
 
-    double AnchorJointConfig::distance (ConfigurationIn_t,
-					ConfigurationIn_t,
-					const size_type&) const
+    value_type AnchorJointConfig::distance (ConfigurationIn_t,
+					    ConfigurationIn_t,
+					    const size_type&) const
     {
       return 0;
     }
@@ -152,26 +152,26 @@ namespace hpp {
     /// \param index index of joint configuration in robot configuration vector
     /// \param unit quaternion corresponding to both joint configuration
     /// \return angle between both joint configuration
-    static double angleBetweenQuaternions (ConfigurationIn_t q1,
-					   ConfigurationIn_t q2,
-					   const size_type& index)
+    static value_type angleBetweenQuaternions (ConfigurationIn_t q1,
+					       ConfigurationIn_t q2,
+					       const size_type& index)
     {
-      double innerprod = q1.segment (index, 4).dot (q2.segment (index, 4));
+      value_type innerprod = q1.segment (index, 4).dot (q2.segment (index, 4));
       assert (fabs (innerprod) < 1.0001);
       if (innerprod < -1) innerprod = -1;
       if (innerprod >  1) innerprod =  1;
-      double theta = acos (innerprod);
+      value_type theta = acos (innerprod);
       return theta;
     }
 
     void SO3JointConfig::interpolate (ConfigurationIn_t q1,
 				      ConfigurationIn_t q2,
-				      const double& u,
+				      const value_type& u,
 				      const size_type& index,
 				      ConfigurationOut_t result)
     {
       // for rotation part, transform roll pitch yaw into quaternion
-      double theta = angleBetweenQuaternions (q1, q2, index);
+      value_type theta = angleBetweenQuaternions (q1, q2, index);
 
       if (fabs (theta) > 1e-6) {
 	result.segment (index, 4) =
@@ -183,11 +183,11 @@ namespace hpp {
       }
     }
 
-    double SO3JointConfig::distance (ConfigurationIn_t q1,
-				     ConfigurationIn_t q2,
-				     const size_type& index) const
+    value_type SO3JointConfig::distance (ConfigurationIn_t q1,
+					 ConfigurationIn_t q2,
+					 const size_type& index) const
     {
-      double theta = angleBetweenQuaternions (q1, q2, index);
+      value_type theta = angleBetweenQuaternions (q1, q2, index);
       assert (theta >= 0);
       return theta;
     }
@@ -201,7 +201,7 @@ namespace hpp {
       vector3_t omega (v [indexVelocity + 0], v [indexVelocity + 1],
 		       v [indexVelocity + 2]);
 
-      double angle = .5*omega.norm();
+      value_type angle = .5*omega.norm();
       if (angle == 0) {
 	result.segment (indexConfig, 4) = q.segment (indexConfig, 4);
 	return;
@@ -234,7 +234,7 @@ namespace hpp {
       Quaternion_t p2 (q2 [indexConfig + 0], q2 [indexConfig + 1],
 		       q2 [indexConfig + 2], q2 [indexConfig + 3]);
       Quaternion_t p (p1); p.conj (); p*=p2;
-      double angle; fcl::Vec3f axis;
+      value_type angle; fcl::Vec3f axis;
       p.toAxisAngle (axis, angle);
       result [indexVelocity + 0] = angle*axis [0];
       result [indexVelocity + 1] = angle*axis [1];
@@ -244,9 +244,9 @@ namespace hpp {
     void SO3JointConfig::uniformlySample (const size_type& index,
 					  ConfigurationOut_t result) const
     {
-      double u1 = (double)rand() / RAND_MAX;
-      double u2 = (double)rand() / RAND_MAX;
-      double u3 = (double)rand() / RAND_MAX;
+      value_type u1 = (value_type)rand() / RAND_MAX;
+      value_type u2 = (value_type)rand() / RAND_MAX;
+      value_type u3 = (value_type)rand() / RAND_MAX;
       result [index] = sqrt (1-u1)*sin(2*M_PI*u2);
       result [index+1] = sqrt (1-u1)*cos(2*M_PI*u2);
       result [index+2] = sqrt (u1) * sin(2*M_PI*u3);
@@ -255,7 +255,7 @@ namespace hpp {
 
     template <size_type dimension>
     void TranslationJointConfig <dimension>::interpolate
-    (ConfigurationIn_t q1, ConfigurationIn_t q2, const double& u,
+    (ConfigurationIn_t q1, ConfigurationIn_t q2, const value_type& u,
      const size_type& index, ConfigurationOut_t result)
     {
       result.segment <dimension> (index) =
@@ -264,7 +264,7 @@ namespace hpp {
     }
 
     template <size_type dimension>
-    double TranslationJointConfig <dimension>::distance
+    value_type TranslationJointConfig <dimension>::distance
     (ConfigurationIn_t q1, ConfigurationIn_t q2, const size_type& index) const
     {
       if (dimension == 1) {
@@ -326,7 +326,7 @@ namespace hpp {
 
     void RotationJointConfig::interpolate (ConfigurationIn_t q1,
 					   ConfigurationIn_t q2,
-					   const double& u,
+					   const value_type& u,
 					   const size_type& index,
 					   ConfigurationOut_t result)
     {
@@ -341,9 +341,9 @@ namespace hpp {
       }
     }
 
-    double RotationJointConfig::distance (ConfigurationIn_t q1,
-					  ConfigurationIn_t q2,
-					  const size_type& index) const
+    value_type RotationJointConfig::distance (ConfigurationIn_t q1,
+					      ConfigurationIn_t q2,
+					      const size_type& index) const
     {
       if (isBounded (0)) {
 	// linearly interpolate
@@ -363,7 +363,7 @@ namespace hpp {
 					 ConfigurationOut_t result) const
     {
       using jrlMathTools::Angle;
-      double omega = v [indexVelocity];
+      value_type omega = v [indexVelocity];
       result [indexConfig] = Angle (q [indexConfig]) + Angle (omega);
       if (isBounded (0)) {
 	if (result [indexConfig] < lowerBound (0)) {

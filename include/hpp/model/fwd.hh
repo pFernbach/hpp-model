@@ -47,19 +47,19 @@ namespace hpp {
     enum Request_t {COLLISION, DISTANCE};
 
     typedef double value_type;
-    typedef Eigen::Matrix <double, Eigen::Dynamic, 1> vector_t;
+    typedef Eigen::Matrix <value_type, Eigen::Dynamic, 1> vector_t;
     typedef vector_t Configuration_t;
     typedef Eigen::Ref <const Configuration_t> ConfigurationIn_t;
     typedef Eigen::Ref <Configuration_t> ConfigurationOut_t;
     typedef Eigen::Ref <const vector_t> vectorIn_t;
     typedef Eigen::Ref <vector_t> vectorOut_t;
-    typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> matrix_t;
+    typedef Eigen::Matrix<value_type, Eigen::Dynamic, Eigen::Dynamic> matrix_t;
     typedef Eigen::Ref <matrix_t> matrixOut_t;
     typedef matrix_t::Index size_type;
     typedef fcl::Matrix3f matrix3_t;
     typedef fcl::Vec3f vector3_t;
-    typedef Eigen::Matrix <double, 6, Eigen::Dynamic> JointJacobian_t;
-    typedef Eigen::Matrix <double, 3, Eigen::Dynamic> ComJacobian_t;
+    typedef Eigen::Matrix <value_type, 6, Eigen::Dynamic> JointJacobian_t;
+    typedef Eigen::Matrix <value_type, 3, Eigen::Dynamic> ComJacobian_t;
     typedef Eigen::Block <JointJacobian_t, 3, Eigen::Dynamic>
     HalfJointJacobian_t;
 

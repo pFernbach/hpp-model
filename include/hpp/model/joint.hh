@@ -168,13 +168,13 @@ namespace hpp {
       /// Get whether given degree of freedom is bounded
       bool isBounded (size_type rank) const;
       /// Get lower bound of given degree of freedom
-      double lowerBound (size_type rank) const;
+      value_type lowerBound (size_type rank) const;
       /// Get upper bound of given degree of freedom
-      double upperBound (size_type rank) const;
+      value_type upperBound (size_type rank) const;
       /// Set lower bound of given degree of freedom
-      void lowerBound (size_type rank, double lowerBound);
+      void lowerBound (size_type rank, value_type lowerBound);
       /// Set upper bound of given degree of freedom
-      void upperBound (size_type rank, double upperBound);
+      void upperBound (size_type rank, value_type upperBound);
       /// \}
 
       /// \name Jacobian
@@ -215,7 +215,7 @@ namespace hpp {
       Transform3f positionInParentFrame_;
       mutable Transform3f T3f_;
       /// Mass of this and all descendants
-      double mass_;
+      value_type mass_;
       /// Mass time center of mass of this and all descendants
       fcl::Vec3f massCom_;
    private:
@@ -236,14 +236,14 @@ namespace hpp {
       virtual void writeSubJacobian (const JointPtr_t& child) = 0;
       void computeJacobian ();
       /// Compute mass of this and all descendants
-      double computeMass ();
+      value_type computeMass ();
       /// Compute the product m * com
       ///
       /// \li m is the mass of the joint and all descendants,
       /// \li com is the center of mass of the joint and all descendants.
       void computeMassTimesCenterOfMass ();
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
-					const double& totalMass) = 0;
+					const value_type& totalMass) = 0;
       size_type configSize_;
       size_type numberDof_;
       Transform3f initialPosition_;
@@ -285,7 +285,7 @@ namespace hpp {
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
-					const double& totalMass);
+					const value_type& totalMass);
     }; // class JointAnchor
 
     /// Spherical Joint
@@ -310,7 +310,7 @@ namespace hpp {
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
-					const double& totalMass);
+					const value_type& totalMass);
       mutable fcl::Vec3f com_;
     }; // class JointSO3
 
@@ -337,9 +337,9 @@ namespace hpp {
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
-					const double& totalMass);
+					const value_type& totalMass);
       mutable fcl::Matrix3f R_;
-      mutable double angle_;
+      mutable value_type angle_;
       mutable fcl::Vec3f axis_;
       mutable fcl::Vec3f O2O1_;
       mutable fcl::Vec3f cross_;
@@ -369,7 +369,7 @@ namespace hpp {
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
-					const double& totalMass);
+					const value_type& totalMass);
       mutable fcl::Vec3f t_;
       mutable fcl::Vec3f axis_ [dimension];
       mutable fcl::Vec3f com_;

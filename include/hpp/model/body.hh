@@ -178,13 +178,13 @@ namespace hpp {
       }
 
       /// Get mass.
-      inline  double mass() const
+      inline  value_type mass() const
       {
 	return mass_;
       }
 
       /// Set mass.
-      inline  void mass(double mass)
+      inline  void mass(value_type mass)
       {
 	mass_ = mass;
       }
@@ -201,7 +201,7 @@ namespace hpp {
       /// Inertial information
       fcl::Vec3f localCom_;
       matrix3_t inertiaMatrix_;
-      double mass_;
+      value_type mass_;
       value_type radius_;
     }; // class Body
   } // namespace model
