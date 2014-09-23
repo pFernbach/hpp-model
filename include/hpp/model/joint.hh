@@ -175,6 +175,26 @@ namespace hpp {
       void lowerBound (size_type rank, value_type lowerBound);
       /// Set upper bound of given degree of freedom
       void upperBound (size_type rank, value_type upperBound);
+      /// Get upper bound on linear velocity of the joint frame
+      /// \return coefficient \f$\lambda\f$ such that
+      /// \f{equation*}
+      /// \forall \mathbf{q}_{joint}\ \ \ \ \ \ \|\mathbf {v}\| \leq \lambda \|\mathbf{\dot{q}}_{joint}\|
+      /// \f}
+      /// where
+      /// \li \f$\mathbf{q}_{joint}\f$ is any joint configuration,
+      /// \li \f$\mathbf{\dot{q}}_{joint}\f$ is the joint velocity, and
+      /// \li \f$\mathbf{v}\f$ is the linear velocity of the joint frame.
+      virtual value_type upperBoundLinearVelocity () const = 0;
+      /// Get upper bound on angular velocity of the joint frame
+      /// \return coefficient \f$\lambda\f$ such that
+      /// \f{equation*}
+      /// \forall \mathbf{q}_{joint}\ \ \ \ \ \ \|\omega\| \leq \lambda \|\mathbf{\dot{q}}_{joint}\|
+      /// \f}
+      /// where
+      /// \li \f$\mathbf{q}_{joint}\f$ is any joint configuration,
+      /// \li \f$\mathbf{\dot{q}}_{joint}\f$ is the joint velocity, and
+      /// \li \f$\omega\f$ is the angular velocity of the joint frame.
+      virtual value_type upperBoundAngularVelocity () const = 0;
       /// \}
 
       /// \name Jacobian
@@ -282,6 +302,19 @@ namespace hpp {
       virtual void computePosition (ConfigurationIn_t configuration,
 				    const Transform3f& parentPosition,
 				    Transform3f& position) const;
+      /// Get upper bound on linear velocity of the joint frame
+      /// \return 0
+      virtual value_type upperBoundLinearVelocity () const
+      {
+	return 0;
+      }
+      /// Get upper bound on angular velocity of the joint frame
+      /// \return 0
+      virtual value_type upperBoundAngularVelocity () const
+      {
+	return 0;
+      }
+
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
@@ -307,6 +340,18 @@ namespace hpp {
 				    const Transform3f& parentPosition,
 				    Transform3f& position) const;
       virtual ~JointSO3 ();
+      /// Get upper bound on linear velocity of the joint frame
+      /// \return 0
+      virtual value_type upperBoundLinearVelocity () const
+      {
+	return 0;
+      }
+      /// Get upper bound on angular velocity of the joint frame
+      /// \return 1
+      virtual value_type upperBoundAngularVelocity () const
+      {
+	return 1;
+      }
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
@@ -334,6 +379,18 @@ namespace hpp {
 				    const Transform3f& parentPosition,
 				    Transform3f& position) const;
       virtual ~JointRotation ();
+      /// Get upper bound on linear velocity of the joint frame
+      /// \return 0
+      virtual value_type upperBoundLinearVelocity () const
+      {
+	return 0;
+      }
+      /// Get upper bound on angular velocity of the joint frame
+      /// \return 1
+      virtual value_type upperBoundAngularVelocity () const
+      {
+	return 1;
+      }
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
@@ -366,6 +423,18 @@ namespace hpp {
 				    const Transform3f& parentPosition,
 				    Transform3f& position) const;
       virtual ~JointTranslation ();
+      /// Get upper bound on linear velocity of the joint frame
+      /// \return 1
+      virtual value_type upperBoundLinearVelocity () const
+      {
+	return 1;
+      }
+      /// Get upper bound on angular velocity of the joint frame
+      /// \return 0
+      virtual value_type upperBoundAngularVelocity () const
+      {
+	return 0;
+      }
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
