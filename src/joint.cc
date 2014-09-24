@@ -35,6 +35,7 @@ namespace hpp {
 		  size_type configSize, size_type numberDof) :
       configuration_ (0x0), currentTransformation_ (initialPosition),
       positionInParentFrame_ (), T3f_ (), mass_ (0), massCom_ (),
+      maximalDistanceToParent_ (0),
       configSize_ (configSize), numberDof_ (numberDof),
       initialPosition_ (initialPosition),
       robot_ (), body_ (0x0),
@@ -49,6 +50,7 @@ namespace hpp {
     Joint::Joint (const Joint& joint) :
       configuration_ (joint.configuration_),
       positionInParentFrame_ (joint.positionInParentFrame_),
+      maximalDistanceToParent_ (joint.maximalDistanceToParent_),
       configSize_ (joint.configSize_), numberDof_ (joint.numberDof_),
       robot_ (), body_ (joint.body_ ? joint.body_->clone (this) : 0x0),
       name_ (joint.name_),
@@ -88,8 +90,10 @@ namespace hpp {
       // Mjoint/parent = Mparent^{-1} Mjoint
       fcl::Transform3f Mp = currentTransformation_;
       fcl::Transform3f Mj = joint->currentTransformation_;
-      if (computePositionInParent)
+      if (computePositionInParent) {
 	joint->positionInParentFrame_ = Mp.inverse () * Mj;
+	computeMaximalDistanceToParent ();
+      }
       // If child joint has been created by Joint::clone, bodies and list of
       // inner and outer objects have been copied without updating the number of
       // distance results.
@@ -120,11 +124,13 @@ namespace hpp {
     void Joint::lowerBound (size_type rank, value_type lower)
     {
       configuration_->lowerBound (rank, lower);
+      computeMaximalDistanceToParent ();
     }
 
     void Joint::upperBound (size_type rank, value_type upper)
     {
       configuration_->upperBound (rank, upper);
+      computeMaximalDistanceToParent ();
     }
 
     BodyPtr_t Joint::linkedBody () const
@@ -210,6 +216,12 @@ namespace hpp {
       delete configuration_;
     }
 
+    void JointAnchor::computeMaximalDistanceToParent ()
+    {
+      maximalDistanceToParent_ =
+	positionInParentFrame ().getTranslation ().length ();
+    }
+
     void JointAnchor::computePosition (ConfigurationIn_t,
 				       const Transform3f& parentPosition,
 				       Transform3f& position) const
@@ -245,6 +257,12 @@ namespace hpp {
     JointSO3::~JointSO3 ()
     {
       delete configuration_;
+    }
+
+    void JointSO3::computeMaximalDistanceToParent ()
+    {
+      maximalDistanceToParent_ =
+	positionInParentFrame ().getTranslation ().length ();
     }
 
     void JointSO3::computePosition (ConfigurationIn_t configuration,
@@ -317,6 +335,12 @@ namespace hpp {
     JointRotation::~JointRotation ()
     {
       delete configuration_;
+    }
+
+    void JointRotation::computeMaximalDistanceToParent ()
+    {
+      maximalDistanceToParent_ =
+	positionInParentFrame ().getTranslation ().length ();
     }
 
     void JointRotation::computePosition (ConfigurationIn_t configuration,
@@ -392,6 +416,97 @@ namespace hpp {
     JointTranslation <dimension>::~JointTranslation ()
     {
       delete configuration_;
+    }
+
+    template <size_type dimension>
+    void JointTranslation <dimension>::computeMaximalDistanceToParent ()
+    {
+      bool bounded = true;
+      for (size_type i=0; i<dimension; ++i) {
+	if (!isBounded (i)) bounded = false;
+      }
+      if (bounded) {
+	const Transform3f& pos = positionInParentFrame ();
+	const fcl::Vec3f& T = pos.getTranslation ();
+	maximalDistanceToParent_ = 0;
+	switch (dimension) {
+	case 1:
+	  {
+	    fcl::Vec3f u0 = pos.getRotation ().getColumn (0);
+	    value_type d = (T + lowerBound (0)*u0).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	    d = (T + upperBound (0)*u0).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	  }
+	  break;
+	case 2:
+	  {
+	    fcl::Vec3f u0 = pos.getRotation ().getColumn (0);
+	    fcl::Vec3f u1 = pos.getRotation ().getColumn (1);
+	    value_type d = (T + lowerBound (0)*u0 +
+			    lowerBound (1)*u1).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	    d = (T + upperBound (0)*u0 + lowerBound (1)*u1).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	    d = (T + lowerBound (0)*u0 + upperBound (1)*u1).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	    d = (T + upperBound (0)*u0 + upperBound (1)*u1).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	  }
+	  break;
+	case 3:
+	  {
+	    fcl::Vec3f u0 = pos.getRotation ().getColumn (0);
+	    fcl::Vec3f u1 = pos.getRotation ().getColumn (1);
+	    fcl::Vec3f u2 = pos.getRotation ().getColumn (2);
+	    value_type d = (T + lowerBound (0)*u0 +
+			    lowerBound (1)*u1 +
+			    lowerBound (2)*u2).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	    d = (T + upperBound (0)*u0 + lowerBound (1)*u1 +
+		 lowerBound (2)*u2).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	    d = (T + lowerBound (0)*u0 + upperBound (1)*u1 +
+		 lowerBound (2)*u2).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	    d = (T + upperBound (0)*u0 + upperBound (1)*u1 +
+		 lowerBound (2)*u2).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	    d = (T + lowerBound (0)*u0 + lowerBound (1)*u1 +
+		 upperBound (2)*u2).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	    d = (T + upperBound (0)*u0 + lowerBound (1)*u1 +
+		 upperBound (2)*u2).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	    d = (T + lowerBound (0)*u0 + upperBound (1)*u1 +
+		 upperBound (2)*u2).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	    d = (T + upperBound (0)*u0 + upperBound (1)*u1 +
+		 upperBound (2)*u2).length ();
+	    if (d > maximalDistanceToParent_)
+	      maximalDistanceToParent_ = d;
+	  }
+	  break;
+	default:
+	  assert (false && "dimension should be included between 1 and 3.");
+	}
+      } else {
+	maximalDistanceToParent_ =
+	  std::numeric_limits <value_type>::infinity ();
+      }
     }
 
     template <size_type dimension>

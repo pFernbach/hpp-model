@@ -195,6 +195,11 @@ namespace hpp {
       /// \li \f$\mathbf{\dot{q}}_{joint}\f$ is the joint velocity, and
       /// \li \f$\omega\f$ is the angular velocity of the joint frame.
       virtual value_type upperBoundAngularVelocity () const = 0;
+      /// Maximal distance of joint origin to parent origin
+      const value_type& maximalDistanceToParent () const
+      {
+	return maximalDistanceToParent_;
+      }
       /// \}
 
       /// \name Jacobian
@@ -230,6 +235,7 @@ namespace hpp {
       /// Display joint
       virtual std::ostream& display (std::ostream& os) const;
     protected:
+      virtual void computeMaximalDistanceToParent () = 0;
       JointConfiguration* configuration_;
       mutable Transform3f currentTransformation_;
       Transform3f positionInParentFrame_;
@@ -238,6 +244,7 @@ namespace hpp {
       value_type mass_;
       /// Mass time center of mass of this and all descendants
       fcl::Vec3f massCom_;
+      value_type maximalDistanceToParent_;
    private:
       /// Compute position of this joint and all its descendents.
       void recursiveComputePosition (ConfigurationIn_t configuration,
@@ -315,6 +322,8 @@ namespace hpp {
 	return 0;
       }
 
+    protected:
+      virtual void computeMaximalDistanceToParent ();
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
@@ -352,6 +361,8 @@ namespace hpp {
       {
 	return 1;
       }
+    protected:
+      virtual void computeMaximalDistanceToParent ();
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
@@ -391,6 +402,8 @@ namespace hpp {
       {
 	return 1;
       }
+    protected:
+      virtual void computeMaximalDistanceToParent ();
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
@@ -435,6 +448,8 @@ namespace hpp {
       {
 	return 0;
       }
+    protected:
+      virtual void computeMaximalDistanceToParent ();
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,
