@@ -362,69 +362,6 @@ namespace hpp {
       }
     }
 
-
-    std::ostream& displayTransform3f (std::ostream& os,
-				      const fcl::Transform3f trans)
-    {
-      const fcl::Matrix3f& R (trans.getRotation ());
-      const fcl::Vec3f& t (trans.getTranslation ());
-      const fcl::Quaternion3f& q (trans.getQuatRotation ());
-      os << "rotation matrix: " << R << "\\n";
-      os << "rotation quaternion: " << "(" << q.getW () << ", "
-	 << q.getX () << ", " << q.getY () << ", " << q.getZ () << ")"
-	 << "\\n";
-      os << "translation: " << t;
-      return os;
-    }
-
-    std::ostream& Joint::display (std::ostream& os) const
-    {
-      os << "\"" << name () << "\"" << "[shape=box label=\"" << name ()
-	 << "\\n";
-      if (configSize () != 0)
-	os << "Rank in configuration: " << rankInConfiguration() << "\\n";
-      else
-	os << "Anchor joint\\n";
-      os << "Current transformation: ";
-      displayTransform3f (os, currentTransformation());
-      os << "\\n";
-      hpp::model::BodyPtr_t body = linkedBody();
-      if (body) {
-	const matrix3_t& I = body->inertiaMatrix();
-	os << "Attached body: " << body->name () << "\\n";
-	os << "Mass of the attached body: " << body->mass() << "\\n";
-	os << "Local center of mass:" << body->localCenterOfMass() << "\\n";
-	os << "Inertia matrix:" << "\\n";
-	os << I (0,0) << "\t" << I (0,1) << "\t" << I (0,2) << "\\n"
-	   << I (1,0) << "\t" << I (1,1) << "\t" << I (1,2) << "\\n"
-	   << I (2,0) << "\t" << I (2,1) << "\t" << I (2,2) << "\\n";
-	os << "geometric objects" << "\\n";
-	const hpp::model::ObjectVector_t& colObjects =
-	  body->innerObjects (hpp::model::COLLISION);
-	for (hpp::model::ObjectVector_t::const_iterator it =
-	       colObjects.begin (); it != colObjects.end (); it++) {
-	  os << "name: " << (*it)->name () << "\\n";
-	  os << "position :" << "\\n";
-	  const fcl::Transform3f& transform ((*it)->fcl ()->getTransform ());
-	  displayTransform3f (os, transform);
-	}
-      } else {
-	os << "No body";
-      }
-      os << "\"]" << std::endl;
-      for (unsigned int iChild=0; iChild < numberChildJoints ();
-	   iChild++) {
-	hpp::model::JointPtr_t child = childJoint (iChild);
-	os << *(child) << std::endl;
-      }
-      // write edges to children joints
-      for (hpp::model::JointVector_t::const_iterator it =
-	     children_.begin (); it != children_.end (); it++) {
-	os << "\"" << name () << "\"->\"" << (*it)->name () << "\""
-	   << std::endl;
-      }
-      return os;
-    }
     template <size_type dimension>
     JointTranslation <dimension>::JointTranslation
     (const Transform3f& initialPosition) : Joint (initialPosition, dimension,
@@ -501,6 +438,69 @@ namespace hpp {
 	  jacobian (2, col+i) = (mass_/totalMass) * axis_ [i][2];
 	}
       }
+    }
+
+    std::ostream& displayTransform3f (std::ostream& os,
+				      const fcl::Transform3f trans)
+    {
+      const fcl::Matrix3f& R (trans.getRotation ());
+      const fcl::Vec3f& t (trans.getTranslation ());
+      const fcl::Quaternion3f& q (trans.getQuatRotation ());
+      os << "rotation matrix: " << R << "\\n";
+      os << "rotation quaternion: " << "(" << q.getW () << ", "
+	 << q.getX () << ", " << q.getY () << ", " << q.getZ () << ")"
+	 << "\\n";
+      os << "translation: " << t;
+      return os;
+    }
+
+    std::ostream& Joint::display (std::ostream& os) const
+    {
+      os << "\"" << name () << "\"" << "[shape=box label=\"" << name ()
+	 << "\\n";
+      if (configSize () != 0)
+	os << "Rank in configuration: " << rankInConfiguration() << "\\n";
+      else
+	os << "Anchor joint\\n";
+      os << "Current transformation: ";
+      displayTransform3f (os, currentTransformation());
+      os << "\\n";
+      hpp::model::BodyPtr_t body = linkedBody();
+      if (body) {
+	const matrix3_t& I = body->inertiaMatrix();
+	os << "Attached body: " << body->name () << "\\n";
+	os << "Mass of the attached body: " << body->mass() << "\\n";
+	os << "Local center of mass:" << body->localCenterOfMass() << "\\n";
+	os << "Inertia matrix:" << "\\n";
+	os << I (0,0) << "\t" << I (0,1) << "\t" << I (0,2) << "\\n"
+	   << I (1,0) << "\t" << I (1,1) << "\t" << I (1,2) << "\\n"
+	   << I (2,0) << "\t" << I (2,1) << "\t" << I (2,2) << "\\n";
+	os << "geometric objects" << "\\n";
+	const hpp::model::ObjectVector_t& colObjects =
+	  body->innerObjects (hpp::model::COLLISION);
+	for (hpp::model::ObjectVector_t::const_iterator it =
+	       colObjects.begin (); it != colObjects.end (); it++) {
+	  os << "name: " << (*it)->name () << "\\n";
+	  os << "position :" << "\\n";
+	  const fcl::Transform3f& transform ((*it)->fcl ()->getTransform ());
+	  displayTransform3f (os, transform);
+	}
+      } else {
+	os << "No body";
+      }
+      os << "\"]" << std::endl;
+      for (unsigned int iChild=0; iChild < numberChildJoints ();
+	   iChild++) {
+	hpp::model::JointPtr_t child = childJoint (iChild);
+	os << *(child) << std::endl;
+      }
+      // write edges to children joints
+      for (hpp::model::JointVector_t::const_iterator it =
+	     children_.begin (); it != children_.end (); it++) {
+	os << "\"" << name () << "\"->\"" << (*it)->name () << "\""
+	   << std::endl;
+      }
+      return os;
     }
     template class JointTranslation <1>;
     template class JointTranslation <2>;
