@@ -38,10 +38,9 @@ namespace hpp {
     class HPP_MODEL_DLLAPI JointConfiguration {
     public:
       /// Constructor
-      /// \param numberDof number of degrees of freedom of the joint
-      ///        configuration
-      /// Used to resize the vector of bounds.
-      JointConfiguration (size_type numberDof);
+      /// \param configSize dimension of the joint configuration size: used to
+      /// resize the vector of bounds.
+      JointConfiguration (size_type configSize);
 
       /// Destructor
       virtual ~JointConfiguration ();

@@ -31,11 +31,11 @@ namespace hpp {
     typedef Eigen::AngleAxis <value_type> AngleAxis_t;
     typedef fcl::Quaternion3f Quaternion_t;
 
-    JointConfiguration::JointConfiguration (size_type numberDof)
+    JointConfiguration::JointConfiguration (size_type configSize)
     {
-      bounded_.resize (numberDof);
-      lowerBounds_.resize (numberDof);
-      upperBounds_.resize (numberDof);
+      bounded_.resize (configSize);
+      lowerBounds_.resize (configSize);
+      upperBounds_.resize (configSize);
       for (size_type i=0; i < (size_type)bounded_.size (); ++i) {
 	bounded_ [i] = false;
       }
@@ -83,7 +83,7 @@ namespace hpp {
     {
     }
 
-    SO3JointConfig::SO3JointConfig () : JointConfiguration (3)
+    SO3JointConfig::SO3JointConfig () : JointConfiguration (4)
     {
     }
 
