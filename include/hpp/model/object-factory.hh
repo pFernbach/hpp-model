@@ -53,10 +53,15 @@ namespace hpp {
       {
 	return new JointAnchor (initialPosition);
       }
-      virtual JointPtr_t createJointRotation
+      virtual JointPtr_t createBoundedJointRotation
 	(const Transform3f& initialPosition)
       {
-	return new JointRotation (initialPosition);
+	return new jointRotation::Bounded (initialPosition);
+      }
+      virtual JointPtr_t createUnBoundedJointRotation
+	(const Transform3f& initialPosition)
+      {
+	return new jointRotation::UnBounded (initialPosition);
       }
       virtual JointPtr_t createJointTranslation
       (const Transform3f& initialPosition)

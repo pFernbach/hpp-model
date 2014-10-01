@@ -23,7 +23,6 @@
 #include <iostream>
 #include <sstream>
 #include <fcl/math/transform.h>
-#include <jrl/mathtools/angle.hh>
 #include <hpp/util/debug.hh>
 #include <hpp/model/joint-configuration.hh>
 
@@ -95,16 +94,6 @@ namespace hpp {
     }
 
     SO3JointConfig::~SO3JointConfig ()
-    {
-    }
-
-    RotationJointConfig::RotationJointConfig () : JointConfiguration (1)
-    {
-      lowerBound (0, -M_PI);
-      upperBound (0, M_PI);
-    }
-
-    RotationJointConfig::~RotationJointConfig ()
     {
     }
 
@@ -333,85 +322,137 @@ namespace hpp {
       }
     }
 
-    void RotationJointConfig::interpolate (ConfigurationIn_t q1,
-					   ConfigurationIn_t q2,
-					   const value_type& u,
-					   const size_type& index,
-					   ConfigurationOut_t result)
-    {
-      if (isBounded (0)) {
+    template class TranslationJointConfig <1>;
+    template class TranslationJointConfig <2>;
+    template class TranslationJointConfig <3>;
+
+    namespace rotationJointConfig {
+      void UnBounded::interpolate (ConfigurationIn_t q1, ConfigurationIn_t q2,
+				  const value_type& u, const size_type& index,
+				  ConfigurationOut_t result)
+      {
+	// interpolate on the unit circle
+	double c1 = q1 [index], s1 = q1 [index + 1];
+	double c2 = q2 [index], s2 = q2 [index + 1];
+	double cosTheta = c1*c2 + s1*s2;
+	double sinTheta = c1*s2 - s1*c2;
+	double theta = atan2 (sinTheta, cosTheta);
+	assert (fabs (sin (theta) - sinTheta) < 1e-8);
+	if (fabs (theta) > 1e-6) {
+	  result.segment (index, 2) =
+	    (sin ((1-u)*theta)/sinTheta) * q1.segment (index, 2) +
+	    (sin (u*theta)/sinTheta) * q2.segment (index, 2);
+	} else {
+	  result.segment (index, 2) =
+	    (1-u) * q1.segment (index, 2) + u * q2.segment (index, 2);
+	}
+      }
+
+      value_type UnBounded::distance (ConfigurationIn_t q1,
+				      ConfigurationIn_t q2,
+				      const size_type& index) const
+      {
+	// distance on the unit circle
+	value_type innerprod =
+	  q1.segment (index, 2).dot (q2.segment (index, 2));
+	assert (fabs (innerprod) < 1.0001);
+	if (innerprod < -1) innerprod = -1;
+	if (innerprod >  1) innerprod =  1;
+	value_type theta = acos (innerprod);
+	return theta;
+      }
+
+      void UnBounded::integrate (ConfigurationIn_t q, vectorIn_t v,
+				 const size_type& indexConfig,
+				 const size_type& indexVelocity,
+				 ConfigurationOut_t result) const
+      {
+	value_type omega = v [indexVelocity];
+	value_type cosOmega = cos (omega);
+	value_type sinOmega = sin (omega);
+	value_type norm2p = q.segment (indexConfig, 2).squaredNorm ();
+	result [indexConfig] = (1.5-.5*norm2p) *
+	  (cosOmega * q [indexConfig] - sinOmega * q [indexConfig + 1]);
+	result [indexConfig + 1] = (1.5-.5*norm2p) *
+	  sinOmega * q [indexConfig] + cosOmega * q [indexConfig + 1];
+      }
+
+      void UnBounded::difference (ConfigurationIn_t q1, ConfigurationIn_t q2,
+				  const size_type& indexConfig,
+				  const size_type& indexVelocity,
+				  vectorOut_t result) const
+      {
+	value_type c1 = q1 [indexConfig];
+	value_type s1 = q1 [indexConfig + 1];
+	value_type c2 = q2 [indexConfig];
+	value_type s2 = q2 [indexConfig + 1];
+
+	result [indexVelocity] = atan2 (-s1*c2 + s2*c1, c1*c2 + s1*s2);
+      }
+
+      void UnBounded::uniformlySample (const size_type& index,
+				       ConfigurationOut_t result) const
+      {
+	value_type angle = -M_PI + 2* M_PI * rand ()/RAND_MAX;
+	result [index] = cos (angle);
+	result [index + 1] = sin (angle);
+      }
+
+      UnBounded::UnBounded () : JointConfiguration (2)
+      {
+      }
+
+      void Bounded::interpolate (ConfigurationIn_t q1, ConfigurationIn_t q2,
+				 const value_type& u, const size_type& index,
+				 ConfigurationOut_t result)
+      {
 	// linearly interpolate
 	result [index] = (1-u) * q1 [index] + u * q2 [index];
-      } else {
-	// interpolate on the unit circle
-	jrlMathTools::Angle th1 (q1 [index]);
-	jrlMathTools::Angle th2 (q2 [index]);
-	result [index] = th1.interpolate (u, th2);
       }
-    }
 
-    value_type RotationJointConfig::distance (ConfigurationIn_t q1,
-					      ConfigurationIn_t q2,
-					      const size_type& index) const
-    {
-      if (isBounded (0)) {
+      value_type Bounded::distance (ConfigurationIn_t q1, ConfigurationIn_t q2,
+				    const size_type& index) const
+      {
 	// linearly interpolate
 	return fabs (q2 [index] - q1 [index]);
-      } else {
-	// distance on the unit circle
-	jrlMathTools::Angle th1 (q1 [index]);
-	jrlMathTools::Angle th2 (q2 [index]);
-	return th1.distance (th2);
       }
-    }
 
-    void RotationJointConfig::integrate (ConfigurationIn_t q,
-					 vectorIn_t v,
-					 const size_type& indexConfig,
-					 const size_type& indexVelocity,
-					 ConfigurationOut_t result) const
-    {
-      using jrlMathTools::Angle;
-      value_type omega = v [indexVelocity];
-      result [indexConfig] = Angle (q [indexConfig]) + Angle (omega);
-      if (isBounded (0)) {
+      void Bounded::integrate (ConfigurationIn_t q, vectorIn_t v,
+			       const size_type& indexConfig,
+			       const size_type& indexVelocity,
+			       ConfigurationOut_t result) const
+      {
+	value_type omega = v [indexVelocity];
+	result [indexConfig] = q [indexConfig] + omega;
 	if (result [indexConfig] < lowerBound (0)) {
 	  result [indexConfig] = lowerBound (0);
 	} else if (result [indexConfig] > upperBound (0)) {
 	  result [indexConfig] = upperBound (0);
 	}
       }
-    }
 
-    void RotationJointConfig::difference (ConfigurationIn_t q1,
-					  ConfigurationIn_t q2,
-					  const size_type& indexConfig,
-					  const size_type& indexVelocity,
-					  vectorOut_t result) const
-    {
-      using jrlMathTools::Angle;
-      if (isBounded (0)) {
-	result [indexVelocity] = q1 [indexConfig] - q2 [indexConfig];
-      } else {
-	result [indexVelocity] = Angle (q1 [indexVelocity]) -
-	  Angle (q2 [indexVelocity]);
+      void Bounded::difference (ConfigurationIn_t q1, ConfigurationIn_t q2,
+				const size_type& indexConfig,
+				const size_type& indexVelocity,
+				vectorOut_t result) const
+      {
+	  result [indexVelocity] = q1 [indexConfig] - q2 [indexConfig];
       }
-    }
 
-    void RotationJointConfig::uniformlySample (const size_type& index,
-					       ConfigurationOut_t result) const
-    {
-      if (!isBounded (0)) {
-	result [index] = -M_PI + 2* M_PI * rand ()/RAND_MAX;
-      }
-      else {
+      void Bounded::uniformlySample (const size_type& index,
+				     ConfigurationOut_t result) const
+      {
 	result [index] = lowerBound (0) +
 	  (upperBound (0) - lowerBound (0)) * rand ()/RAND_MAX;
       }
-    }
-    template class TranslationJointConfig <1>;
-    template class TranslationJointConfig <2>;
-    template class TranslationJointConfig <3>;
+
+      Bounded::Bounded () : JointConfiguration (1)
+      {
+	isBounded (0, true);
+	lowerBound (0, -M_PI);
+	upperBound (0,  M_PI);
+      }
+    } // namespace rotationJointConfig
 
   } // namespace model
 } // namespace hpp

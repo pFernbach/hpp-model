@@ -99,6 +99,17 @@ namespace hpp {
 				    const Transform3f& parentPosition,
 				    Transform3f& position) const = 0;
 
+      /// Get neutral configuration of joint
+      ///
+      /// Neutral configuration is
+      /// \li 0 for translation joints,
+      /// \li (1,0,0,0) for SO3 joints,
+      /// \li (1,0) for unbounded rotation joint
+      /// \li 0 for bounded rotation joint.
+      vector_t neutralConfiguration () const
+      {
+	return neutralConfiguration_;
+      }
       ///\}
 
       /// Return number of degrees of freedom
@@ -245,6 +256,7 @@ namespace hpp {
       /// Mass time center of mass of this and all descendants
       fcl::Vec3f massCom_;
       value_type maximalDistanceToParent_;
+      vector_t neutralConfiguration_;
    private:
       /// Compute position of this joint and all its descendents.
       void recursiveComputePosition (ConfigurationIn_t configuration,
@@ -377,18 +389,24 @@ namespace hpp {
     class HPP_MODEL_DLLAPI JointRotation : public Joint
     {
     public:
-      JointRotation (const Transform3f& initialPosition);
+      /// Constructor
+      /// \param initialPosition position of the joint in global frame before
+      ///        being linked to a parent,
+      /// \param configSize dimension of the configuration vector,
+      /// \param numberDof dimension of the velocity vector.
+      JointRotation (const Transform3f& initialPosition, size_type configSize,
+		     size_type numberDof);
       JointRotation (const JointRotation& joint);
       /// Return pointer to copy of this
       /// Clone body and therefore inner and outer objects (see Body::clone).
-      virtual JointPtr_t clone () const;
+      virtual JointPtr_t clone () const = 0;
       /// Compute position of joint
       /// \param configuration the configuration of the robot,
       /// \param parentPosition position of parent joint,
       /// \retval position position of this joint.
       virtual void computePosition (ConfigurationIn_t configuration,
 				    const Transform3f& parentPosition,
-				    Transform3f& position) const;
+				    Transform3f& position) const = 0;
       virtual ~JointRotation ();
       /// Get upper bound on linear velocity of the joint frame
       /// \return 0
@@ -404,18 +422,71 @@ namespace hpp {
       }
     protected:
       virtual void computeMaximalDistanceToParent ();
-    private:
-      virtual void writeSubJacobian (const JointPtr_t& child);
-      virtual void writeComSubjacobian (ComJacobian_t& jacobian,
-					const value_type& totalMass);
       mutable fcl::Matrix3f R_;
-      mutable value_type angle_;
       mutable fcl::Vec3f axis_;
       mutable fcl::Vec3f O2O1_;
       mutable fcl::Vec3f cross_;
       mutable fcl::Vec3f com_;
+    private:
+      virtual void writeSubJacobian (const JointPtr_t& child);
+      virtual void writeComSubjacobian (ComJacobian_t& jacobian,
+					const value_type& totalMass);
     }; // class JointRotation
 
+    namespace jointRotation {
+      /// Rotation about an axis without bound
+      ///
+      /// The configuration space of this joint is the unit circle, represented
+      /// by \f$(q_0, q_1)\f$ such that \f$q_0^2 + q_1^2=1\f$
+      class HPP_MODEL_DLLAPI UnBounded : public JointRotation
+      {
+      public:
+	UnBounded (const Transform3f& initialPosition);
+	UnBounded (const UnBounded& joint);
+	/// Return pointer to copy of this
+	/// Clone body and therefore inner and outer objects (see Body::clone).
+	JointPtr_t clone () const;
+	/// Compute position of joint
+	/// \param configuration the configuration of the robot,
+	/// \param parentPosition position of parent joint,
+	/// \retval position position of this joint.
+	virtual void computePosition (ConfigurationIn_t configuration,
+				      const Transform3f& parentPosition,
+				      Transform3f& position) const;
+
+	virtual ~UnBounded ()
+	{
+	}
+      private:
+	mutable value_type cosAngle_;
+	mutable value_type sinAngle_;
+      }; // class UnBounded
+
+      /// Rotation about an axis with bound
+      ///
+      /// The configuration space of this joint is an interval of angle.
+      class HPP_MODEL_DLLAPI Bounded : public JointRotation
+      {
+      public:
+	Bounded (const Transform3f& initialPosition);
+	Bounded (const Bounded& joint);
+	/// Return pointer to copy of this
+	/// Clone body and therefore inner and outer objects (see Body::clone).
+	JointPtr_t clone () const;
+	/// Compute position of joint
+	/// \param configuration the configuration of the robot,
+	/// \param parentPosition position of parent joint,
+	/// \retval position position of this joint.
+	virtual void computePosition (ConfigurationIn_t configuration,
+				      const Transform3f& parentPosition,
+				      Transform3f& position) const;
+	virtual ~Bounded ()
+	{
+	}
+      private:
+	mutable value_type angle_;
+      }; // class Bounded
+    } // namespace jointRotation
     /// Translation Joint
     ///
     /// Map a 1,2 or 3-dimensional input vector to a translation

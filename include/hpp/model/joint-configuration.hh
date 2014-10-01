@@ -232,13 +232,16 @@ namespace hpp {
     class HPP_MODEL_DLLAPI RotationJointConfig : public JointConfiguration
     {
     public:
-      RotationJointConfig ();
+      /// Constructor
+      /// \param configSize dimension of the joint configuration size: used to
+      /// resize the vector of bounds.
+      RotationJointConfig (size_type configSize);
       virtual ~RotationJointConfig ();
       virtual void interpolate (ConfigurationIn_t q1,
 				ConfigurationIn_t q2,
 				const value_type& u,
 				const size_type& index,
-				ConfigurationOut_t result);
+				ConfigurationOut_t result) = 0;
 
       /// Distance between two configurations of the joint
       /// \param q1, q2 two configurations of the robot
@@ -247,12 +250,12 @@ namespace hpp {
       /// \return the angle between the joint orientations
       virtual value_type distance (ConfigurationIn_t q1,
 				   ConfigurationIn_t q2,
-				   const size_type& index) const;
+				   const size_type& index) const = 0;
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,
 			      const size_type& indexConfig,
 			      const size_type& indexVelocity,
-			      ConfigurationOut_t result) const;
+			      ConfigurationOut_t result) const = 0;
 
       /// Difference between two configurations
       ///
@@ -282,11 +285,61 @@ namespace hpp {
 			       ConfigurationIn_t q2,
 			       const size_type& indexConfig,
 			       const size_type& indexVelocity,
-			       vectorOut_t result) const;
+			       vectorOut_t result) const = 0;
 
       virtual void uniformlySample (const size_type& index,
-				    ConfigurationOut_t result) const;
+				    ConfigurationOut_t result) const = 0;
     }; // class RotationJointConfig
+
+    namespace rotationJointConfig {
+      class HPP_MODEL_DLLAPI UnBounded : public JointConfiguration
+      {
+      public:
+	UnBounded ();
+	virtual ~UnBounded ()
+	{
+	}
+	void interpolate (ConfigurationIn_t q1, ConfigurationIn_t q2,
+			  const value_type& u, const size_type& index,
+			  ConfigurationOut_t result);
+	value_type distance (ConfigurationIn_t q1, ConfigurationIn_t q2,
+			     const size_type& index) const;
+	void integrate (ConfigurationIn_t q, vectorIn_t v,
+			const size_type& indexConfig,
+			const size_type& indexVelocity,
+			ConfigurationOut_t result) const;
+	void difference (ConfigurationIn_t q1, ConfigurationIn_t q2,
+			 const size_type& indexConfig,
+			 const size_type& indexVelocity,
+			 vectorOut_t result) const;
+	void uniformlySample (const size_type& index,
+			      ConfigurationOut_t result) const;
+      }; // class UnBounded
+
+      class HPP_MODEL_DLLAPI Bounded : public JointConfiguration
+      {
+      public:
+	Bounded ();
+	virtual ~Bounded ()
+	{
+	}
+	void interpolate (ConfigurationIn_t q1, ConfigurationIn_t q2,
+			  const value_type& u, const size_type& index,
+			  ConfigurationOut_t result);
+	value_type distance (ConfigurationIn_t q1, ConfigurationIn_t q2,
+			     const size_type& index) const;
+	void integrate (ConfigurationIn_t q, vectorIn_t v,
+			const size_type& indexConfig,
+			const size_type& indexVelocity,
+			ConfigurationOut_t result) const;
+	void difference (ConfigurationIn_t q1, ConfigurationIn_t q2,
+			 const size_type& indexConfig,
+			 const size_type& indexVelocity,
+			 vectorOut_t result) const;
+	void uniformlySample (const size_type& index,
+			      ConfigurationOut_t result) const;
+      }; // class Bounded
+    } // namespace rotationJointConfig
 
     /// Configuration of a JointTranslation
     template <size_type dimension>

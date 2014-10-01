@@ -45,6 +45,8 @@ namespace hpp {
       positionInParentFrame_.setIdentity ();
       T3f_.setIdentity ();
       massCom_.setValue (0);
+      neutralConfiguration_.resize (configSize);
+      neutralConfiguration_.setZero ();
     }
 
     Joint::Joint (const Joint& joint) :
@@ -242,6 +244,7 @@ namespace hpp {
       Joint (initialPosition, 4, 3)
     {
       configuration_ = new SO3JointConfig;
+      neutralConfiguration_ [0] = 1;
     }
 
     JointSO3::JointSO3 (const JointSO3& joint) :
@@ -314,10 +317,10 @@ namespace hpp {
       }
     }
 
-    JointRotation::JointRotation (const Transform3f& initialPosition) :
-      Joint (initialPosition, 1, 1), R_ ()
+    JointRotation::JointRotation (const Transform3f& initialPosition,
+				  size_type configSize, size_type numberDof) :
+      Joint (initialPosition, configSize, numberDof), R_ ()
     {
-      configuration_ = new RotationJointConfig;
       R_.setIdentity ();
     }
 
@@ -325,11 +328,6 @@ namespace hpp {
       Joint (joint), R_ ()
     {
       R_.setIdentity ();
-    }
-
-    JointPtr_t JointRotation::clone () const
-    {
-      return new JointRotation (*this);
     }
 
     JointRotation::~JointRotation ()
@@ -341,17 +339,6 @@ namespace hpp {
     {
       maximalDistanceToParent_ =
 	positionInParentFrame ().getTranslation ().length ();
-    }
-
-    void JointRotation::computePosition (ConfigurationIn_t configuration,
-					 const Transform3f& parentPosition,
-					 Transform3f& position) const
-    {
-      angle_ = configuration [rankInConfiguration ()];
-      R_ (1,1) = cos (angle_); R_ (1,2) = -sin (angle_);
-      R_ (2,1) = sin (angle_); R_ (2,2) = cos (angle_);
-      T3f_.setRotation (R_);
-      position = parentPosition * positionInParentFrame_ * T3f_;
     }
 
     void JointRotation::writeSubJacobian (const JointPtr_t& child)
@@ -385,6 +372,63 @@ namespace hpp {
 	jacobian (2, col) = cross_ [2];
       }
     }
+
+    namespace jointRotation {
+
+      UnBounded::UnBounded (const Transform3f& initialPosition) :
+	JointRotation (initialPosition, 2, 1)
+      {
+	configuration_ = new rotationJointConfig::UnBounded;
+	neutralConfiguration_ [0] = 1;
+      }
+
+      UnBounded::UnBounded (const UnBounded& joint) : JointRotation (joint)
+      {
+      }
+
+      JointPtr_t UnBounded::clone () const
+      {
+	return new UnBounded (*this);
+      }
+
+      void UnBounded::computePosition (ConfigurationIn_t configuration,
+				       const Transform3f& parentPosition,
+				       Transform3f& position) const
+      {
+	cosAngle_ = configuration [rankInConfiguration ()];
+	sinAngle_ = configuration [rankInConfiguration () + 1];
+	R_ (1,1) = cosAngle_; R_ (1,2) = -sinAngle_;
+	R_ (2,1) = sinAngle_; R_ (2,2) = cosAngle_;
+	T3f_.setRotation (R_);
+	position = parentPosition * positionInParentFrame_ * T3f_;
+      }
+
+      Bounded::Bounded (const Transform3f& initialPosition) :
+	JointRotation (initialPosition, 1, 1)
+      {
+	configuration_ = new rotationJointConfig::Bounded;
+      }
+
+      Bounded::Bounded (const Bounded& joint) : JointRotation (joint)
+      {
+      }
+
+      JointPtr_t Bounded::clone () const
+      {
+	return new Bounded (*this);
+      }
+
+      void Bounded::computePosition (ConfigurationIn_t configuration,
+				     const Transform3f& parentPosition,
+				     Transform3f& position) const
+      {
+	angle_ = configuration [rankInConfiguration ()];
+	R_ (1,1) = cos (angle_); R_ (1,2) = -sin (angle_);
+	R_ (2,1) = sin (angle_); R_ (2,2) = cos (angle_);
+	T3f_.setRotation (R_);
+	position = parentPosition * positionInParentFrame_ * T3f_;
+      }
+    } // namespace jointRotation
 
     template <size_type dimension>
     JointTranslation <dimension>::JointTranslation

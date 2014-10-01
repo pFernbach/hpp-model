@@ -409,27 +409,33 @@ namespace hpp {
 
     // ========================================================================
 
-    void Device::registerJoint (JointPtr_t joint)
+    void Device::registerJoint (const JointPtr_t& joint)
     {
       jointVector_.push_back (joint);
       joint->rankInConfiguration_ = configSize_;
       joint->rankInVelocity_ = numberDof_;
       numberDof_ += joint->numberDof ();
       configSize_ += joint->configSize ();
-      resizeState ();
+      resizeState (joint);
       jointByName_ [joint->name ()] = joint;
       resizeJacobians ();
       computeMass ();
     }
 
-    void Device::resizeState ()
+    void Device::resizeState (const JointPtr_t& joint)
     {
       size_type oldSize = currentConfiguration_.size ();
       size_type newSize = configSize ();
+      Configuration_t q = currentConfiguration_;
       currentConfiguration_.resize (newSize);
       // if size of configuration increased, set last coordinates to 0
       if (newSize > oldSize) {
+	currentConfiguration_.head (oldSize) = q;
 	currentConfiguration_.tail (newSize - oldSize).setZero ();
+	if (joint) {
+	  currentConfiguration_.tail (newSize - oldSize) =
+	    joint->neutralConfiguration ();
+	}
       }
       oldSize = currentVelocity_.size ();
       newSize = numberDof ();

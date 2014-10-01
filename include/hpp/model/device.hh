@@ -97,7 +97,7 @@ namespace hpp {
       JointPtr_t rootJoint () const;
 
       /// Register joint in internal containers
-      void registerJoint (JointPtr_t joint);
+      void registerJoint (const JointPtr_t& joint);
 
       /// Get vector of joints
       const JointVector_t& getJointVector () const;
@@ -149,7 +149,7 @@ namespace hpp {
       void setDimensionExtraConfigSpace (const size_type& dimension)
       {
 	extraConfigSpace_.setDimension (dimension);
-	resizeState ();
+	resizeState (0x0);
       }
 
       ///
@@ -328,7 +328,7 @@ namespace hpp {
       void computeMass ();
       void computePositionCenterOfMass ();
       void computeJacobianCenterOfMass ();
-      void resizeState ();
+      void resizeState (const JointPtr_t& joint);
       void resizeJacobians ();
       std::string name_;
       DistanceResults_t distances_;
