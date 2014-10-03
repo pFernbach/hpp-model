@@ -76,8 +76,7 @@ namespace hpp {
 
       /// Integrate constant derivative during unit time
       /// \param q initial configuration
-      /// \param v homogeneous derivative (angular velocities are multiplied
-      ///                                  by parameter homogenize)
+      /// \param v joint velocity
       /// \param indexConfig index of first component of q corresponding to
       ///        the joint.
       /// \param indexVelocity index of first component of v corresponding to

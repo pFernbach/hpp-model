@@ -1,24 +1,156 @@
-///
-/// \mainpage
-///
-/// \section sec_intro_hppDevice Introduction
-///
-/// This package implements forward kinematics for a kinematic chain.
-/// The kinematic chain is a tree of hpp::model::Joint that belongs to a
-/// hpp::model::Device.
-///
-/// The position of each joint depends on the current configuration of the
-/// device.
-///
-/// A hpp::model::Body can be attached to each joint. hpp::model::Body carry
-/// \li geometric hpp::model::CollisionObject that can collide each other,
-/// \li mass and inertia.
-///
-/// A hpp::model::HumanoidRobot is a device with accessors to specific joints
-/// like
-/// \li left and right ankles,
-/// \li left and right wrists,
-/// \li gaze joint (that moves the cameras),
-/// \li chest,
-/// \li waist.
+/**
+ \mainpage
 
+ \section sec_intro_hpp_model Introduction
+
+ This package implements forward kinematics for a kinematic chain.
+ The kinematic chain is a tree of joints (hpp::model::Joint) that belongs to
+ a robot (hpp::model::Device).
+
+ The position of each joint depends on the current configuration of the
+ robot.
+
+ A body (hpp::model::Body) can be attached to each joint. Bodies carry
+ \li geometric hpp::model::CollisionObject that can collide each other,
+ \li mass and inertia.
+
+ A hpp::model::HumanoidRobot is a device with accessors to specific joints
+ like
+ \li left and right ankles,
+ \li left and right wrists,
+ \li gaze joint (that moves the cameras),
+ \li chest,
+ \li waist.
+
+ \section sec_hpp_model_main_classes Main classes
+
+ \subsection subsec_hpp_model_joint Joints
+
+ In the following, we denote by \f$M = (R, \mathbf{T})\f$ a rigid-body motion
+ with
+ \li \f$R\in SO(3)\f$ a rotation matrix, and
+ \li \f$\mathbf{T}\in\mathbf{R}^3\f$ a translation  vector.
+ The space of rigid-body motion is denoted by
+ \f$SE(3)\f$.
+ A point \f$\mathbf{x}\in\mathbf{R}^3\f$ is mapped by
+ \f$(R, \mathbf{T})\f$ to
+ \f{equation*}
+ \mathbf{y} = R \mathbf{x} + \mathbf{T}
+ \f}
+
+ Joints are represented by abstract class hpp::model::Joint. A
+ joint is a mapping from an input space (a Lie group
+ or a vector space) to SE(3) the space of rigid-body motion. The mapping is
+ called the joint \b internal \b motion.
+
+ The types
+ of joints implemented in the package are the following:
+ \li hpp::model::JointTranslation <d> where d is the dimension between 1
+ and 3 that maps a vector of \f$\mathbf{R}^d\f$ to the rigid body motion
+ \f{eqnarray*}
+ (I_3, \left(\begin{array}{c}x_1 \\ 0 \\ 0\end{array}\right)) & \mbox{if}& d = 1 \\
+ (I_3, \left(\begin{array}{c}x_1 \\ x_2 \\ 0\end{array}\right)) & \mbox{if}& d = 2 \\
+ (I_3, \left(\begin{array}{c}x_1 \\ x_2 \\ x_3\end{array}\right)) & \mbox{if}& d = 3 \\
+ \f}
+ \li hpp::model::jointRotation::Bounded that maps a real number \f$\theta\f$ to
+ \f{eqnarray*}
+ (\left(\begin{array}{ccc}1 & 0 & 0 \\ 0 & \cos \theta & -\sin \theta \\ 0 & \sin \theta & \cos \theta\end{array}\right), \left(\begin{array}{c}0 \\ 0 \\ 0\end{array}\right)) & \mbox{if}& d = 1 \f}
+ \li hpp::model::jointRotation::UnBounded that maps an element \f$(x_1,x_2)\f$ of \f$S^1\f$ to
+ \f{equation*}
+ (\left(\begin{array}{ccc}1 & 0 & 0 \\ 0 & x_1 & -x_2 \\ 0 & x_2 & x_1\end{array}\right), \left(\begin{array}{c}0 \\ 0 \\ 0\end{array}\right))\f}
+ \li hpp::model::JointAnchor that maps nothing to
+ \f{equation*}
+ (I_3, 0)
+ \f}
+ \li hpp::model::JointSO3 that maps \f$\mathbf{x}\in S^3\f$ (the sphere of unit
+ quaternions) to
+ \f{equation*}
+ (\left(\begin{array}{ccc}
+ 1 - 2(x_3^2 + x_4^2)& 2x_3x_2 - 2x_4x_1& 2x_4x_2 + 2x_3x_1\\
+ 2x_3x_2 + 2x_4x_1& 1 - 2(x_2^2 + x_4^2)& 2x_4x_3 - 2x_2x_1\\
+ 2x_4x_2 - 2x_3x_1& 2x_4x_3 + 2x_2x_1& 1 - 2(x_2^2 + 2x_3^2)
+\end{array}\right),0)
+ \f}
+ where the rotation matrix corresponds to the unit quaternion
+ \f$x_1 + x_2 i + x_3 j + x_4 k\f$.
+ \note The number of parameters of each joint configuration is different 
+ from the number of degrees of freedom of the joint.
+
+ Joints are the nodes of the kinematic chain considered as a tree. Each joint
+ can access to its children and to its parent.
+
+ The position of a joint is defined by the following relation
+ \f{equation}
+ P_{joint} = P_{parent} P_{joint/parent} M (\mathbf{x}_{joint})
+ \f}
+ where
+ \li \f$ P_{joint} \in SE(3)\f$ is the position of the joint,
+ \li \f$ P_{parent} \in SE(3)\f$ is the position of the parent joint,
+ \li \f$ P_{joint/parent}\f$ is the position of the joint in the frame of its
+     parent when the joint internal motion is identity,
+ \li \f$ \mathbf{x}_{joint}\f$ is the joint configuration, and
+ \li \f$ M \f$ is the joint internal motion as defined previously.
+
+ \subsection subsec_hpp_model_device Device
+
+ The class device represents either a robot as a kinematic chain, or a
+ free-floating object (hence the name of the class).
+
+ The kinematic chain can be accessed via method hpp::model::Device::rootJoint.
+ 
+ \subsubsection Configuration
+
+ The joints are stored in a vector
+ (hpp::model::device::getJointVector).  The configuration of the robot
+ (commonly denoted by \f$\mathbf{q}\f$ is a vector built by
+ concatenation of joint configuration vectors in the order to the
+ joint vector.
+
+ \subsubsection Velocity
+
+ The velocity of the robot (commonly denoted by \f$\mathbf{q}\f$ is
+ represented by a vector built by concatenating joint velocities in
+ the order of the joint vector.
+ \li For hpp::model::JointTranslation the
+ velocity of the joint is the time-derivative of the joint
+ configuration as defined in Section \ref
+ subsec_hpp_model_joint.
+ \li for hpp::model::JointSO3, the
+ derivative of the joint is represented by the angular velocity vector
+ \f$\omega\in\mathbf{R}^3\f$ such that if \f$R\f$ is the orientation of the joint as
+ defined in Section \ref subsec_hpp_model_joint,
+ \f{equation*}
+ \dot{R} = \left[\omega\right]_{\times} R
+ \f}
+ where \f$\left[\omega\right]_{\times}\f$ is the antisymmetric matrix
+ corresponding to the cross product by \f$\omega\f$,
+ \li for hpp::model::jointRotation::UnBounded, the velocity is the angular
+     velocity around x-axis \f$\alpha\in\mathbf{R}\f$ such that
+     \f{equation*}
+     \omega = \left(\begin{array}{c}0 \\ 0 \\ \alpha\end{array}\right)
+     \f}
+ \li for hpp::model::jointRotation::Bounded, the velocity is the angular
+     velocity around x-axis \f$\dot{\theta}\in\mathbf{R}\f$ such that
+     \f{equation*}
+     \omega = \left(\begin{array}{c} 0 \\ 0 \\ \dot{\theta}\end{array}\right)
+     \f}
+
+ `\note Unlike the dimension of the joint configuration, the dimension
+        of the joint velocity is equal to the number of degrees of
+        freedom. For instance configuration of hpp::model::JointSO3 is
+        of dimension 4 for 3 degrees of freedom. Therefore, the
+        dimension of the  robot velocity vector can be different from the
+        dimension of the robot configuration vector.
+
+\subsection Joint configuration
+
+ Abstract class hpp::model::JointConfiguration aims at handling joint
+ configuration and velocities. The main methods are the following:
+ \li hpp::model::JointConfiguration::integrate computes the configuration
+     reached from an initial joint configuration after moving at constant
+     joint velocity during unit time,
+ \li hpp::model::JointConfiguration::difference compute the constant joint
+     velocity moving the joint from one configuration to the other one,
+ \li hpp::model::JointConfiguration::interpolate,
+ \li hpp::model::JointConfiguration::distance.
+*/
