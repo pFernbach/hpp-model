@@ -17,6 +17,7 @@
 // hpp-model  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include <limits>
 #include <stdexcept>
 #include <cstdlib>
 #include <iostream>
@@ -38,6 +39,8 @@ namespace hpp {
       upperBounds_.resize (configSize);
       for (size_type i=0; i < (size_type)bounded_.size (); ++i) {
 	bounded_ [i] = false;
+	lowerBounds_ [i] = -std::numeric_limits<value_type>::infinity();
+	upperBounds_ [i] = +std::numeric_limits<value_type>::infinity();
       }
     }
 
@@ -85,6 +88,10 @@ namespace hpp {
 
     SO3JointConfig::SO3JointConfig () : JointConfiguration (4)
     {
+      for (size_type i=0; i<4; ++i) {
+	lowerBound (i, -1);
+	upperBound (i, 1);
+      }
     }
 
     SO3JointConfig::~SO3JointConfig ()
@@ -93,6 +100,8 @@ namespace hpp {
 
     RotationJointConfig::RotationJointConfig () : JointConfiguration (1)
     {
+      lowerBound (0, -M_PI);
+      upperBound (0, M_PI);
     }
 
     RotationJointConfig::~RotationJointConfig ()
