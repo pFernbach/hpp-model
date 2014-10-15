@@ -59,6 +59,7 @@ namespace hpp {
       children_ (), parent_ (), rankInConfiguration_ (-1), rankInVelocity_ (-1),
       rankInParent_ (-1)
     {
+      neutralConfiguration_ = joint.neutralConfiguration ();
     }
 
     Joint::~Joint ()
