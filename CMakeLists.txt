@@ -66,7 +66,7 @@ SEARCH_FOR_BOOST()
 
 ADD_REQUIRED_DEPENDENCY("eigen3 >= 3.2")
 ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.7")
-ADD_REQUIRED_DEPENDENCY("fcl >= 0.2.9")
+ADD_REQUIRED_DEPENDENCY("hpp-fcl >= 0.2.9")
 
 # Compile documentation
 CONFIGURE_FILE(doc/main.hh.in doc/main.hh)
