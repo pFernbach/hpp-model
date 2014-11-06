@@ -91,6 +91,18 @@
  \li \f$ \mathbf{x}_{joint}\f$ is the joint configuration, and
  \li \f$ M \f$ is the joint internal motion as defined previously.
 
+ \subsubsection hpp_model_joint_configuration Joint configuration
+
+ Abstract class hpp::model::JointConfiguration aims at handling joint
+ configuration and velocities. The main methods are the following:
+ \li hpp::model::JointConfiguration::integrate computes the configuration
+     reached from an initial joint configuration after moving at constant
+     joint velocity during unit time,
+ \li hpp::model::JointConfiguration::difference compute the constant joint
+     velocity moving the joint from one configuration to the other one,
+ \li hpp::model::JointConfiguration::interpolate,
+ \li hpp::model::JointConfiguration::distance.
+
  \subsection subsec_hpp_model_device Device
 
  The class device represents either a robot as a kinematic chain, or a
@@ -142,15 +154,10 @@
         dimension of the  robot velocity vector can be different from the
         dimension of the robot configuration vector.
 
-\subsection Joint configuration
+ \subsubsection hpp_model_operation_between_configurations_and_velocities Operations between configurations and velocities
 
- Abstract class hpp::model::JointConfiguration aims at handling joint
- configuration and velocities. The main methods are the following:
- \li hpp::model::JointConfiguration::integrate computes the configuration
-     reached from an initial joint configuration after moving at constant
-     joint velocity during unit time,
- \li hpp::model::JointConfiguration::difference compute the constant joint
-     velocity moving the joint from one configuration to the other one,
- \li hpp::model::JointConfiguration::interpolate,
- \li hpp::model::JointConfiguration::distance.
+ The following operations are defined between configurations and velocities.
+ \li hpp::model::integrate Integrates a constant velocity during unit time,
+ \li hpp::model::difference returns the constant velocity that moves from one
+     configuration to the other in unit time.
 */
