@@ -373,8 +373,10 @@ namespace hpp {
         value_type cosq = q [indexConfig];
         value_type sinq = q [indexConfig + 1];
 	value_type norm2p = q.segment (indexConfig, 2).squaredNorm ();
-	result [indexConfig    ] = (1.5-.5*norm2p) * (cosOmega * cosq - sinOmega * sinq);
-	result [indexConfig + 1] = (1.5-.5*norm2p) * (sinOmega * cosq + cosOmega * sinq);
+	result [indexConfig    ] = (1.5-.5*norm2p) *
+	  (cosOmega * cosq - sinOmega * sinq);
+	result [indexConfig + 1] = (1.5-.5*norm2p) *
+	  (sinOmega * cosq + cosOmega * sinq);
       }
 
       void UnBounded::difference (ConfigurationIn_t q1, ConfigurationIn_t q2,
