@@ -389,7 +389,11 @@ namespace hpp {
 	value_type c2 = q2 [indexConfig];
 	value_type s2 = q2 [indexConfig + 1];
 
-	result [indexVelocity] = atan2 (-s1*c2 + s2*c1, c1*c2 + s1*s2);
+	// s1 = sin q1 c1 = cos (q1)
+	// s2 = sin q2 c2 = cos (q2)
+	// sin (q1 - q2) = s1*c2 - s2*c1
+	// cos (q1 - q2) = c1*c2 + s1*s2
+	result [indexVelocity] = atan2 (s1*c2 - s2*c1, c1*c2 + s1*s2);
       }
 
       void UnBounded::uniformlySample (const size_type& index,
