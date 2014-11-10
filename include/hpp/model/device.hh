@@ -173,6 +173,9 @@ namespace hpp {
 	  currentConfiguration_ = configuration;
 	}
       }
+      /// Get the neutral configuration
+      Configuration_t neutralConfiguration () const;
+
       /// Get current velocity
       const vector_t& currentVelocity () const
       {

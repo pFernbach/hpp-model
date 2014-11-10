@@ -529,6 +529,17 @@ namespace hpp {
       }
     }
 
+    Configuration_t Device::neutralConfiguration () const
+    {
+      Configuration_t nc (configSize());
+      const JointVector_t& jv = getJointVector ();
+      for (JointVector_t::const_iterator it = jv.begin ();
+          it != jv.end (); it++)
+        nc.segment ((*it)->rankInConfiguration (), (*it)->configSize()) =
+          (*it)->neutralConfiguration ();
+      return nc;
+    }
+
     void Device::resizeJacobians ()
     {
       jacobianCom_.resize (3, numberDof_);
