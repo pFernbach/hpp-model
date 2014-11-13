@@ -39,7 +39,7 @@ namespace hpp {
 		const fcl::CollisionObjectConstPtr_t& object)
     {
       ObjectVector_t::iterator it;
-      for (it = vector.begin (); it != vector.end (); it++) {
+      for (it = vector.begin (); it != vector.end (); ++it) {
 	const CollisionObjectPtr_t& local = *it;
 	if (local->fcl ()->collisionGeometry () ==
 	    object->collisionGeometry ()) return it;
@@ -305,10 +305,10 @@ namespace hpp {
       fcl::CollisionResult collisionResult;
       for (ObjectVector_t::const_iterator itInner =
 	     collisionInnerObjects_.begin ();
-	   itInner != collisionInnerObjects_.end (); itInner++) {
+	   itInner != collisionInnerObjects_.end (); ++itInner) {
 	for (ObjectVector_t::const_iterator itOuter =
 	       collisionOuterObjects_.begin ();
-	     itOuter != collisionOuterObjects_.end (); itOuter++) {
+	     itOuter != collisionOuterObjects_.end (); ++itOuter) {
 	  if (fcl::collide ((*itInner)->fcl ().get (),
 			    (*itOuter)->fcl ().get (),
 			    collisionRequest, collisionResult) != 0) {
@@ -326,13 +326,13 @@ namespace hpp {
     {
       fcl::DistanceRequest distanceRequest (true, 0, 0, fcl::GST_INDEP);
       for (ObjectVector_t::iterator itInner = distanceInnerObjects_.begin ();
-	   itInner != distanceInnerObjects_.end (); itInner++) {
+	   itInner != distanceInnerObjects_.end (); ++itInner) {
 	// Compute global position if inner object
 	fcl::Transform3f globalPosition = joint ()->currentTransformation ()*
 	  (*itInner)->positionInJointFrame ();
 	(*itInner)->fcl ()->setTransform (globalPosition);
 	for (ObjectVector_t::iterator itOuter = distanceOuterObjects_.begin ();
-	     itOuter != distanceOuterObjects_.end (); itOuter++) {
+	     itOuter != distanceOuterObjects_.end (); ++itOuter) {
 	  // Compute global position if inner object
 	  results [offset].fcl.clear ();
 	  fcl::distance ((*itInner)->fcl ().get (), (*itOuter)->fcl ().get (),

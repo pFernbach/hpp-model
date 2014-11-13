@@ -156,7 +156,7 @@ namespace hpp {
     {
       computePosition (configuration, parentPosition, currentTransformation_);
       for (std::vector <JointPtr_t>::const_iterator itJoint =
-	     children_.begin (); itJoint != children_.end (); itJoint++) {
+	     children_.begin (); itJoint != children_.end (); ++itJoint) {
 	(*itJoint)->recursiveComputePosition
 	  (configuration, currentTransformation_);
       }
@@ -178,7 +178,7 @@ namespace hpp {
 	mass_ = body_->mass ();
       }
       for (std::vector <JointPtr_t>::iterator it =  children_.begin ();
-	   it != children_.end (); it++) {
+	   it != children_.end (); ++it) {
 	mass_ += (*it)->computeMass ();
       }
       return mass_;
@@ -192,7 +192,7 @@ namespace hpp {
 	  (body_->localCenterOfMass ()) * body_->mass ();
       }
       for (std::vector <JointPtr_t>::iterator it =  children_.begin ();
-	   it != children_.end (); it++) {
+	   it != children_.end (); ++it) {
 	(*it)->computeMassTimesCenterOfMass ();
 	massCom_ += (*it)->massCom_;
       }
@@ -639,7 +639,7 @@ namespace hpp {
 	const hpp::model::ObjectVector_t& colObjects =
 	  body->innerObjects (hpp::model::COLLISION);
 	for (hpp::model::ObjectVector_t::const_iterator it =
-	       colObjects.begin (); it != colObjects.end (); it++) {
+	       colObjects.begin (); it != colObjects.end (); ++it) {
 	  os << "name: " << (*it)->name () << "\\n";
 	  os << "position :" << "\\n";
 	  const fcl::Transform3f& transform ((*it)->fcl ()->getTransform ());
@@ -656,7 +656,7 @@ namespace hpp {
       }
       // write edges to children joints
       for (hpp::model::JointVector_t::const_iterator it =
-	     children_.begin (); it != children_.end (); it++) {
+	     children_.begin (); it != children_.end (); ++it) {
 	os << "\"" << name () << "\"->\"" << (*it)->name () << "\""
 	   << std::endl;
       }

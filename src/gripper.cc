@@ -45,7 +45,7 @@ namespace hpp {
         os << "joint :" << joint ()->name () << std::endl;
         os << "disable Collisions : ";
         for (JointVector_t::const_iterator itJoint = disabledCollisions_.begin() ;
-              itJoint != disabledCollisions_.end() ; itJoint++ ) {
+              itJoint != disabledCollisions_.end() ; ++itJoint ) {
           os << (*itJoint)->name() << "  ";
         }
         os << std::endl;

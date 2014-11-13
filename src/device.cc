@@ -150,7 +150,7 @@ namespace hpp {
 		 << body1->name () << ": " << collisionObjects.size ());
 	for (ObjectVector_t::const_iterator itObj1 =
 	       collisionObjects.begin ();
-	     itObj1 != collisionObjects.end (); itObj1++) {
+	     itObj1 != collisionObjects.end (); ++itObj1) {
 	  body2->addOuterObject (*itObj1, true, false);
 	  hppDout (info, "Adding object " << (*itObj1)->name ()
 		   << " to body " << body2->name ()
@@ -183,7 +183,7 @@ namespace hpp {
 		 << body1->name () << ": " << distanceObjects.size ());
 	for (ObjectVector_t::const_iterator itObj1 =
 	       distanceObjects.begin ();
-	     itObj1 != distanceObjects.end (); itObj1++) {
+	     itObj1 != distanceObjects.end (); ++itObj1) {
 	  body2->addOuterObject (*itObj1, false, true);
 	  hppDout (info, "Adding object " << (*itObj1)->name ()
 		   << " to body " << body2->name ()
@@ -225,7 +225,7 @@ namespace hpp {
 		 << joint1->name () << ": " << collisionObjects.size ());
 	for (ObjectVector_t::const_iterator itObj1 =
 	       collisionObjects.begin ();
-	     itObj1 != collisionObjects.end (); itObj1++) {
+	     itObj1 != collisionObjects.end (); ++itObj1) {
 	  body2->removeOuterObject (*itObj1, true, false);
 	  hppDout (info, "delete object " << (*itObj1)->name ()
 		   << " to body " << body2->name ()
@@ -238,7 +238,7 @@ namespace hpp {
 		 << joint2->name () << ": " << collisionObjects2.size ());
 	for (ObjectVector_t::const_iterator itObj2 =
 	       collisionObjects2.begin ();
-	     itObj2 != collisionObjects2.end (); itObj2++) {
+	     itObj2 != collisionObjects2.end (); ++itObj2) {
 	  body1->removeOuterObject (*itObj2, true, false);
 	  hppDout (info, "delete object " << (*itObj2)->name ()
 		   << " to body " << body1->name ()
@@ -268,7 +268,7 @@ namespace hpp {
 		 << joint1->name () << ": " << distanceObjects.size ());
 	for (ObjectVector_t::const_iterator itObj1 =
 	       distanceObjects.begin ();
-	     itObj1 != distanceObjects.end (); itObj1++) {
+	     itObj1 != distanceObjects.end (); ++itObj1) {
 	  body2->removeOuterObject (*itObj1, false, true);
 	  hppDout (info, "delete object " << (*itObj1)->name ()
 		   << " to body " << body2->name ()
@@ -280,7 +280,7 @@ namespace hpp {
 		 << joint2->name () << ": " << distanceObjects2.size ());
 	for (ObjectVector_t::const_iterator itObj2 =
 	       distanceObjects2.begin ();
-	     itObj2 != distanceObjects2.end (); itObj2++) {
+	     itObj2 != distanceObjects2.end (); ++itObj2) {
 	  body1->removeOuterObject (*itObj2, false, true);
 	  hppDout (info, "delete object " << (*itObj2)->name ()
 		   << " to body " << body1->name ()
@@ -318,7 +318,7 @@ namespace hpp {
       JointVector_t joints = getJointVector ();
       JointVector_t::size_type size = 0;
       for (JointVector_t::iterator it = joints.begin (); it != joints.end ();
-	   it++) {
+	   ++it) {
 	BodyPtr_t body = (*it)->linkedBody ();
 	if (body) {
 	  size += body->innerObjects (DISTANCE).size () *
@@ -335,7 +335,7 @@ namespace hpp {
       JointVector_t joints = getJointVector ();
       JointVector_t::size_type offset = 0;
       for (JointVector_t::iterator it = joints.begin (); it != joints.end ();
-	   it++) {
+	   ++it) {
 	BodyPtr_t body = (*it)->linkedBody ();
 	if (body) {
 	  body->computeDistances (distances_, offset);
@@ -349,7 +349,7 @@ namespace hpp {
     bool Device::collisionTest () const
     {
       for (JointVector_t::const_iterator itJoint = jointVector_.begin ();
-	   itJoint != jointVector_.end (); itJoint++) {
+	   itJoint != jointVector_.end (); ++itJoint) {
 	BodyPtr_t body = (*itJoint)->linkedBody ();
 	if (body != 0x0) {
 	  if (body->collisionTest ()) {
@@ -378,13 +378,13 @@ namespace hpp {
       // Update positions of bodies from position of joints.
       JointVector_t jv = getJointVector ();
       for (JointVector_t::iterator itJoint = jv.begin (); itJoint != jv.end ();
-	   itJoint++) {
+	   ++itJoint) {
 	BodyPtr_t body = (*itJoint)->linkedBody ();
 	if (body) {
 	  const ObjectVector_t& cbv =
 	    body->innerObjects (COLLISION);
 	  for (ObjectVector_t::const_iterator itInner = cbv.begin ();
-	       itInner != cbv.end (); itInner++) {
+	       itInner != cbv.end (); ++itInner) {
 	    // Compute global position if inner object
 	    fcl::Transform3f globalPosition =
 	      (*itJoint)->currentTransformation ()*
@@ -394,7 +394,7 @@ namespace hpp {
 	  const ObjectVector_t& dbv =
 	    body->innerObjects (DISTANCE);
 	  for (ObjectVector_t::const_iterator itInner = dbv.begin ();
-	       itInner != dbv.end (); itInner++) {
+	       itInner != dbv.end (); ++itInner) {
 	    // Compute global position if inner object
 	    fcl::Transform3f globalPosition =
 	      (*itJoint)->currentTransformation ()*
@@ -507,7 +507,7 @@ namespace hpp {
     {
       rootJoint_->computeJacobian ();
       for (JointVector_t::const_iterator it = jointVector_.begin ();
-	   it != jointVector_.end (); it++) {
+	   it != jointVector_.end (); ++it) {
       }
     }
 
@@ -524,7 +524,7 @@ namespace hpp {
     void Device::computeJacobianCenterOfMass ()
     {
       for (JointVector_t::iterator it = jointVector_.begin ();
-	   it != jointVector_.end (); it++) {
+	   it != jointVector_.end (); ++it) {
 	(*it)->writeComSubjacobian (jacobianCom_, mass ());
       }
     }
@@ -534,7 +534,7 @@ namespace hpp {
       jacobianCom_.resize (3, numberDof_);
       jacobianCom_.setZero ();
       for (JointVector_t::iterator itJoint = jointVector_.begin ();
-	   itJoint != jointVector_.end () ; itJoint++) {
+	   itJoint != jointVector_.end () ; ++itJoint) {
 	(*itJoint)->jacobian_.resize (6, numberDof_);
 	(*itJoint)->jacobian_.setZero ();
       }
