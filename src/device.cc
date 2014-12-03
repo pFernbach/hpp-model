@@ -570,10 +570,10 @@ namespace hpp {
 
       return os;
     }
+
+    std::ostream& operator<<(std::ostream& os, const hpp::model::Device& device)
+    {
+      return device.print (os);
+    }
   } // namespace model
 } // namespace hpp
-
-std::ostream& operator<<(std::ostream& os, const hpp::model::Device& device)
-{
-  return device.print (os);
-}
