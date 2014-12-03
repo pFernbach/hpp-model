@@ -530,11 +530,11 @@ namespace hpp {
       mutable fcl::Vec3f com_;
     }; // class JointTranslation
 
+    std::ostream& operator<< (std::ostream& os, const hpp::model::Joint& joint);
   } // namespace model
 } // namespace hpp
 
 namespace fcl {
   std::ostream& operator<< (std::ostream& os , const fcl::Transform3f& trans);
 }
-std::ostream& operator<< (std::ostream& os, const hpp::model::Joint& joint);
 #endif // HPP_MODEL_JOINT_HH

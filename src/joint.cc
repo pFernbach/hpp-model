@@ -665,6 +665,11 @@ namespace hpp {
     template class JointTranslation <1>;
     template class JointTranslation <2>;
     template class JointTranslation <3>;
+
+    std::ostream& operator<< (std::ostream& os, const hpp::model::Joint& joint)
+    {
+      return joint.display (os);
+    }
   } // namespace model
 } // namespace hpp
 
@@ -682,9 +687,3 @@ namespace fcl {
     return os;
   }
 }
-
-std::ostream& operator<< (std::ostream& os, const hpp::model::Joint& joint)
-{
-  return joint.display (os);
-}
-

@@ -358,9 +358,9 @@ namespace hpp {
       ExtraConfigSpace extraConfigSpace_;
       DeviceWkPtr_t weakPtr_;
     }; // class Device
+
+    std::ostream& operator<< (std::ostream& os, const hpp::model::Device& device);
   } // namespace model
 } // namespace hpp
-
-std::ostream& operator<< (std::ostream& os, const hpp::model::Device& device);
 
 #endif // HPP_MODEL_DEVICE_HH
