@@ -18,7 +18,7 @@
 // <http://www.gnu.org/licenses/>.
 
 #include <hpp/model/body.hh>
-#include <fcl/math/transform.h>
+#include <hpp/fcl/math/transform.h>
 #include <hpp/model/joint.hh>
 #include <hpp/model/gripper.hh>
 

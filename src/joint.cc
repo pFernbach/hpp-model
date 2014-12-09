@@ -17,7 +17,7 @@
 // hpp-model  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include <fcl/math/vec_3f.h>
+#include <hpp/fcl/math/vec_3f.h>
 #include <hpp/util/debug.hh>
 #include <hpp/model/body.hh>
 #include <hpp/model/collision-object.hh>

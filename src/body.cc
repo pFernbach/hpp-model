@@ -17,8 +17,8 @@
 // hpp-model  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include <fcl/distance.h>
-#include <fcl/collision.h>
+#include <hpp/fcl/distance.h>
+#include <hpp/fcl/collision.h>
 #include <hpp/util/debug.hh>
 #include <hpp/model/body.hh>
 #include <hpp/model/joint.hh>

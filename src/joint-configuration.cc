@@ -22,7 +22,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
-#include <fcl/math/transform.h>
+#include <hpp/fcl/math/transform.h>
 #include <hpp/util/debug.hh>
 #include <hpp/model/joint-configuration.hh>
 

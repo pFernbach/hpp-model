@@ -25,8 +25,8 @@
 # include <map>
 # include <Eigen/Core>
 # include <hpp/util/pointer.hh>
-# include <fcl/fwd.hh>
-# include <fcl/math/matrix_3f.h>
+# include <hpp/fcl/fwd.hh>
+# include <hpp/fcl/math/matrix_3f.h>
 
 namespace hpp {
   namespace model {

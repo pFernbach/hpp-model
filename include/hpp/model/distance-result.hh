@@ -20,7 +20,7 @@
 #ifndef HPP_MODEL_DISTANCE_RESULT_HH
 # define HPP_MODEL_DISTANCE_RESULT_HH
 
-# include <fcl/collision_data.h>
+# include <hpp/fcl/collision_data.h>
 # include <hpp/model/config.hh>
 # include <hpp/model/fwd.hh>
 

@@ -21,7 +21,7 @@
 # define HPP_MODEL_JOINT_HH
 
 # include <cstddef>
-# include <fcl/math/transform.h>
+# include <hpp/fcl/math/transform.h>
 # include <hpp/model/config.hh>
 # include <hpp/model/fwd.hh>
 
