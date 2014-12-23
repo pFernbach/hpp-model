@@ -80,19 +80,9 @@ namespace hpp {
 	newBody->collisionInnerObjects_.push_back ((*itObj)->clone (joint));
       }
       for (ObjectVector_t::const_iterator itObj =
-	     collisionOuterObjects_.begin ();
-	   itObj != collisionOuterObjects_.end (); ++itObj) {
-	newBody->collisionOuterObjects_.push_back ((*itObj)->clone (joint));
-      }
-      for (ObjectVector_t::const_iterator itObj =
 	     distanceInnerObjects_.begin ();
 	   itObj != distanceInnerObjects_.end (); ++itObj) {
 	newBody->distanceInnerObjects_.push_back ((*itObj)->clone (joint));
-      }
-      for (ObjectVector_t::const_iterator itObj =
-	     distanceOuterObjects_.begin ();
-	   itObj != distanceOuterObjects_.end (); ++itObj) {
-	newBody->distanceOuterObjects_.push_back ((*itObj)->clone (joint));
       }
       return newBody;
     }
