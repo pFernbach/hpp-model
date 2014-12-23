@@ -641,9 +641,12 @@ namespace hpp {
 	for (hpp::model::ObjectVector_t::const_iterator it =
 	       colObjects.begin (); it != colObjects.end (); it++) {
 	  os << "name: " << (*it)->name () << "\\n";
+	  os << "position in joint:" << "\\n";
+	  const fcl::Transform3f& local ((*it)->positionInJointFrame ());
+	  displayTransform3f (os, local); os << "\\n";
 	  os << "position :" << "\\n";
-	  const fcl::Transform3f& transform ((*it)->fcl ()->getTransform ());
-	  displayTransform3f (os, transform);
+	  const fcl::Transform3f& global ((*it)->fcl ()->getTransform ());
+	  displayTransform3f (os, global);
 	}
       } else {
 	os << "No body";
