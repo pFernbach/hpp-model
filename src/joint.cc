@@ -39,10 +39,12 @@ namespace hpp {
       configSize_ (configSize), numberDof_ (numberDof),
       initialPosition_ (initialPosition),
       robot_ (), body_ (0x0),
-      name_ (), children_ (), parent_ (0x0), rankInConfiguration_ (-1),
+      name_ (), linkName_ (), children_ (), parent_ (0x0),
+      rankInConfiguration_ (-1),
       jacobian_ (), rankInParent_ (0)
     {
       positionInParentFrame_.setIdentity ();
+      linkInJointFrame_.setIdentity ();
       T3f_.setIdentity ();
       massCom_.setValue (0);
       neutralConfiguration_.resize (configSize);
@@ -52,10 +54,11 @@ namespace hpp {
     Joint::Joint (const Joint& joint) :
       configuration_ (joint.configuration_),
       positionInParentFrame_ (joint.positionInParentFrame_),
+      linkInJointFrame_ (joint.linkInJointFrame_),
       maximalDistanceToParent_ (joint.maximalDistanceToParent_),
       configSize_ (joint.configSize_), numberDof_ (joint.numberDof_),
       robot_ (), body_ (joint.body_ ? joint.body_->clone (this) : 0x0),
-      name_ (joint.name_),
+      name_ (joint.name_), linkName_ (joint.linkName_),
       children_ (), parent_ (), rankInConfiguration_ (-1), rankInVelocity_ (-1),
       rankInParent_ (-1)
     {
