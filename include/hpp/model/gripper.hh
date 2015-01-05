@@ -20,7 +20,7 @@
 #ifndef HPP_MANIPULATION_GRIPPER_HH
 # define HPP_MANIPULATION_GRIPPER_HH
 
-# include <fcl/math/transform.h>
+# include <hpp/fcl/math/transform.h>
 # include <hpp/model/joint.hh>
 
 namespace hpp {

@@ -21,7 +21,7 @@
 # define HPP_MODEL_JOINT_HH
 
 # include <cstddef>
-# include <fcl/math/transform.h>
+# include <hpp/fcl/math/transform.h>
 # include <hpp/model/config.hh>
 # include <hpp/model/fwd.hh>
 
@@ -243,6 +243,40 @@ namespace hpp {
       void setLinkedBody (const BodyPtr_t& body);
       /// \}
 
+      /// \name Compatibility with urdf
+      ///
+      /// \{
+
+      /// Get urdf link position in joint frame
+      ///
+      /// When parsing urdf models, joint frames are reoriented in order
+      /// to rotate about their x-axis. For some applications, it is necessary
+      /// to be able to recover the position of the urdf link attached to
+      /// the joint.
+      const Transform3f& linkInJointFrame () const
+      {
+	return linkInJointFrame_;
+      }
+
+      /// Set urdf link position in joint frame
+      void linkInJointFrame (const Transform3f& transform)
+      {
+	linkInJointFrame_ = transform;
+      }
+
+      /// Get link name
+      const std::string& linkName () const
+      {
+	return linkName_;
+      }
+
+      /// Set link name
+      void linkName (const std::string& linkName)
+      {
+	linkName_ = linkName;
+      }
+      /// \}
+
       /// Display joint
       virtual std::ostream& display (std::ostream& os) const;
     protected:
@@ -250,6 +284,7 @@ namespace hpp {
       JointConfiguration* configuration_;
       mutable Transform3f currentTransformation_;
       Transform3f positionInParentFrame_;
+      Transform3f linkInJointFrame_;
       mutable Transform3f T3f_;
       /// Mass of this and all descendants
       value_type mass_;
@@ -289,6 +324,7 @@ namespace hpp {
       DeviceWkPtr_t robot_;
       BodyPtr_t body_;
       std::string name_;
+      std::string linkName_;
       std::vector <JointPtr_t> children_;
       JointPtr_t parent_;
       size_type rankInConfiguration_;

@@ -17,8 +17,8 @@
 // hpp-model  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include <fcl/distance.h>
-#include <fcl/collision.h>
+#include <hpp/fcl/distance.h>
+#include <hpp/fcl/collision.h>
 #include <hpp/util/debug.hh>
 #include <hpp/model/body.hh>
 #include <hpp/model/joint.hh>
@@ -80,19 +80,9 @@ namespace hpp {
 	newBody->collisionInnerObjects_.push_back ((*itObj)->clone (joint));
       }
       for (ObjectVector_t::const_iterator itObj =
-	     collisionOuterObjects_.begin ();
-	   itObj != collisionOuterObjects_.end (); ++itObj) {
-	newBody->collisionOuterObjects_.push_back ((*itObj)->clone (joint));
-      }
-      for (ObjectVector_t::const_iterator itObj =
 	     distanceInnerObjects_.begin ();
 	   itObj != distanceInnerObjects_.end (); ++itObj) {
 	newBody->distanceInnerObjects_.push_back ((*itObj)->clone (joint));
-      }
-      for (ObjectVector_t::const_iterator itObj =
-	     distanceOuterObjects_.begin ();
-	   itObj != distanceOuterObjects_.end (); ++itObj) {
-	newBody->distanceOuterObjects_.push_back ((*itObj)->clone (joint));
       }
       return newBody;
     }

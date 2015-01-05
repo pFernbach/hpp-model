@@ -20,7 +20,7 @@
 #ifndef HPP_MODEL_COLLISION_OBJECT_HH
 # define HPP_MODEL_COLLISION_OBJECT_HH
 
-# include <fcl/collision_object.h>
+# include <hpp/fcl/collision_object.h>
 # include <hpp/util/pointer.hh>
 # include <hpp/model/config.hh>
 # include <hpp/model/fwd.hh>

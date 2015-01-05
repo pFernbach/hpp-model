@@ -20,7 +20,7 @@
 #ifndef HPP_MODEL_FCL_TO_EIGEN_HH
 # define HPP_MODEL_FCL_TO_EIGEN_HH
 
-# include <fcl/math/transform.h>
+# include <hpp/fcl/math/transform.h>
 # include <hpp/model/fwd.hh>
 
 inline hpp::model::matrix_t operator* (const hpp::model::matrix_t& m1,
