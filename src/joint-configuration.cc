@@ -309,10 +309,10 @@ namespace hpp {
     {
       for (unsigned int i=0; i<dimension; ++i) {
 	if (!isBounded (i)) {
-	  std::ostringstream iss
-	    ("Cannot uniformly sample non bounded translation degrees of "
-	     "freedom at rank ");
-	  iss  << index + i;
+	  std::ostringstream iss;
+	  iss << "Cannot uniformly sample non bounded translation degrees of ";
+	  iss << "freedom at rank ";
+	  iss << index + i;
 	  throw std::runtime_error (iss.str ());
 	}
 	else {
