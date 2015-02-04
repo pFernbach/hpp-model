@@ -44,6 +44,7 @@ namespace hpp {
     HPP_PREDEF_CLASS (ObjectFactory);
     HPP_PREDEF_CLASS (ObjectIterator);
     HPP_PREDEF_CLASS (Gripper);
+    HPP_PREDEF_CLASS (CenterOfMassComputation);
     enum Request_t {COLLISION, DISTANCE};
 
     typedef double value_type;
@@ -92,6 +93,8 @@ namespace hpp {
     typedef boost::shared_ptr <Gripper> GripperPtr_t;
     typedef std::vector <GripperPtr_t> Grippers_t;
     typedef fcl::Transform3f Transform3f;
+    typedef boost::shared_ptr <CenterOfMassComputation>
+      CenterOfMassComputationPtr_t;
   } // namespace model
 } // namespace hpp
 #endif //HPP_MODEL_FWD_HH

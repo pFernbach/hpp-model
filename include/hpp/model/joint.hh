@@ -334,6 +334,7 @@ namespace hpp {
       std::size_t rankInParent_;
       friend class Device;
       friend class ChildrenIterator;
+      friend class CenterOfMassComputation;
     }; // class Joint
 
     /// Anchor Joint
