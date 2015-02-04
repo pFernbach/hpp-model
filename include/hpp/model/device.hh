@@ -166,12 +166,16 @@ namespace hpp {
 	return currentConfiguration_;
       }
       /// Set current configuration
-      virtual void currentConfiguration (ConfigurationIn_t configuration)
+      /// \return True if the current configuration was modified and false if
+      ///         the current configuration did not change.
+      virtual bool currentConfiguration (ConfigurationIn_t configuration)
       {
 	if (configuration != currentConfiguration_) {
 	  upToDate_ = false;
 	  currentConfiguration_ = configuration;
+          return true;
 	}
+        return false;
       }
       /// Get the neutral configuration
       Configuration_t neutralConfiguration () const;
