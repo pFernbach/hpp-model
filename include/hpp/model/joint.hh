@@ -572,6 +572,46 @@ namespace hpp {
       mutable fcl::Vec3f com_;
     }; // class JointTranslation
 
+    /// static rod joint
+    ///
+    ///
+    class HPP_MODEL_DLLAPI JointStaticRod : public Joint
+    {
+    public:
+      JointStaticRod (const Transform3f& initialPosition);// à changer
+      JointStaticRod (const JointStaticRod& joint);
+      /// Return pointer to copy of this
+      /// Clone body and therefore inner and outer objects (see Body::clone).
+      virtual JointPtr_t clone () const;
+
+      /// Compute position of joint
+      /// \param configuration the configuration of the robot,
+      /// \param parentPosition position of parent joint,
+      /// \retval position position of this joint.
+      virtual void computePosition (ConfigurationIn_t configuration,
+                    const Transform3f& parentPosition,
+                    Transform3f& position) const;
+      virtual ~JointStaticRod ();
+      /// Get upper bound on linear velocity of the joint frame
+      /// \return 0
+      virtual value_type upperBoundLinearVelocity () const
+      {
+        return 0;
+      }
+      /// Get upper bound on angular velocity of the joint frame
+      /// \return 1
+      virtual value_type upperBoundAngularVelocity () const
+      {
+        return 1;
+      }
+    protected:
+      virtual void computeMaximalDistanceToParent ();
+    private:
+      virtual void writeSubJacobian (const JointPtr_t& child);
+      virtual void writeComSubjacobian (ComJacobian_t& jacobian,const value_type& totalMass);
+     // mutable fcl::Vec3f com_;
+    }; // class JointStaticRod
+
     std::ostream& operator<< (std::ostream& os, const hpp::model::Joint& joint);
   } // namespace model
 } // namespace hpp
