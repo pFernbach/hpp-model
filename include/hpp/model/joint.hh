@@ -578,7 +578,7 @@ namespace hpp {
     class HPP_MODEL_DLLAPI JointStaticRod : public Joint
     {
     public:
-      JointStaticRod (const Transform3f& initialPosition);// à changer
+      JointStaticRod (const Transform3f& initialPosition);// à changer (transform3f) ?
       JointStaticRod (const JointStaticRod& joint);
       /// Return pointer to copy of this
       /// Clone body and therefore inner and outer objects (see Body::clone).
@@ -596,7 +596,7 @@ namespace hpp {
       /// \return 0
       virtual value_type upperBoundLinearVelocity () const
       {
-        return 0;
+        return 1;
       }
       /// Get upper bound on angular velocity of the joint frame
       /// \return 1
@@ -605,7 +605,7 @@ namespace hpp {
         return 1;
       }
     protected:
-      virtual void computeMaximalDistanceToParent ();
+       virtual void computeMaximalDistanceToParent ();
     private:
       virtual void writeSubJacobian (const JointPtr_t& child);
       virtual void writeComSubjacobian (ComJacobian_t& jacobian,const value_type& totalMass);

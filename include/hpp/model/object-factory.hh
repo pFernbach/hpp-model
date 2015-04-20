@@ -49,6 +49,12 @@ namespace hpp {
       {
 	return new JointSO3 (initialPosition);
       }
+
+      virtual JointPtr_t createJointStaticRod (const Transform3f& initialPosition)
+      {
+    return new JointStaticRod (initialPosition);
+      }
+
       virtual JointPtr_t createJointAnchor (const Transform3f& initialPosition)
       {
 	return new JointAnchor (initialPosition);

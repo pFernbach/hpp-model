@@ -40,6 +40,7 @@ namespace hpp {
     HPP_PREDEF_CLASS (JointAnchor);
     HPP_PREDEF_CLASS (JointRotation);
     HPP_PREDEF_CLASS (JointSO3);
+    HPP_PREDEF_CLASS (JointStaticRod);
     HPP_PREDEF_CLASS (JointConfiguration);
     HPP_PREDEF_CLASS (ObjectFactory);
     HPP_PREDEF_CLASS (ObjectIterator);

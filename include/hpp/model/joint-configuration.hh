@@ -367,8 +367,8 @@ namespace hpp {
 			      const size_type& indexConfig,
 			      const size_type& indexVelocity,
 			      ConfigurationOut_t result) const;
+
       /// Difference between two configurations
-      ///
       /// \param q1 configuration,
       /// \param q2 configuration,
       /// \param indexConfig index of first component of q corresponding to
@@ -391,6 +391,65 @@ namespace hpp {
       virtual void uniformlySample (const size_type& index,
 				    ConfigurationOut_t result) const;
     }; // class TranslationJointConfig
+
+    /// Configuration of a JointStaticRod
+    class HPP_MODEL_DLLAPI StaticRodJointConfig : public JointConfiguration
+    {
+    public:
+      StaticRodJointConfig ();
+      virtual ~StaticRodJointConfig ();
+      virtual void interpolate (ConfigurationIn_t q1,
+                ConfigurationIn_t q2,
+                const value_type& u,
+                const size_type& index,
+                ConfigurationOut_t result);
+
+      /// Distance between two configurations of the joint
+      /// \param q1, q2 two configurations of the robot
+      /// \param index index of first component of q1 and q2 corresponding to
+      /// the joint.
+      /// \return the angle between the joint orientations
+      virtual value_type distance (ConfigurationIn_t q1,
+                   ConfigurationIn_t q2,
+                   const size_type& index) const;
+
+      virtual void integrate (ConfigurationIn_t q,
+                  vectorIn_t v,
+                  const size_type& indexConfig,
+                  const size_type& indexVelocity,
+                  ConfigurationOut_t result) const;
+
+      /// Difference between two configurations
+      /// \param q1 configuration,
+      /// \param q2 configuration,
+      /// \param indexConfig index of first component of q corresponding to
+      ///        the joint.
+      /// \param indexVelocity index of first component of v corresponding to
+      ///        the joint
+      /// \retval result[index:index+ joint number dof] part of vector
+      ///         representing the difference between q1 and q2.
+      ///
+      /// \f[
+      /// \texttt{result}[\texttt{index}:\texttt{index}+3] =
+      /// \textbf{q}_1[\texttt{index}:\texttt{index}+3] -
+      /// \textbf{q}_2[\texttt{index}:\texttt{index}+3]
+      /// \f]
+      /// The difference is computed as follows:
+      /// \f[
+      /// \textbf{q}_1 [\texttt{index}+3:\texttt{index}+6] =
+      /// \exp \left(\texttt{result}[\texttt{index}+3:\texttt{index}+6]_{\times}
+      /// \right)\textbf{q}_2 [\texttt{index}+3:\texttt{index}+6]
+      /// \f]
+
+      virtual void difference (ConfigurationIn_t q1,
+                   ConfigurationIn_t q2,
+                   const size_type& indexConfig,
+                   const size_type& indexVelocity,
+                   vectorOut_t result) const;
+
+      virtual void uniformlySample (const size_type& index,
+                    ConfigurationOut_t result) const;
+    }; // class StaticRodJointConfig
 
   } // namespace model
 } // namespace hpp

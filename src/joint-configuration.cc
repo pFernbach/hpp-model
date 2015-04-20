@@ -424,7 +424,7 @@ namespace hpp {
       }
 
       void Bounded::integrate (ConfigurationIn_t q, vectorIn_t v,
-			       const size_type& indexConfig,
+                   const size_type& indexConfig,
 			       const size_type& indexVelocity,
 			       ConfigurationOut_t result) const
       {
@@ -434,7 +434,7 @@ namespace hpp {
 	  result [indexConfig] = lowerBound (0);
 	} else if (result [indexConfig] > upperBound (0)) {
 	  result [indexConfig] = upperBound (0);
-	}
+    }
       }
 
       void Bounded::difference (ConfigurationIn_t q1, ConfigurationIn_t q2,
@@ -459,6 +459,112 @@ namespace hpp {
 	upperBound (0,  M_PI);
       }
     } // namespace rotationJointConfig
+
+
+    // ---- method for StaticRodConfig
+
+    StaticRodJointConfig::StaticRodJointConfig () : JointConfiguration (6)
+    {
+    }
+
+    StaticRodJointConfig::~StaticRodJointConfig ()
+    {
+    }
+
+
+    void StaticRodJointConfig::interpolate (ConfigurationIn_t q1,
+              ConfigurationIn_t q2,
+              const value_type& u,
+              const size_type& index,
+              ConfigurationOut_t result)
+    {
+        result.segment <6> (index) =
+        (1-u) * q1.segment <6> (index) +
+        u * q2.segment <6> (index);
+    }
+
+    /// Distance between two configurations of the joint
+    /// \param q1, q2 two configurations of the robot
+    /// \param index index of first component of q1 and q2 corresponding to
+    /// the joint.
+    /// \return the angle between the joint orientations
+    value_type StaticRodJointConfig::distance (ConfigurationIn_t q1,
+                 ConfigurationIn_t q2,
+                 const size_type& index) const
+    {
+        return ((q2.segment <6> (index) -q1.segment <6> (index)).norm ());
+    }
+
+    void StaticRodJointConfig::integrate (ConfigurationIn_t q,
+                vectorIn_t v,
+                const size_type& indexConfig,
+                const size_type& indexVelocity,
+                ConfigurationOut_t result) const
+    {
+        assert (indexConfig < result.size ());
+        result.segment <6> (indexConfig) =  q.segment <6> (indexConfig) +
+      v.segment <6> (indexVelocity);
+        for (unsigned int i=0; i<6; ++i) {
+      if (isBounded (i)) {
+        if (result [indexConfig + i] < lowerBound (i)) {
+          result [indexConfig + i] = lowerBound (i);
+        } else if (result [indexConfig + i] > upperBound (i)) {
+          result [indexConfig + i] = upperBound (i);
+        }
+      }
+        }
+    }
+
+    /// Difference between two configurations
+    /// \param q1 configuration,
+    /// \param q2 configuration,
+    /// \param indexConfig index of first component of q corresponding to
+    ///        the joint.
+    /// \param indexVelocity index of first component of v corresponding to
+    ///        the joint
+    /// \retval result[index:index+ joint number dof] part of vector
+    ///         representing the difference between q1 and q2.
+    ///
+    /// \f[
+    /// \texttt{result}[\texttt{index}:\texttt{index}+3] =
+    /// \textbf{q}_1[\texttt{index}:\texttt{index}+3] -
+    /// \textbf{q}_2[\texttt{index}:\texttt{index}+3]
+    /// \f]
+    /// The difference is computed as follows:
+    /// \f[
+    /// \textbf{q}_1 [\texttt{index}+3:\texttt{index}+6] =
+    /// \exp \left(\texttt{result}[\texttt{index}+3:\texttt{index}+6]_{\times}
+    /// \right)\textbf{q}_2 [\texttt{index}+3:\texttt{index}+6]
+    /// \f]
+
+    void StaticRodJointConfig::difference (ConfigurationIn_t q1,
+                 ConfigurationIn_t q2,
+                 const size_type& indexConfig,
+                 const size_type& indexVelocity,
+                 vectorOut_t result) const
+    {
+      result.segment <6> (indexVelocity) =
+      q1.segment <6> (indexConfig) -
+      q2.segment <6> (indexConfig);
+    }
+
+    void StaticRodJointConfig::uniformlySample (const size_type& index,
+                  ConfigurationOut_t result)const
+    {
+      for (unsigned int i=0; i<6; ++i) {
+      if (!isBounded (i)) {
+        std::ostringstream iss;
+        iss << "Cannot uniformly sample non bounded translation degrees of ";
+        iss << "freedom at rank ";
+        iss << index + i;
+        throw std::runtime_error (iss.str ());
+      }
+      else {
+        result [index + i] = lowerBound (i) +
+          (upperBound (i) - lowerBound (i)) * rand ()/RAND_MAX;
+      }
+        }
+    }
 
   } // namespace model
 } // namespace hpp

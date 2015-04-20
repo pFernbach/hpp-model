@@ -676,6 +676,63 @@ namespace hpp {
     {
       return joint.display (os);
     }
+
+
+    // ------ method for JointStaticRod
+
+    JointStaticRod::JointStaticRod (const Transform3f& initialPosition) :
+      Joint (initialPosition, 6, 6)// config size = 6 , dof = 6
+    {
+      configuration_ = new StaticRodJointConfig;
+      neutralConfiguration_ [0] = 0;    //
+    }
+
+    JointStaticRod::JointStaticRod (const JointStaticRod& joint) :
+      Joint (joint)
+    {
+    }
+
+    JointPtr_t JointStaticRod::clone () const
+    {
+      return new JointStaticRod (*this);
+    }
+
+    JointStaticRod::~JointStaticRod ()
+    {
+      delete configuration_;
+    }
+
+    void JointStaticRod::computeMaximalDistanceToParent ()
+    {
+      maximalDistanceToParent_ = positionInParentFrame ().getTranslation ().length ();
+    }
+
+    void JointStaticRod::computePosition (ConfigurationIn_t configuration,
+                    const Transform3f& parentPosition,
+                    Transform3f& position) const
+    {
+        //TODO
+      fcl::Quaternion3f p (configuration [rankInConfiguration ()],
+               configuration [rankInConfiguration () + 1],
+               configuration [rankInConfiguration () + 2],
+               configuration [rankInConfiguration () + 3]);
+      T3f_.setQuatRotation (p);
+      position = parentPosition * positionInParentFrame_ * T3f_;
+    }
+
+
+    void JointStaticRod::writeSubJacobian (const JointPtr_t&)
+    {
+    }
+
+    void JointStaticRod::writeComSubjacobian (ComJacobian_t&,
+                       const value_type&)
+    {
+    }
+
+    // ---- end method for rods
+
+
   } // namespace model
 } // namespace hpp
 
