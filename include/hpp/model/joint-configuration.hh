@@ -207,16 +207,11 @@ namespace hpp {
       /// \retval result[index:index+ joint number dof] part of vector
       ///         representing the difference between q1 and q2.
       ///
-      /// \f[
-      /// \texttt{result}[\texttt{index}:\texttt{index}+3] =
-      /// \textbf{q}_1[\texttt{index}:\texttt{index}+3] -
-      /// \textbf{q}_2[\texttt{index}:\texttt{index}+3]
-      /// \f]
       /// The difference is computed as follows:
       /// \f[
-      /// \textbf{q}_1 [\texttt{index}+3:\texttt{index}+6] =
-      /// \exp \left(\texttt{result}[\texttt{index}+3:\texttt{index}+6]_{\times}
-      /// \right)\textbf{q}_2 [\texttt{index}+3:\texttt{index}+6]
+      /// \textbf{q}_1 [\texttt{index}:\texttt{index}+4] =
+      /// \exp \left(\texttt{result}[\texttt{index}:\texttt{index}+3]_{\times}
+      /// \right)\textbf{q}_2 [\texttt{index}:\texttt{index}+4]
       /// \f]
       virtual void difference (ConfigurationIn_t q1,
 			       ConfigurationIn_t q2,
