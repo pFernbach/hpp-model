@@ -231,7 +231,7 @@ namespace hpp {
 		       q1 [indexConfig + 2], q1 [indexConfig + 3]);
       Quaternion_t p2 (q2 [indexConfig + 0], q2 [indexConfig + 1],
 		       q2 [indexConfig + 2], q2 [indexConfig + 3]);
-      Quaternion_t p (p1); p.conj (); p*=p2;
+      Quaternion_t p (p2); p.conj (); p = p1*p;
       value_type angle; fcl::Vec3f axis;
       p.toAxisAngle (axis, angle);
       result [indexVelocity + 0] = angle*axis [0];
