@@ -711,23 +711,25 @@ namespace hpp {
                     const Transform3f& parentPosition,
                     Transform3f& position) const
     {
-        //TODO
-      fcl::Quaternion3f p (configuration [rankInConfiguration ()],
+
+      /*fcl::Quaternion3f p (configuration [rankInConfiguration ()],
                configuration [rankInConfiguration () + 1],
                configuration [rankInConfiguration () + 2],
                configuration [rankInConfiguration () + 3]);
-      T3f_.setQuatRotation (p);
-      position = parentPosition * positionInParentFrame_ * T3f_;
+      T3f_.setQuatRotation (p);*/
+      position = parentPosition * positionInParentFrame_;
     }
 
 
     void JointStaticRod::writeSubJacobian (const JointPtr_t&)
     {
+      //TODO
     }
 
     void JointStaticRod::writeComSubjacobian (ComJacobian_t&,
                        const value_type&)
     {
+      //TODO
     }
 
     // ---- end method for rods
