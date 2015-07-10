@@ -487,12 +487,13 @@ namespace hpp {
     /// \param q1, q2 two configurations of the robot
     /// \param index index of first component of q1 and q2 corresponding to
     /// the joint.
-    /// \return the angle between the joint orientations
     value_type StaticRodJointConfig::distance (ConfigurationIn_t q1,
                  ConfigurationIn_t q2,
                  const size_type& index) const
     {
-        return ((q2.segment <6> (index) -q1.segment <6> (index)).norm ());
+        //return ((q2.segment <6> (index) -q1.segment <6> (index)).norm ());
+       return 0; // issue with force/couple computed by XDE, need to fix it
+       // maybe use the position of the tail of the rod instead of the forces ?
     }
 
     void StaticRodJointConfig::integrate (ConfigurationIn_t q,
