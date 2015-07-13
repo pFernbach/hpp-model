@@ -491,8 +491,8 @@ namespace hpp {
                  ConfigurationIn_t q2,
                  const size_type& index) const
     {
-        //return ((q2.segment <6> (index) -q1.segment <6> (index)).norm ());
-       return 0; // issue with force/couple computed by XDE, need to fix it
+        return ((q2.segment <6> (index) -q1.segment <6> (index)).norm ());
+       //return 0; // issue with force/couple computed by XDE, need to fix it
        // maybe use the position of the tail of the rod instead of the forces ?
     }
 
