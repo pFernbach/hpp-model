@@ -500,25 +500,35 @@ namespace hpp {
 
     void Device::computeJointPositions ()
     {
-      rootJoint_->recursiveComputePosition (currentConfiguration_, I4);
+      if (rootJoint_) {
+	rootJoint_->recursiveComputePosition (currentConfiguration_, I4);
+      }
     }
 
     void Device::computeJointJacobians ()
     {
-      rootJoint_->computeJacobian ();
-      for (JointVector_t::const_iterator it = jointVector_.begin ();
-	   it != jointVector_.end (); ++it) {
+      if (rootJoint_) {
+	rootJoint_->computeJacobian ();
+	for (JointVector_t::const_iterator it = jointVector_.begin ();
+	     it != jointVector_.end (); ++it) {
+	}
       }
     }
 
     void Device::computeMass ()
     {
-      mass_ = rootJoint_->computeMass ();
+      mass_ = 0;
+      if (rootJoint_) {
+	mass_ = rootJoint_->computeMass ();
+      }
     }
     void Device::computePositionCenterOfMass ()
     {
-      rootJoint_->computeMassTimesCenterOfMass ();
-      com_ = (1/mass_) * rootJoint_->massCom_;
+      com_.setZero ();
+      if (rootJoint_) {
+	rootJoint_->computeMassTimesCenterOfMass ();
+	com_ = (1/mass_) * rootJoint_->massCom_;
+      }
     }
 
     void Device::computeJacobianCenterOfMass ()
