@@ -98,7 +98,7 @@ namespace hpp {
       fcl::Transform3f Mj = joint->currentTransformation_;
       if (computePositionInParent) {
 	joint->positionInParentFrame_ = Mp.inverse () * Mj;
-	computeMaximalDistanceToParent ();
+	joint->computeMaximalDistanceToParent ();
       }
       // If child joint has been created by Joint::clone, bodies and list of
       // inner and outer objects have been copied without updating the number of
