@@ -32,7 +32,7 @@ inline hpp::model::matrix_t operator* (const hpp::model::matrix_t& m1,
   for (std::size_t i=0; i<rows; ++i) {
     for (std::size_t k=0; k<3; ++k) {
       result (i, k) = 0;
-      for (std::size_t j=0; j<3; ++j) { 
+      for (std::size_t j=0; j<3; ++j) {
 	result (i, k) += m1 (i,j) * m2 (j, k);
       }
     }
@@ -43,11 +43,17 @@ inline hpp::model::matrix_t operator* (const hpp::model::matrix_t& m1,
 namespace hpp {
   namespace model {
     inline void toEigen (const hpp::model::vector3_t& v,
+			 Eigen::Matrix <value_type, 3, 1>& res)
+    {
+      res [0] = v [0]; res [1] = v [1]; res [2] = v [2];
+    }
+
+    inline void toEigen (const hpp::model::vector3_t& v,
 			 hpp::model::vectorOut_t res)
     {
       res [0] = v [0]; res [1] = v [1]; res [2] = v [2];
     }
-    
+
     inline void toEigen (const hpp::model::matrix3_t& m,
 			 hpp::model::matrixOut_t res)
     {
