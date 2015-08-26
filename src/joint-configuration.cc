@@ -22,6 +22,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <Eigen/Geometry>
 #include <hpp/fcl/math/transform.h>
 #include <hpp/util/debug.hh>
 #include <hpp/model/joint-configuration.hh>
@@ -29,7 +30,7 @@
 namespace hpp {
   namespace model {
     typedef Eigen::AngleAxis <value_type> AngleAxis_t;
-    typedef fcl::Quaternion3f Quaternion_t;
+    typedef Eigen::Quaternion <value_type> Quaternion_t;
 
     JointConfiguration::JointConfiguration (size_type configSize)
     {
@@ -214,10 +215,10 @@ namespace hpp {
       Quaternion_t pOmega (cos (angle), k [0], k [1], k [2]);
       Quaternion_t res = pOmega*p;
       // Eigen does not allow to get the 4 coefficients at once.
-      result [indexConfig + 0] = res.getW ();
-      result [indexConfig + 1] = res.getX ();
-      result [indexConfig + 2] = res.getY ();
-      result [indexConfig + 3] = res.getZ ();
+      result [indexConfig + 0] = res.w ();
+      result [indexConfig + 1] = res.x ();
+      result [indexConfig + 2] = res.y ();
+      result [indexConfig + 3] = res.z ();
     }
 
     void SO3JointConfig::difference (ConfigurationIn_t q1,
@@ -231,9 +232,11 @@ namespace hpp {
 		       q1 [indexConfig + 2], q1 [indexConfig + 3]);
       Quaternion_t p2 (q2 [indexConfig + 0], q2 [indexConfig + 1],
 		       q2 [indexConfig + 2], q2 [indexConfig + 3]);
-      Quaternion_t p (p2); p.conj (); p = p1*p;
-      value_type angle; fcl::Vec3f axis;
-      p.toAxisAngle (axis, angle);
+      Quaternion_t p (p1*p2.conjugate ());
+      value_type angle; Eigen::Matrix <value_type, 3, 1> axis;
+      AngleAxis_t angleAxis (p);
+      angle = angleAxis.angle ();
+      axis = angleAxis.axis ();
       result [indexVelocity + 0] = angle*axis [0];
       result [indexVelocity + 1] = angle*axis [1];
       result [indexVelocity + 2] = angle*axis [2];
