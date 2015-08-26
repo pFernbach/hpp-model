@@ -112,6 +112,24 @@ namespace hpp {
         disabledCollisions_.clear();
       }
 
+      /// Get the clearance
+      ///
+      /// The clearance is a distance, from the center of the gripper and along
+      /// the x-aixs, that "ensures" an object being at that distance is not
+      /// colliding with this gripper.
+      /// It also gives an order of magnitude of the size of the gripper.
+      value_type clearance () const
+      {
+        return clearance_;
+      }
+
+      /// Set the clearance
+      /// \sa clearance()
+      void clearance (const value_type& clearance)
+      {
+        clearance_ = clearance;
+      }
+
       //DifferentiableFunctionPtr_t createGrasp(HandlePtr_t& handle);
 
       GripperPtr_t clone () const;
@@ -131,6 +149,7 @@ namespace hpp {
         name_ (name),
 	joint_ (joint),
 	objectPositionInJoint_ (objectPositionInJoint),
+        clearance_ (0),
         disabledCollisions_(disabledCollisions)
       {
       }
@@ -145,6 +164,8 @@ namespace hpp {
       /// Joint of the robot that holds handles.
       JointPtr_t joint_;
       Transform3f objectPositionInJoint_;
+      /// Clearance
+      value_type clearance_;
       /// Joints that will be in collision with the object 
       ///  => disabled collision between object and bodies of the joints
       JointVector_t disabledCollisions_;
