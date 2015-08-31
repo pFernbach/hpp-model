@@ -172,9 +172,8 @@ namespace hpp {
       /// Weak pointer to itself
       GripperWkPtr_t weakPtr_;
     }; // class Gripper
+    std::ostream& operator<< (std::ostream& os, const Gripper& gripper);
   } // namespace model
 } // namespace hpp
-std::ostream& operator<< (std::ostream& os,
-			  const hpp::model::Gripper& gripper);
 
 #endif // HPP_MODEL_GRIPPER_HH

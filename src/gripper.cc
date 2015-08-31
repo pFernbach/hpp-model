@@ -52,11 +52,10 @@ namespace hpp {
         return os;
       }
 
-
-  } // namespace model
-} // namespace hpp
-std::ostream& operator<< (std::ostream& os,
-			  const hpp::model::Gripper& gripper)
+    std::ostream& operator<< (std::ostream& os, const Gripper& gripper)
 {
   return gripper.print (os);
 }
+
+  } // namespace model
+} // namespace hpp
