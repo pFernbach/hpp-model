@@ -40,6 +40,23 @@ inline hpp::model::matrix_t operator* (const hpp::model::matrix_t& m1,
   return result;
 }
 
+inline hpp::model::matrix_t operator* (const fcl::Matrix3f& m1,
+				       const hpp::model::matrix_t& m2)
+{
+  assert (m2.rows () == 3);
+  std::size_t cols = m2.cols ();
+  hpp::model::matrix_t result (3, cols);
+  for (std::size_t i=0; i<3; ++i) {
+    for (std::size_t k=0; k<cols; ++k) {
+      result (i, k) = 0;
+      for (std::size_t j=0; j<3; ++j) {
+	result (i, k) += m1 (i,j) * m2 (j, k);
+      }
+    }
+  }
+  return result;
+}
+
 namespace hpp {
   namespace model {
     inline void toEigen (const hpp::model::vector3_t& v,
