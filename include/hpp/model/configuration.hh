@@ -76,6 +76,21 @@ namespace hpp {
       }
     }
 
+    /// Normalize configuration
+    ///
+    /// Configuration space is a represented by a sub-manifold of a vector
+    /// space. Normalization consists in projecting a vector on this
+    /// sub-manifold. It mostly consists in normalizing quaternions for 
+    /// SO3 joints and 2D-vectors for unbounded rotations.
+    inline void normalize (const DevicePtr_t& robot, ConfigurationOut_t q)
+    {
+      const JointVector_t& jv (robot->getJointVector ());
+      for (model::JointVector_t::const_iterator itJoint = jv.begin ();
+	   itJoint != jv.end (); itJoint++) {
+	size_type indexConfig = (*itJoint)->rankInConfiguration ();
+	(*itJoint)->configuration ()->normalize (indexConfig, q);
+      }
+    }
     /// Write configuration in a string
     inline std::string displayConfig (ConfigurationIn_t q)
     {

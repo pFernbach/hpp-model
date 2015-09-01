@@ -108,12 +108,16 @@ namespace hpp {
 			       const size_type& indexVelocity,
 			       vectorOut_t result) const = 0;
 
+      /// Normalize configuration of joint
+      virtual void normalize (const size_type& index,
+			      ConfigurationOut_t result) const = 0;
       /// Uniformly sample the configuration space of the joint
       /// \param index index of first component of q corresponding to the joint.
       /// \retval result write joint configuration in
       /// result [index:index+nb dofs]
       virtual void uniformlySample (const size_type& index,
 				    ConfigurationOut_t result) const = 0;
+
       /// \name Bounds
       /// @{
       /// Set whether given degree of freedom is bounded
@@ -167,6 +171,9 @@ namespace hpp {
 			       const size_type& indexConfig,
 			       const size_type& indexVelocity,
 			       vectorOut_t result) const;
+      /// Normalize configuration of joint
+      virtual void normalize (const size_type& index,
+			      ConfigurationOut_t result) const;
       virtual void uniformlySample (const size_type& index,
 				    ConfigurationOut_t result) const;
     }; // class AnchorJointConfig
@@ -218,6 +225,9 @@ namespace hpp {
 			       const size_type& indexConfig,
 			       const size_type& indexVelocity,
 			       vectorOut_t result) const;
+      /// Normalize configuration of joint
+      virtual void normalize (const size_type& index,
+			      ConfigurationOut_t result) const;
       virtual void uniformlySample (const size_type& index,
 				    ConfigurationOut_t result) const;
     }; // class SO3JointConfig
@@ -281,6 +291,9 @@ namespace hpp {
 			       const size_type& indexVelocity,
 			       vectorOut_t result) const = 0;
 
+      /// Normalize configuration of joint
+      virtual void normalize (const size_type& index,
+			      ConfigurationOut_t result) const;
       virtual void uniformlySample (const size_type& index,
 				    ConfigurationOut_t result) const = 0;
     }; // class RotationJointConfig
@@ -306,6 +319,9 @@ namespace hpp {
 			 const size_type& indexConfig,
 			 const size_type& indexVelocity,
 			 vectorOut_t result) const;
+	/// Normalize configuration of joint
+	virtual void normalize (const size_type& index,
+			      ConfigurationOut_t result) const;
 	void uniformlySample (const size_type& index,
 			      ConfigurationOut_t result) const;
       }; // class UnBounded
@@ -330,6 +346,9 @@ namespace hpp {
 			 const size_type& indexConfig,
 			 const size_type& indexVelocity,
 			 vectorOut_t result) const;
+	/// Normalize configuration of joint
+	virtual void normalize (const size_type& index,
+				ConfigurationOut_t result) const;
 	void uniformlySample (const size_type& index,
 			      ConfigurationOut_t result) const;
       }; // class Bounded
@@ -383,6 +402,9 @@ namespace hpp {
 			       const size_type& indexVelocity,
 			       vectorOut_t result) const;
 
+      /// Normalize configuration of joint
+      virtual void normalize (const size_type& index,
+			      ConfigurationOut_t result) const;
       virtual void uniformlySample (const size_type& index,
 				    ConfigurationOut_t result) const;
     }; // class TranslationJointConfig

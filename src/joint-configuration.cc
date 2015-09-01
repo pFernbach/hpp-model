@@ -140,6 +140,12 @@ namespace hpp {
     {
     }
 
+    /// Normalize configuration of joint
+    void AnchorJointConfig::normalize (const size_type&,
+				       ConfigurationOut_t) const
+    {
+    }
+
     void AnchorJointConfig::uniformlySample (const size_type&,
 					     ConfigurationOut_t) const
     {
@@ -242,6 +248,21 @@ namespace hpp {
       result [indexVelocity + 2] = angle*axis [2];
     }
 
+    /// Normalize configuration of joint
+    void SO3JointConfig::normalize (const size_type& index,
+				    ConfigurationOut_t result) const
+    {
+      value_type p0 = result [index];
+      value_type p1 = result [index + 1];
+      value_type p2 = result [index + 2];
+      value_type p3 = result [index + 3];
+      value_type d = sqrt (p0*p0 + p1*p1 + p2*p2 + p3*p3);
+      result [index] /= d;
+      result [index + 1] /= d;
+      result [index + 2] /= d;
+      result [index + 3] /= d;
+    }
+
     void SO3JointConfig::uniformlySample (const size_type& index,
 					  ConfigurationOut_t result) const
     {
@@ -304,6 +325,14 @@ namespace hpp {
       result.segment <dimension> (indexVelocity) =
 	q1.segment <dimension> (indexConfig) -
 	q2.segment <dimension> (indexConfig);
+    }
+
+    /// Normalize configuration of joint
+    /// Do nothing
+    template <size_type dimension>
+    void TranslationJointConfig <dimension>::normalize
+    (const size_type&, ConfigurationOut_t) const
+    {
     }
 
     template <size_type dimension>
@@ -399,6 +428,17 @@ namespace hpp {
 	result [indexVelocity] = atan2 (s1*c2 - s2*c1, c1*c2 + s1*s2);
       }
 
+      /// Normalize configuration of joint
+      void UnBounded::normalize (const size_type& index,
+				 ConfigurationOut_t result) const
+      {
+	value_type c = result [index];
+	value_type s = result [index + 1];
+	value_type d = sqrt (c*c + s*s);
+	result [index] /= d;
+	result [index + 1] /= d;
+      }
+
       void UnBounded::uniformlySample (const size_type& index,
 				       ConfigurationOut_t result) const
       {
@@ -446,6 +486,13 @@ namespace hpp {
 				vectorOut_t result) const
       {
 	  result [indexVelocity] = q1 [indexConfig] - q2 [indexConfig];
+      }
+
+      /// Normalize configuration of joint
+      /// Do nothing.
+      void Bounded::normalize (const size_type&,
+			       ConfigurationOut_t) const
+      {
       }
 
       void Bounded::uniformlySample (const size_type& index,
