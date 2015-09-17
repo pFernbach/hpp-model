@@ -360,8 +360,8 @@ namespace hpp {
 
     namespace rotationJointConfig {
       void UnBounded::interpolate (ConfigurationIn_t q1, ConfigurationIn_t q2,
-				  const value_type& u, const size_type& index,
-				  ConfigurationOut_t result)
+				   const value_type& u, const size_type& index,
+				   ConfigurationOut_t result)
       {
 	// interpolate on the unit circle
 	double c1 = q1 [index], s1 = q1 [index + 1];
@@ -370,13 +370,17 @@ namespace hpp {
 	double sinTheta = c1*s2 - s1*c2;
 	double theta = atan2 (sinTheta, cosTheta);
 	assert (fabs (sin (theta) - sinTheta) < 1e-8);
-	if (fabs (theta) > 1e-6) {
+	if (fabs (theta) > 1e-6 && fabs (theta) < M_PI - 1e-6) {
 	  result.segment (index, 2) =
 	    (sin ((1-u)*theta)/sinTheta) * q1.segment (index, 2) +
 	    (sin (u*theta)/sinTheta) * q2.segment (index, 2);
-	} else {
+	} else if (fabs (theta) < 1e-6) { // theta = 0
 	  result.segment (index, 2) =
 	    (1-u) * q1.segment (index, 2) + u * q2.segment (index, 2);
+	} else { // theta = +-M_PI
+	  double theta0 = atan2 (q1 [index + 1], q1 [index]);
+	  result [index] = cos (theta0 + u * theta);
+	  result [index + 1] = sin (theta0 + u * theta);
 	}
       }
 
