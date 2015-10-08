@@ -45,6 +45,49 @@ namespace hpp {
       pinvmat = svd.matrixV () * singularValues_inv.asDiagonal()
         * svd.matrixU().adjoint();
     }
+
+    template < typename SVD >
+    void projectorOnKernel (const SVD svd,
+        Eigen::Ref <typename SVD::MatrixType> projector,
+        const value_type tolerance =
+        Eigen::NumTraits<typename SVD::MatrixType::Scalar>::epsilon())
+    {
+      eigen_assert(svd.computeU() && svd.computeV() && "Eigen::JacobiSVD "
+          "computation flags must be at least: ComputeThinU | ComputeThinV");
+
+      const typename SVD::SingularValuesType& singularValues
+        = svd.singularValues ();
+
+      typename SVD::SingularValuesType sv_invTimesSv =
+        (singularValues.array () >= tolerance).select (
+            SVD::SingularValuesType::Ones (singularValues.size()),
+            SVD::SingularValuesType::Zero (singularValues.size())
+            ).matrix ();
+
+      projector = svd.matrixV () * sv_invTimesSv.asDiagonal()
+        * svd.matrixV().adjoint();
+    }
+
+    template < typename SVD >
+    void projectorOnKernelOfInv (const SVD svd,
+        Eigen::Ref <typename SVD::MatrixType> projector,
+        const value_type tolerance =
+        Eigen::NumTraits<typename SVD::MatrixType::Scalar>::epsilon())
+    {
+      eigen_assert(svd.computeU() && svd.computeV() && "Eigen::JacobiSVD "
+          "computation flags must be at least: ComputeThinU | ComputeThinV");
+
+      const typename SVD::SingularValuesType& singularValues
+        = svd.singularValues ();
+
+      typename SVD::SingularValuesType sv_invTimesSv =
+        (singularValues.array () >= tolerance).select (
+            SVD::SingularValuesType::Ones (singularValues.size()),
+            SVD::SingularValuesType::Zero (singularValues.size())
+            ).matrix ();
+
+      projector = svd.matrixU () * sv_invTimesSv.asDiagonal()
+        * svd.matrixU().adjoint();
     }
   } // namespace model
 } // namespace hpp
