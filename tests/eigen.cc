@@ -20,6 +20,8 @@
 #include <hpp/model/eigen.hh>
 
 using hpp::model::pseudoInverse;
+using hpp::model::projectorOnKernel;
+using hpp::model::projectorOnKernelOfInv;
 using hpp::model::matrix_t;
 using hpp::model::value_type;
 
@@ -32,8 +34,13 @@ BOOST_AUTO_TEST_CASE(testPseudoInverse)
   matrix_t Mpinv (cols, rows);
   for (int i = 0; i < 1000; ++i) {
     matrix_t M = matrix_t::Random (rows, cols);
+    matrix_t PK (cols, cols);
+    matrix_t PKinv (rows, rows);
+
     svd.compute (M);
     pseudoInverse <SVD> (svd, Mpinv, tol); 
+    projectorOnKernel <SVD> (svd, PK, tol); 
+    projectorOnKernelOfInv <SVD> (svd, PKinv, tol); 
     matrix_t Ir = M * Mpinv;
     matrix_t Ic = Mpinv * M;
     matrix_t _M = M * Ic;
@@ -42,5 +49,8 @@ BOOST_AUTO_TEST_CASE(testPseudoInverse)
     BOOST_CHECK_MESSAGE (_Mpinv.isApprox (Mpinv), "M+ = M+ * M * M+ failed");
     BOOST_CHECK_MESSAGE (Ir.adjoint ().isApprox (Ir), "(M * M+)* = M * M+ failed");
     BOOST_CHECK_MESSAGE (Ic.adjoint ().isApprox (Ic), "(M+ * M)* = M+ * M failed");
+
+    BOOST_CHECK_MESSAGE (PK.isApprox (Ic), "PK = M+ * M failed");
+    BOOST_CHECK_MESSAGE (PKinv.isApprox (Ir), "PKinv = M * M+ failed");
   }
 }
