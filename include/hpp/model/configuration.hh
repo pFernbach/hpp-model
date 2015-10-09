@@ -55,6 +55,27 @@ namespace hpp {
       }
     }
 
+    /// Interpolate between two configurations of the robot
+    /// \param robot robot that describes the kinematic chain
+    /// \param q0, q1, two configurations to interpolate
+    /// \param u in [0,1] position along the interpolation: q0 for u=0,
+    /// q1 for u=1
+    /// \retval result interpolated configuration
+    inline void interpolate  (const DevicePtr_t& robot,
+			      ConfigurationIn_t q0,
+			      ConfigurationIn_t q1,
+                              const value_type& u,
+                              ConfigurationOut_t result)
+    {
+      const JointVector_t& jv (robot->getJointVector ());
+      for (model::JointVector_t::const_iterator itJoint = jv.begin ();
+          itJoint != jv.end (); itJoint++) {
+        size_type indexConfig = (*itJoint)->rankInConfiguration ();
+        (*itJoint)->configuration ()->interpolate
+          (q0, q1, u, indexConfig, result);
+      }
+    }
+
     /// Difference between two configurations as a vector
     ///
     /// \param robot robot that describes the kinematic chain
