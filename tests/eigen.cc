@@ -22,25 +22,40 @@
 using hpp::model::pseudoInverse;
 using hpp::model::projectorOnKernel;
 using hpp::model::projectorOnKernelOfInv;
+using hpp::model::projectorOnSpan;
+using hpp::model::projectorOnSpanOfInv;
 using hpp::model::matrix_t;
 using hpp::model::value_type;
 
-BOOST_AUTO_TEST_CASE(testPseudoInverse)
+BOOST_AUTO_TEST_CASE(eigen_pseudoInverse_features)
 {
   const std::size_t rows = 4, cols = 6;
   const value_type tol = 1e-6;
   typedef Eigen::JacobiSVD <matrix_t> SVD;
-  SVD svd (rows, cols, Eigen::ComputeThinU | Eigen::ComputeThinV);
+  const bool computeFullU = false;
+  const bool computeFullV = true;
+  int computationFlags =
+    ( computeFullU ? Eigen::ComputeFullU : Eigen::ComputeThinU )
+    | ( computeFullV ? Eigen::ComputeFullV : Eigen::ComputeThinV );
+  SVD svd (rows, cols, computationFlags);
+  svd.setThreshold (tol);
   matrix_t Mpinv (cols, rows);
   for (int i = 0; i < 1000; ++i) {
     matrix_t M = matrix_t::Random (rows, cols);
     matrix_t PK (cols, cols);
+    matrix_t PS (cols, cols);
     matrix_t PKinv (rows, rows);
+    matrix_t PSinv (rows, rows);
 
     svd.compute (M);
-    pseudoInverse <SVD> (svd, Mpinv, tol); 
-    projectorOnKernel <SVD> (svd, PK, tol); 
-    projectorOnKernelOfInv <SVD> (svd, PKinv, tol); 
+    BOOST_CHECK_MESSAGE ((svd.matrixV().adjoint() * svd.matrixV() - matrix_t::Identity (svd.matrixV().cols(),svd.matrixV().cols())).isZero(),
+                         svd.matrixV().adjoint() * svd.matrixV() - matrix_t::Identity (svd.matrixV().cols(),svd.matrixV().cols()));
+    pseudoInverse          <SVD> (svd, Mpinv); 
+    projectorOnKernel      <SVD> (svd, PK, computeFullV); 
+    projectorOnSpan        <SVD> (svd, PS);
+    projectorOnKernelOfInv <SVD> (svd, PKinv, computeFullU); 
+    projectorOnSpanOfInv   <SVD> (svd, PSinv); 
+    
     matrix_t Ir = M * Mpinv;
     matrix_t Ic = Mpinv * M;
     matrix_t _M = M * Ic;
@@ -50,7 +65,10 @@ BOOST_AUTO_TEST_CASE(testPseudoInverse)
     BOOST_CHECK_MESSAGE (Ir.adjoint ().isApprox (Ir), "(M * M+)* = M * M+ failed");
     BOOST_CHECK_MESSAGE (Ic.adjoint ().isApprox (Ic), "(M+ * M)* = M+ * M failed");
 
-    BOOST_CHECK_MESSAGE (PK.isApprox (Ic), "PK = M+ * M failed");
-    BOOST_CHECK_MESSAGE (PKinv.isApprox (Ir), "PKinv = M * M+ failed");
+    BOOST_CHECK_MESSAGE (PS.isApprox (Ic), "PK = M+ * M failed");
+    BOOST_CHECK_MESSAGE (PSinv.isApprox (Ir), "PKinv = M * M+ failed");
+
+    BOOST_CHECK_MESSAGE ((PS + PK)      .isApprox (matrix_t::Identity(cols, cols)), "PS + PK = I failed");
+    BOOST_CHECK_MESSAGE ((PSinv + PKinv).isApprox (matrix_t::Identity(rows, rows)), "PSinv + PKinv = I failed");
   }
 }

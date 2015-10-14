@@ -24,70 +24,101 @@
 
 namespace hpp {
   namespace model {
-    template < typename SVD >
-    void pseudoInverse(const SVD& svd,
-        Eigen::Ref <typename SVD::MatrixType> pinvmat,
-        const value_type tolerance =
-        Eigen::NumTraits<typename SVD::MatrixType::Scalar>::epsilon())
+    template <typename SVD>
+      static Eigen::Ref<const typename SVD::MatrixUType>
+      getU1 (const SVD& svd)
+    {
+      return svd.matrixU().leftCols (svd.rank());
+    }
+
+    template <typename SVD>
+      static Eigen::Ref<const typename SVD::MatrixUType>
+      getU2 (const SVD& svd)
+    {
+      return svd.matrixU().rightCols (svd.matrixU().cols() - svd.rank ());
+    }
+
+    template <typename SVD>
+      static Eigen::Ref<const typename SVD::MatrixUType>
+      getV1 (const SVD& svd)
+    {
+      return svd.matrixV().leftCols (svd.rank());
+    }
+
+    template <typename SVD>
+      static Eigen::Ref<const typename SVD::MatrixUType>
+      getV2 (const SVD& svd)
+    {
+      return svd.matrixV().rightCols (svd.matrixV().cols() - svd.rank ());
+    }
+
+    template < typename SVD>
+    static void pseudoInverse(const SVD& svd,
+        Eigen::Ref <typename SVD::MatrixType> pinvmat)
     {
       eigen_assert(svd.computeU() && svd.computeV() && "Eigen::JacobiSVD "
           "computation flags must be at least: ComputeThinU | ComputeThinV");
 
-      const typename SVD::SingularValuesType& singularValues
-        = svd.singularValues ();
-
       typename SVD::SingularValuesType singularValues_inv =
-        (singularValues.array () >= tolerance).select (
-            singularValues.array ().cwiseInverse (),
-            SVD::SingularValuesType::Zero (singularValues.size())
-            ).matrix ();
+        svd.singularValues().segment (0,svd.rank()).cwiseInverse ();
 
-      pinvmat = svd.matrixV () * singularValues_inv.asDiagonal()
-        * svd.matrixU().adjoint();
+      pinvmat.noalias() =
+        getV1<SVD> (svd) * singularValues_inv.asDiagonal() *
+        getU1<SVD> (svd).adjoint();
+    }
+
+    template < typename SVD >
+    void projectorOnSpan (const SVD svd,
+        Eigen::Ref <typename SVD::MatrixType> projector)
+    {
+      eigen_assert(svd.computeU() && svd.computeV() && "Eigen::JacobiSVD "
+          "computation flags must be at least: ComputeThinU | ComputeThinV");
+
+      projector.noalias() = getV1<SVD> (svd) * getV1<SVD>(svd).adjoint();
+    }
+
+    template < typename SVD >
+    void projectorOnSpanOfInv (const SVD svd,
+        Eigen::Ref <typename SVD::MatrixType> projector)
+    {
+      eigen_assert(svd.computeU() && svd.computeV() && "Eigen::JacobiSVD "
+          "computation flags must be at least: ComputeThinU | ComputeThinV");
+
+      projector.noalias() = getU1<SVD>(svd) * getU1<SVD>(svd).adjoint();
     }
 
     template < typename SVD >
     void projectorOnKernel (const SVD svd,
         Eigen::Ref <typename SVD::MatrixType> projector,
-        const value_type tolerance =
-        Eigen::NumTraits<typename SVD::MatrixType::Scalar>::epsilon())
+        const bool& computeFullV = false)
     {
-      eigen_assert(svd.computeU() && svd.computeV() && "Eigen::JacobiSVD "
-          "computation flags must be at least: ComputeThinU | ComputeThinV");
+      eigen_assert(svd.computeV() && "Eigen::JacobiSVD "
+          "computation flags must be at least: ComputeThinV");
 
-      const typename SVD::SingularValuesType& singularValues
-        = svd.singularValues ();
-
-      typename SVD::SingularValuesType sv_invTimesSv =
-        (singularValues.array () >= tolerance).select (
-            SVD::SingularValuesType::Ones (singularValues.size()),
-            SVD::SingularValuesType::Zero (singularValues.size())
-            ).matrix ();
-
-      projector = svd.matrixV () * sv_invTimesSv.asDiagonal()
-        * svd.matrixV().adjoint();
+      if (computeFullV)
+        projector.noalias() = getV2<SVD> (svd) * getV2<SVD>(svd).adjoint();
+      else {
+        projector.noalias() = - getV1<SVD> (svd) * getV1<SVD>(svd).adjoint();
+        projector.diagonal().noalias () += vector_t::Ones(svd.matrixV().rows());
+      }
     }
 
     template < typename SVD >
     void projectorOnKernelOfInv (const SVD svd,
         Eigen::Ref <typename SVD::MatrixType> projector,
-        const value_type tolerance =
-        Eigen::NumTraits<typename SVD::MatrixType::Scalar>::epsilon())
+        const bool& computeFullU = false)
     {
-      eigen_assert(svd.computeU() && svd.computeV() && "Eigen::JacobiSVD "
-          "computation flags must be at least: ComputeThinU | ComputeThinV");
+      eigen_assert(svd.computeU() && "Eigen::JacobiSVD "
+          "computation flags must be at least: ComputeThinU");
 
-      const typename SVD::SingularValuesType& singularValues
-        = svd.singularValues ();
-
-      typename SVD::SingularValuesType sv_invTimesSv =
-        (singularValues.array () >= tolerance).select (
-            SVD::SingularValuesType::Ones (singularValues.size()),
-            SVD::SingularValuesType::Zero (singularValues.size())
-            ).matrix ();
-
-      projector = svd.matrixU () * sv_invTimesSv.asDiagonal()
-        * svd.matrixU().adjoint();
+      if (computeFullU) {
+        // U2 * U2*
+        projector.noalias() = getU2<SVD>(svd) * getU2<SVD>(svd).adjoint();
+      } else {
+        // I - U1 * U1*
+        projector.noalias() = - getU1<SVD>(svd) * getU1<SVD>(svd).adjoint();
+        projector.diagonal().noalias () += vector_t::Ones(svd.matrixU().rows());
+      }
     }
   } // namespace model
 } // namespace hpp
