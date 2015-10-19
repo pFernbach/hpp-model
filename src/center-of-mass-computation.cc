@@ -64,7 +64,7 @@ namespace hpp {
     void CenterOfMassComputation::compute (const Device::Computation_t& flag)
     {
       assert (mass_ > 0);
-      if (flag | Device::COM) {
+      if (flag & Device::COM) {
         massCom_.setValue (0);
         for (JointTreeList::iterator it = rootJointTrees_.begin ();
             it != rootJointTrees_.end (); ++it) {
@@ -73,7 +73,7 @@ namespace hpp {
         }
         com_ = massCom_ / mass_;
       }
-      if (flag | Device::JACOBIAN) {
+      if (flag & Device::JACOBIAN) {
         jacobianCom_.setZero ();
         for (JointTreeList::iterator it = jointTrees_.begin ();
             it != jointTrees_.end (); ++it)
