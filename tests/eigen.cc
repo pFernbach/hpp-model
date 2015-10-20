@@ -17,6 +17,8 @@
 #define BOOST_TEST_MODULE EIGEN_FEATURE
 #include <boost/test/unit_test.hpp>
 
+#include <Eigen/Dense>
+
 #include <hpp/model/eigen.hh>
 
 using hpp::model::pseudoInverse;
