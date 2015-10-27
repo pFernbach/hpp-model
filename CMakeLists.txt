@@ -61,7 +61,6 @@ SET(${PROJECT_NAME}_HEADERS
   include/hpp/model/gripper.hh
   include/hpp/model/center-of-mass-computation.hh
   include/hpp/model/debug.hh
-  include/hpp/model/eigen.hh
   )
 
 # Declare dependencies
