@@ -83,7 +83,7 @@ namespace hpp {
     /// \param q2 second configuration,
     /// \retval result difference as a vector \f$\textbf{v}\f$ such that
     /// q2 is the result of method integrate from q1 with vector
-    /// $\f\textbf{v}\f$
+    /// \f$\textbf{v}\f$
     void inline difference (const DevicePtr_t& robot, ConfigurationIn_t q1,
 			    ConfigurationIn_t q2, vectorOut_t result)
     {
