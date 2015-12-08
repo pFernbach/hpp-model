@@ -103,6 +103,12 @@ namespace hpp {
       /// Get vector of joints
       const JointVector_t& getJointVector () const;
 
+      /// Get the joint at configuration rank r
+      JointPtr_t getJointAtConfigRank (const size_type& r) const;
+
+      /// Get the joint at velocity rank r
+      JointPtr_t getJointAtVelocityRank (const size_type& r) const;
+
       /// Get joint by name
       /// \param name name of the joint.
       /// \throw runtime_error if device has no joint with this name
@@ -342,6 +348,8 @@ namespace hpp {
       DistanceResults_t distances_;
       JointByName_t jointByName_;
       JointVector_t jointVector_;
+      JointVector_t jointByConfigRank_;
+      JointVector_t jointByVelocityRank_;
       JointPtr_t rootJoint_;
       size_type numberDof_;
       size_type configSize_;

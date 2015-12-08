@@ -33,7 +33,8 @@ namespace hpp {
     Device::Device(const std::string& name) :
       name_ (name), distances_ (),
       jointByName_ (),
-      jointVector_ (), rootJoint_ (0x0), numberDof_ (0),
+      jointVector_ (), jointByConfigRank_ (), jointByVelocityRank_ (),
+      rootJoint_ (0x0), numberDof_ (0),
       configSize_ (0), currentConfiguration_ (configSize_),
       currentVelocity_ (numberDof_), 	currentAcceleration_ (numberDof_),
       com_ (), jacobianCom_ (3, 0), mass_ (0), upToDate_ (false),
@@ -414,6 +415,10 @@ namespace hpp {
       jointVector_.push_back (joint);
       joint->rankInConfiguration_ = configSize_;
       joint->rankInVelocity_ = numberDof_;
+      for (size_type i = 0; i < joint->configSize(); ++i)
+        jointByConfigRank_.push_back (joint);
+      for (size_type i = 0; i < joint->numberDof(); ++i)
+        jointByVelocityRank_.push_back (joint);
       numberDof_ += joint->numberDof ();
       configSize_ += joint->configSize ();
       resizeState (joint);
@@ -470,6 +475,16 @@ namespace hpp {
     const JointVector_t& Device::getJointVector () const
     {
       return jointVector_;
+    }
+
+    JointPtr_t Device::getJointAtConfigRank (const size_type& r) const
+    {
+      return jointByConfigRank_[r];
+    }
+
+    JointPtr_t Device::getJointAtVelocityRank (const size_type& r) const
+    {
+      return jointByVelocityRank_[r];
     }
 
     JointPtr_t Device::getJointByName (const std::string& name) const
