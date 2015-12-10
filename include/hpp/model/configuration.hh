@@ -53,6 +53,8 @@ namespace hpp {
 						 indexConfig, indexVelocity,
 						 result);
       }
+      const size_type& dim = robot->extraConfigSpace().dimension();
+      result.tail (dim) = configuration.tail (dim) + velocity.tail (dim);
     }
 
     /// Interpolate between two configurations of the robot
@@ -74,6 +76,8 @@ namespace hpp {
         (*itJoint)->configuration ()->interpolate
           (q0, q1, u, indexConfig, result);
       }
+      const size_type& dim = robot->extraConfigSpace().dimension();
+      result.tail (dim) = u * q1.tail (dim) + (1-u) * q0.tail (dim);
     }
 
     /// Difference between two configurations as a vector
@@ -95,6 +99,8 @@ namespace hpp {
 	(*itJoint)->configuration ()->difference (q1, q2, indexConfig,
 						  indexVelocity, result);
       }
+      const size_type& dim = robot->extraConfigSpace().dimension();
+      result.tail (dim) = q2.tail (dim) - q1.tail (dim);
     }
 
     /// Normalize configuration
