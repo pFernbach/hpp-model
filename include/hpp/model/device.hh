@@ -153,7 +153,7 @@ namespace hpp {
       }
 
       /// Set dimension of extra configuration space
-      void setDimensionExtraConfigSpace (const size_type& dimension)
+      virtual void setDimensionExtraConfigSpace (const size_type& dimension)
       {
 	extraConfigSpace_.setDimension (dimension);
 	resizeState (0x0);
