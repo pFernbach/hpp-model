@@ -73,11 +73,11 @@ ADD_REQUIRED_DEPENDENCY("hpp-fcl >= 0.2.9")
 # Compile documentation
 CONFIGURE_FILE(doc/main.hh.in doc/main.hh)
 
-# Add dependency toward hpp-model library in pkg-config file.
-PKG_CONFIG_APPEND_LIBS("hpp-model")
-
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(tests)
+
+# Add dependency toward hpp-model library in pkg-config file.
+PKG_CONFIG_APPEND_LIBS("hpp-model")
 
 SETUP_PROJECT_FINALIZE()
 SETUP_PROJECT_CPACK()

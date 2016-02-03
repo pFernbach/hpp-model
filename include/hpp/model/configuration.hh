@@ -86,8 +86,10 @@ namespace hpp {
     /// \param q1 first configuration,
     /// \param q2 second configuration,
     /// \retval result difference as a vector \f$\textbf{v}\f$ such that
-    /// q2 is the result of method integrate from q1 with vector
+    /// q1 is the result of method integrate from q2 with vector
     /// \f$\textbf{v}\f$
+    /// \note If the configuration space is a vector space, this is
+    /// \f$\textbf{v} = q_1 - q_2\f$
     void inline difference (const DevicePtr_t& robot, ConfigurationIn_t q1,
 			    ConfigurationIn_t q2, vectorOut_t result)
     {
