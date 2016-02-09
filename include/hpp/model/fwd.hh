@@ -60,8 +60,8 @@ namespace hpp {
     typedef matrix_t::Index size_type;
     typedef fcl::Matrix3f matrix3_t;
     typedef fcl::Vec3f vector3_t;
-    typedef Eigen::Matrix <value_type, 6, Eigen::Dynamic> JointJacobian_t;
-    typedef Eigen::Matrix <value_type, 3, Eigen::Dynamic> ComJacobian_t;
+    typedef Eigen::Matrix <value_type, 6, Eigen::Dynamic, Eigen::RowMajor> JointJacobian_t;
+    typedef Eigen::Matrix <value_type, 3, Eigen::Dynamic, Eigen::RowMajor> ComJacobian_t;
     typedef Eigen::Block <JointJacobian_t, 3, Eigen::Dynamic>
     HalfJointJacobian_t;
 
