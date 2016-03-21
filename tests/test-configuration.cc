@@ -71,6 +71,7 @@ DevicePtr_t createRobot ()
   // SO3 joint
   position.setIdentity ();
   JointPtr_t j1 = factory.createJointSO3 (position);
+  j1->name ("so3");
   joint->addChildJoint (j1);
 
   return robot;
@@ -109,14 +110,31 @@ BOOST_AUTO_TEST_CASE(difference_and_integrate)
   Configuration_t q1; q1.resize (robot->configSize ());
   Configuration_t q2; q2.resize (robot->configSize ());
   vector_t q1_minus_q0; q1_minus_q0.resize (robot->numberDof ());
+  const value_type eps_dist = robot->numberDof() * sqrt(Eigen::NumTraits<value_type>::epsilon());
   for (size_type i=0; i<10000; ++i) {
     shootRandomConfig (robot, q0);
     shootRandomConfig (robot, q1);
+
     hpp::model::difference (robot, q1, q0, q1_minus_q0);
     hpp::model::integrate (robot, q0, q1_minus_q0, q2);
-    std::cout << "q1=" << q1.transpose () << std::endl;
-    std::cout << "q2=" << q2.transpose () << std::endl;
-    std::cout << "(q2 - q1).norm () = " << (q2 - q1).norm () << std::endl;
-    BOOST_CHECK ((q2 - q1).norm () < 1e-10);
+
+    // Check that the distance is the norm of the difference
+    value_type distance = hpp::model::distance (robot, q0, q1);
+    BOOST_CHECK_MESSAGE (distance - q1_minus_q0.norm () < Eigen::NumTraits<value_type>::dummy_precision(),
+        "\nThe distance is not the norm of the difference\n" <<
+        "q0=" << q0.transpose () << "\n" <<
+        "q1=" << q1.transpose () << "\n" <<
+        "distance=" << distance  << "\n" <<
+        "(q1 - q0).norm () = " << q1_minus_q0.norm ()
+        );
+
+    // Check that distance (q0 + (q1 - q0), q1) is zero
+    distance = hpp::model::distance (robot, q1, q2);
+    BOOST_CHECK_MESSAGE (distance < eps_dist,
+        "\n(q0 + (q1 - q0)) is not equivalent to q1\n" <<
+        "q1=" << q1.transpose () << "\n" <<
+        "q2=" << q2.transpose () << "\n" <<
+        "distance=" << distance
+        );
   }
 }

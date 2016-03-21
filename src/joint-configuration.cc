@@ -117,6 +117,13 @@ namespace hpp {
     {
     }
 
+    value_type AnchorJointConfig::squaredDistance (ConfigurationIn_t,
+					           ConfigurationIn_t,
+					           const size_type&) const
+    {
+      return 0;
+    }
+
     value_type AnchorJointConfig::distance (ConfigurationIn_t,
 					    ConfigurationIn_t,
 					    const size_type&) const
@@ -152,6 +159,8 @@ namespace hpp {
     }
 
     /// Compute quaternion and angle from a SO(3) joint configuration
+    /// \note this angle corresponds to the angle between q1 and q2, in \f$ \mathbb{R}^4 \f$.
+    ///       The angle of the rotation going from q1 to q2 is half this angle.
     ///
     /// \param q1, q2, robot configurations
     /// \param index index of joint configuration in robot configuration vector
@@ -199,6 +208,14 @@ namespace hpp {
       }
     }
 
+    value_type SO3JointConfig::squaredDistance (ConfigurationIn_t q1,
+                                                ConfigurationIn_t q2,
+                                                const size_type& index) const
+    {
+      const value_type d (distance (q1, q2, index));
+      return d*d;
+    }
+
     value_type SO3JointConfig::distance (ConfigurationIn_t q1,
 					 ConfigurationIn_t q2,
 					 const size_type& index) const
@@ -207,7 +224,7 @@ namespace hpp {
       value_type theta = angleBetweenQuaternions (q1, q2, index, cosIsNegative);
       assert (theta >= 0);
       assert (M_PI - theta >= 0);
-      return (cosIsNegative) ? M_PI - theta : theta;
+      return 2 * (cosIsNegative ? M_PI - theta : theta);
     }
 
     void SO3JointConfig::integrate (ConfigurationIn_t q,
@@ -300,6 +317,13 @@ namespace hpp {
       result.segment <dimension> (index) =
 	(1-u) * q1.segment <dimension> (index) +
 	u * q2.segment <dimension> (index);
+    }
+
+    template <size_type dimension>
+    value_type TranslationJointConfig <dimension>::squaredDistance
+    (ConfigurationIn_t q1, ConfigurationIn_t q2, const size_type& index) const
+    {
+      return (q2.segment <dimension> (index) - q1.segment <dimension> (index)).squaredNorm ();
     }
 
     template <size_type dimension>
@@ -401,6 +425,14 @@ namespace hpp {
 	}
       }
 
+      value_type UnBounded::squaredDistance (ConfigurationIn_t q1,
+				             ConfigurationIn_t q2,
+				             const size_type& index) const
+      {
+        const value_type d (distance (q1, q2, index));
+	return d*d;
+      }
+
       value_type UnBounded::distance (ConfigurationIn_t q1,
 				      ConfigurationIn_t q2,
 				      const size_type& index) const
@@ -473,6 +505,14 @@ namespace hpp {
       {
 	// linearly interpolate
 	result [index] = (1-u) * q1 [index] + u * q2 [index];
+      }
+
+      value_type Bounded::squaredDistance (ConfigurationIn_t q1,
+                                           ConfigurationIn_t q2,
+                                           const size_type& index) const
+      {
+	// linearly interpolate
+        return (q2.segment<1>(index) - q1.segment<1>(index)).squaredNorm ();
       }
 
       value_type Bounded::distance (ConfigurationIn_t q1, ConfigurationIn_t q2,

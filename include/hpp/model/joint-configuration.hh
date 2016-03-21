@@ -66,6 +66,14 @@ namespace hpp {
 				const size_type& index,
 				ConfigurationOut_t result) = 0;
 
+      /// Squared distance between two configurations of the joint
+      /// \param q1, q2 two configurations of the robot
+      /// \param index index of first component of q1 and q2 corresponding to
+      /// the joint.
+      virtual value_type squaredDistance (ConfigurationIn_t q1,
+				          ConfigurationIn_t q2,
+				          const size_type& index) const = 0;
+
       /// Distance between two configurations of the joint
       /// \param q1, q2 two configurations of the robot
       /// \param index index of first component of q1 and q2 corresponding to
@@ -160,6 +168,9 @@ namespace hpp {
       virtual value_type distance (ConfigurationIn_t q1,
 				   ConfigurationIn_t q2,
 				   const size_type& index) const;
+      value_type squaredDistance (ConfigurationIn_t q1,
+				  ConfigurationIn_t q2,
+				  const size_type& index) const;
 
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,
@@ -198,6 +209,9 @@ namespace hpp {
       virtual value_type distance (ConfigurationIn_t q1,
 				   ConfigurationIn_t q2,
 				   const size_type& index) const;
+      value_type squaredDistance (ConfigurationIn_t q1,
+				  ConfigurationIn_t q2,
+				  const size_type& index) const;
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,
 			      const size_type& indexConfig,
@@ -311,6 +325,9 @@ namespace hpp {
 			  ConfigurationOut_t result);
 	value_type distance (ConfigurationIn_t q1, ConfigurationIn_t q2,
 			     const size_type& index) const;
+        value_type squaredDistance (ConfigurationIn_t q1,
+				    ConfigurationIn_t q2,
+				    const size_type& index) const;
 	void integrate (ConfigurationIn_t q, vectorIn_t v,
 			const size_type& indexConfig,
 			const size_type& indexVelocity,
@@ -338,6 +355,9 @@ namespace hpp {
 			  ConfigurationOut_t result);
 	value_type distance (ConfigurationIn_t q1, ConfigurationIn_t q2,
 			     const size_type& index) const;
+        value_type squaredDistance (ConfigurationIn_t q1,
+				    ConfigurationIn_t q2,
+				    const size_type& index) const;
 	void integrate (ConfigurationIn_t q, vectorIn_t v,
 			const size_type& indexConfig,
 			const size_type& indexVelocity,
@@ -375,6 +395,9 @@ namespace hpp {
       virtual value_type distance (ConfigurationIn_t q1,
 				   ConfigurationIn_t q2,
 				   const size_type& index) const;
+      value_type squaredDistance (ConfigurationIn_t q1,
+				  ConfigurationIn_t q2,
+				  const size_type& index) const;
 
       virtual void integrate (ConfigurationIn_t q,
 			      vectorIn_t v,

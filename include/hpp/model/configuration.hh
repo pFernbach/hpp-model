@@ -105,6 +105,26 @@ namespace hpp {
       result.tail (dim) = q2.tail (dim) - q1.tail (dim);
     }
 
+    /// Distance between two configuration.
+    ///
+    /// \param robot robot that describes the kinematic chain
+    /// \param q1 first configuration,
+    /// \param q2 second configuration,
+    inline value_type distance (const DevicePtr_t& robot, ConfigurationIn_t q1,
+			  ConfigurationIn_t q2)
+    {
+      value_type result = 0;
+      const JointVector_t& jv (robot->getJointVector ());
+      for (model::JointVector_t::const_iterator itJoint = jv.begin ();
+	   itJoint != jv.end (); itJoint++) {
+	size_type iC = (*itJoint)->rankInConfiguration ();
+        result += (*itJoint)->configuration ()->squaredDistance (q1, q2, iC);
+      }
+      const size_type& dim = robot->extraConfigSpace().dimension();
+      result += (q2.tail (dim) - q1.tail (dim)).squaredNorm ();
+      return sqrt (result);
+    }
+
     /// Normalize configuration
     ///
     /// Configuration space is a represented by a sub-manifold of a vector
