@@ -20,8 +20,11 @@
 #ifndef HPP_MODEL_FCL_TO_EIGEN_HH
 # define HPP_MODEL_FCL_TO_EIGEN_HH
 
+# include <hpp/fcl/config-fcl.hh>
 # include <hpp/fcl/math/transform.h>
 # include <hpp/model/fwd.hh>
+
+# if ! FCL_HAVE_EIGEN
 
 inline hpp::model::matrix_t operator* (const hpp::model::matrix_t& m1,
 				       const fcl::Matrix3f& m2)
@@ -60,7 +63,7 @@ inline hpp::model::matrix_t operator* (const fcl::Matrix3f& m1,
 namespace hpp {
   namespace model {
     inline void toEigen (const hpp::model::vector3_t& v,
-			 Eigen::Matrix <value_type, 3, 1>& res)
+                         Eigen::Matrix <value_type, 3, 1>& res)
     {
       res [0] = v [0]; res [1] = v [1]; res [2] = v [2];
     }
@@ -80,5 +83,21 @@ namespace hpp {
     }
   } // namespace model
 } // namespace hpp
+
+# else
+
+namespace hpp {
+  namespace model {
+    /// For compatibility only
+    template <typename Derived>
+    inline void toEigen (const Eigen::MatrixBase<Derived>& v,
+			 Eigen::Ref<matrix_t> res)
+    {
+      res = v.derived();
+    }
+  } // namespace model
+} // namespace hpp
+
+# endif
 
 #endif // HPP_MODEL_FCL_TO_EIGEN_HH

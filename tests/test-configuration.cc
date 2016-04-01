@@ -35,6 +35,7 @@ using boost::test_tools::output_test_stream;
 #include <hpp/util/debug.hh>
 #include <hpp/model/configuration.hh>
 #include <hpp/model/object-factory.hh>
+#include <hpp/model/fcl-to-eigen.hh>
 
 using hpp::model::vector_t;
 using hpp::model::vectorIn_t;
@@ -230,4 +231,22 @@ BOOST_AUTO_TEST_CASE(interpolate)
         "distance=" << distance
         );
   }
+}
+
+BOOST_AUTO_TEST_CASE(toEigenFunction)
+{
+  // Compilation check only.
+
+  using namespace hpp::model;
+  vector3_t fcl_v;
+  matrix3_t fcl_m;
+  fcl_v.setValue (1);
+  fcl_m.setValue (3);
+
+  vector_t eigen_v(3);
+  matrix_t eigen_m(3,3);
+
+  toEigen (fcl_v, eigen_v);
+  toEigen (fcl_m, eigen_m);
+  toEigen (fcl_v, eigen_m.col(0));
 }
