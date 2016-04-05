@@ -465,6 +465,7 @@ namespace hpp {
 	throw std::runtime_error ("The device has no root joint.");
       }
       rootJoint_->positionInParentFrame_ = position;
+      upToDate_ = false;
     }
 
     JointPtr_t Device::rootJoint () const
