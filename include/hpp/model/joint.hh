@@ -177,10 +177,7 @@ namespace hpp {
 	return positionInParentFrame_;
       }
       /// Set position of joint in parent frame
-      void positionInParentFrame (const Transform3f& p)
-      {
-	positionInParentFrame_ = p;
-      }
+      void positionInParentFrame (const Transform3f& p);
       ///\}
 
       /// \name Bounds

@@ -107,6 +107,13 @@ namespace hpp {
       robot->computeMass ();
     }
 
+    void Joint::positionInParentFrame (const Transform3f& p)
+    {
+      DevicePtr_t r = robot_.lock ();
+      if (r) r->upToDate_ = false;
+      positionInParentFrame_ = p;
+    }
+
     void Joint::isBounded (size_type rank, bool bounded)
     {
       configuration_->isBounded (rank, bounded);
