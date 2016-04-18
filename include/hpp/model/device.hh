@@ -333,8 +333,18 @@ namespace hpp {
       ///
       void init(const DeviceWkPtr_t& weakPtr);
 
+      ///
+      /// \brief Initialization of of a clone device.
+      ///
+      void initCopy(const DeviceWkPtr_t& weakPtr, const Device& model);
+
+
       /// Recompute number of distance pairs
       void updateDistances ();
+
+    private:
+      /// \brief Copy Constructor
+      Device(const Device& device);
 
     private:
       void computeJointPositions ();

@@ -89,7 +89,7 @@ namespace hpp {
 	  positionInJointFrame_.setIdentity ();
 	}
       /// Wrap fcl collision object and put at given position
-      explicit CollisionObject (fcl::CollisionGeometryPtr_t geometry,
+      explicit CollisionObject (const fcl::CollisionGeometryPtr_t geometry,
 				const Transform3f& position,
 				const std::string& name) :
 	object_ (new fcl::CollisionObject (geometry, position)),
@@ -100,7 +100,8 @@ namespace hpp {
 
       /// Copy constructor
       explicit CollisionObject (const CollisionObject& object) :
-	object_ (object.object_),
+    object_ (new fcl::CollisionObject (object.fcl()->collisionGeometry(),
+                                       object.fcl()->getTransform())),
 	positionInJointFrame_ (object.positionInJointFrame_),
 	joint_ (0x0),
 	name_ (object.name_),

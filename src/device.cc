@@ -44,10 +44,6 @@ namespace hpp {
       com_.setZero ();
       I4.setIdentity ();
     }
-
-
-    // ========================================================================
-
     Device::~Device()
     {
     }
@@ -67,11 +63,73 @@ namespace hpp {
 
     DevicePtr_t Device::createCopy(const DevicePtr_t& device)
     {
-      Device* ptr = new Device(*device);
+      Device* ptr = new Device(device->name());
       DevicePtr_t shPtr(ptr);
 
-      ptr->init (shPtr);
+      ptr->initCopy (shPtr, *device);
       return shPtr;
+    }
+
+    // ========================================================================
+
+    namespace
+    {
+    void CloneJointRec(JointPtr_t current, JointPtr_t clone)
+    {
+        for(std::size_t i = 0; i < current->numberChildJoints(); ++i)
+        {
+            JointPtr_t cloneChild = current->childJoint(i)->clone();
+            clone->addChildJoint(cloneChild);
+            CloneJointRec(current->childJoint(i),cloneChild);
+        }
+    }
+
+    JointPtr_t CloneJoints(hpp::model::Device &clone, const hpp::model::Device &device)
+    {
+        JointPtr_t root(device.rootJoint()->clone());
+        clone.rootJoint(root);
+        CloneJointRec(device.rootJoint(), root);
+        return root;
+    }
+
+    JointVector_t CloneDisabledPositions(const hpp::model::Device &clone, const JointVector_t& disabledPositions)
+    {
+        JointVector_t res;
+        for(JointVector_t::const_iterator cit = disabledPositions.begin();
+            cit != disabledPositions.end(); ++cit)
+        {
+            res.push_back(clone.getJointByName((*cit)->name()));
+        }
+        return res;
+    }
+
+    Grippers_t CloneGrippers(hpp::model::Device &clone, const hpp::model::Device &device)
+    {
+        Grippers_t res;
+        for(Grippers_t::const_iterator cit = device.grippers().begin();
+            cit != device.grippers().end(); ++cit)
+        {
+            JointVector_t disabledPositions(
+                        CloneDisabledPositions(clone, (*cit)->getDisabledCollisions()));
+            GripperPtr_t cloneGripper = Gripper::create((*cit)->name(),
+                                 clone.getJointByName((*cit)->joint()->name()),
+                                 (*cit)->objectPositionInJoint(),
+                                 disabledPositions);
+            res.push_back(cloneGripper);
+
+        }
+        return res;
+    }
+
+    void CloneCollisionPairs(hpp::model::Device &clone, const hpp::model::Device &device, Request_t type)
+    {
+        for(Device::CollisionPairs_t::const_iterator cit = device.collisionPairs(type).begin();
+            cit != device.collisionPairs(type).end(); ++cit)
+        {
+            clone.addCollisionPairs(clone.getJointByName(cit->first->name()),
+                                    clone.getJointByName(cit->second->name()),type);
+        }
+    }
     }
 
     // ========================================================================
@@ -86,6 +144,21 @@ namespace hpp {
     void Device::init(const DeviceWkPtr_t& weakPtr)
     {
       weakPtr_ = weakPtr;
+    }
+
+    // ========================================================================
+
+    void Device::initCopy(const DeviceWkPtr_t& weakPtr, const Device& device)
+    {
+      init(weakPtr);
+      CloneJoints(*this, device);
+      grippers_ = CloneGrippers(*this, device);
+      setDimensionExtraConfigSpace(device.extraConfigSpace().dimension());
+      collisionPairs_.clear();
+      distances_.clear();
+      CloneCollisionPairs(*this, device,COLLISION);
+      CloneCollisionPairs(*this, device,DISTANCE);
+      computeDistances();
     }
 
     // ========================================================================
