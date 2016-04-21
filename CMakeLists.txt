@@ -64,6 +64,7 @@ SET(${PROJECT_NAME}_HEADERS
   )
 
 # Declare dependencies
+SET(BOOST_COMPONENTS unit_test_framework)
 SEARCH_FOR_BOOST()
 
 ADD_REQUIRED_DEPENDENCY("eigen3 >= 3.2")
