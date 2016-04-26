@@ -77,6 +77,19 @@ BOOST_AUTO_TEST_CASE(clone_device)
   d1->computeForwardKinematics();
   d2->computeForwardKinematics();
 
+
+  // now verifying that transforms are correctly updated as well
+  fcl::Vec3f x(0,0,1);
+  fcl::Transform3f r1, r2;
+
+  for(std::size_t i =0; i != jv1.size(); ++i)
+  {
+      r1 = jv1[i]->currentTransformation();
+      r2 = jv2[i]->currentTransformation();
+      BOOST_CHECK_MESSAGE((r1.getRotation() * x + r1.getTranslation() - r2.getRotation() * x + r2.getTranslation()).norm() < 10e-2,
+              "Transformation not matching for joint " +jv1[i]->name()+ " and " +jv2[i]->name() );
+  }
+
   //collision checking with objects
   fcl::CollisionObjectPtr_t c1 = d1->rootJoint()->linkedBody()->innerObjects(hpp::model::COLLISION).front()->fcl();
   fcl::CollisionObjectPtr_t c2 = d2->rootJoint()->linkedBody()->innerObjects(hpp::model::COLLISION).front()->fcl();
@@ -96,4 +109,5 @@ BOOST_AUTO_TEST_CASE(clone_device)
   fcl::collide(c1.get(),c2.get(),colReq2,colRes2);
   BOOST_CHECK_MESSAGE ( !colRes2.isCollision(),
       "Device robot and clone should not be colliding after collision");
+
 }

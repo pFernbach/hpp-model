@@ -53,10 +53,12 @@ namespace hpp {
 
     Joint::Joint (const Joint& joint) :
       configuration_ (joint.configuration_),
+      currentTransformation_ (joint.initialPosition_),
       positionInParentFrame_ (joint.positionInParentFrame_),
       linkInJointFrame_ (joint.linkInJointFrame_),
       maximalDistanceToParent_ (joint.maximalDistanceToParent_),
       configSize_ (joint.configSize_), numberDof_ (joint.numberDof_),
+      initialPosition_(joint.initialPosition_),
       robot_ (), body_ (joint.body_ ? joint.body_->clone (this) : 0x0),
       name_ (joint.name_), linkName_ (joint.linkName_),
       children_ (), parent_ (), rankInConfiguration_ (-1), rankInVelocity_ (-1),
