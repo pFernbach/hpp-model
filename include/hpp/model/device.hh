@@ -89,7 +89,7 @@ namespace hpp {
       /// \{
 
       /// Set the root of the kinematic chain
-      void rootJoint (JointPtr_t joint);
+      virtual void rootJoint (JointPtr_t joint);
 
       /// Set position of root joint in world frame
       void rootJointPosition (const Transform3f& position);
