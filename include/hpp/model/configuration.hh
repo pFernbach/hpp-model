@@ -102,7 +102,7 @@ namespace hpp {
 						  indexVelocity, result);
       }
       const size_type& dim = robot->extraConfigSpace().dimension();
-      result.tail (dim) = q2.tail (dim) - q1.tail (dim);
+      result.tail (dim) = q1.tail (dim) - q2.tail (dim);
     }
 
     /// Distance between two configuration.
