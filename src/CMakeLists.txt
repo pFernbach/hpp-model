@@ -40,8 +40,10 @@ PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} eigen3)
 IF (ASSIMP_FOUND)
   ADD_EXECUTABLE(hpp-check-mesh-file
     check_mesh_file.cc)
-  PKG_CONFIG_USE_DEPENDENCY(hpp-check-mesh-file assimp)
   TARGET_LINK_LIBRARIES(hpp-check-mesh-file ${LIBRARY_NAME})
+  PKG_CONFIG_USE_DEPENDENCY(hpp-check-mesh-file assimp)
+  PKG_CONFIG_USE_DEPENDENCY(hpp-check-mesh-file hpp-fcl)
+  PKG_CONFIG_USE_DEPENDENCY(hpp-check-mesh-file hpp-util)
   INSTALL(TARGETS hpp-check-mesh-file DESTINATION bin)
 ENDIF (ASSIMP_FOUND)
 

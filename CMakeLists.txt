@@ -22,14 +22,13 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(CXX_DISABLE_WERROR TRUE)
 INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/boost.cmake)
-INCLUDE(cmake/eigen.cmake)
 INCLUDE(cmake/cpack.cmake)
 
 SET(PROJECT_NAME hpp-model)
 SET(PROJECT_DESCRIPTION
   "Implementation of hybrid geometric and dynamic humanoid robots"
   )
-SET(PROJECT_URL "")
+SET(PROJECT_URL "https://github.com/humanoid-path-planner/hpp-model")
 
 # Where to compile shared objects
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
