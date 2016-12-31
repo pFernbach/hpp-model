@@ -41,6 +41,9 @@ IF (HPP_DEBUG)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
 ENDIF()
 
+# Add a cache variable to allow not compiling and running tests
+set (RUN_TESTS TRUE CACHE BOOL "compile and run unit tests")
+
 # Declare headers
 SET(${PROJECT_NAME}_HEADERS
   include/hpp/model/body.hh
@@ -63,8 +66,10 @@ SET(${PROJECT_NAME}_HEADERS
   )
 
 # Declare dependencies
-SET(BOOST_COMPONENTS unit_test_framework)
-SEARCH_FOR_BOOST()
+IF (RUN_TESTS)
+  SET(BOOST_COMPONENTS unit_test_framework)
+  SEARCH_FOR_BOOST()
+ENDIF ()
 
 ADD_REQUIRED_DEPENDENCY("eigen3 >= 3.2")
 ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.7")
@@ -75,7 +80,9 @@ ADD_OPTIONAL_DEPENDENCY("assimp")
 CONFIGURE_FILE(doc/main.hh.in doc/main.hh)
 
 ADD_SUBDIRECTORY(src)
-ADD_SUBDIRECTORY(tests)
+IF (RUN_TESTS)
+ ADD_SUBDIRECTORY(tests)
+ENDIF ()
 
 # Add dependency toward hpp-model library in pkg-config file.
 PKG_CONFIG_APPEND_LIBS("hpp-model")
