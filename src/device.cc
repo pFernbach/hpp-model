@@ -39,7 +39,7 @@ namespace hpp {
       currentVelocity_ (numberDof_), 	currentAcceleration_ (numberDof_),
       com_ (), jacobianCom_ (3, 0), mass_ (0), upToDate_ (false),
       computationFlag_ (ALL), collisionPairs_ (), distancePairs_ (),
-      grippers_ (), weakPtr_ ()
+      grippers_ (),q0_(configSize_), weakPtr_ ()
     {
       com_.setZero ();
       I4.setIdentity ();
@@ -506,6 +506,7 @@ namespace hpp {
       size_type newSize = configSize ();
       Configuration_t q = currentConfiguration_;
       currentConfiguration_.resize (newSize);
+      q0_ = Configuration_t(newSize);
       // if size of configuration increased, set last coordinates to 0
       if (newSize > oldSize) {
 	currentConfiguration_.head (oldSize) = q;

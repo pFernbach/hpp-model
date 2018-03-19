@@ -324,6 +324,9 @@ namespace hpp {
       /// Print object in a stream
       virtual std::ostream& print (std::ostream& os) const;
 
+      virtual const Configuration_t q0(){return q0_;}
+      virtual void q0(Configuration_t q0){q0_ = q0;}
+
     protected:
       /// \brief Constructor
       Device(const std::string& name);
@@ -379,6 +382,7 @@ namespace hpp {
       ObjectVector_t distanceObstacles_;
       // Grippers
       Grippers_t grippers_;
+      Configuration_t q0_;
       // Extra configuration space
       ExtraConfigSpace extraConfigSpace_;
       DeviceWkPtr_t weakPtr_;
