@@ -486,8 +486,14 @@ namespace hpp {
     void Device::registerJoint (const JointPtr_t& joint)
     {
       jointVector_.push_back (joint);
-      joint->rankInConfiguration_ = configSize_;
-      joint->rankInVelocity_ = numberDof_;
+      if(joint->configSize() > 0)
+        joint->rankInConfiguration_ = configSize_;
+      else
+        joint->rankInConfiguration_ = configSize_ - 1 ;
+      if(joint->numberDof () > 0)
+        joint->rankInVelocity_ = numberDof_;
+      else
+        joint->rankInVelocity_ = numberDof_ - 1;
       for (size_type i = 0; i < joint->configSize(); ++i)
         jointByConfigRank_.push_back (joint);
       for (size_type i = 0; i < joint->numberDof(); ++i)
